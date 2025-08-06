@@ -8,3 +8,6 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* 토스트 알림 import */
+@import url('toast.css');

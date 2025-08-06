@@ -26,6 +26,9 @@ gem 'jwt'
 # HTTP client for API calls
 gem 'faraday'
 
+# Load environment variables from .env file
+gem 'dotenv-rails', groups: [:development, :test]
+
 # Tailwind CSS
 gem 'tailwindcss-rails'
 

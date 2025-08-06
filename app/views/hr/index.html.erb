@@ -236,11 +236,16 @@
       
       <form id="new-employee-form" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
-          <div>
+          <div class="form-field">
             <label for="name" class="block text-sm font-medium text-gray-700">이름</label>
             <input type="text" id="name" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div class="validation-icon success">✓</div>
+            <div class="validation-icon error">✕</div>
+            <div class="validation-icon loading">⋯</div>
+            <div class="field-error"></div>
+            <div class="field-success"></div>
           </div>
-          <div>
+          <div class="form-field">
             <label for="department" class="block text-sm font-medium text-gray-700">부서</label>
             <select id="department" name="department" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
               <option value="">부서 선택</option>
@@ -249,6 +254,10 @@
               <option value="행정부">행정부</option>
               <option value="시설관리">시설관리</option>
             </select>
+            <div class="validation-icon success">✓</div>
+            <div class="validation-icon error">✕</div>
+            <div class="field-error"></div>
+            <div class="field-success"></div>
           </div>
         </div>
         
@@ -286,13 +295,23 @@
         </div>
         
         <div class="grid grid-cols-2 gap-4">
-          <div>
+          <div class="form-field">
             <label for="phone" class="block text-sm font-medium text-gray-700">전화번호</label>
             <input type="tel" id="phone" name="phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div class="validation-icon success">✓</div>
+            <div class="validation-icon error">✕</div>
+            <div class="validation-icon loading">⋯</div>
+            <div class="field-error"></div>
+            <div class="field-success"></div>
           </div>
-          <div>
+          <div class="form-field">
             <label for="email" class="block text-sm font-medium text-gray-700">이메일</label>
             <input type="email" id="email" name="email" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <div class="validation-icon success">✓</div>
+            <div class="validation-icon error">✕</div>
+            <div class="validation-icon loading">⋯</div>
+            <div class="field-error"></div>
+            <div class="field-success"></div>
           </div>
         </div>
         
@@ -348,38 +367,35 @@ document.querySelectorAll('[data-tab]').forEach(tab => {
   });
 });
 
-// API 기본 설정
-const API_BASE_URL = 'http://localhost:7001/api/v1';
-
-// 인증 헤더 가져오기
-function getAuthHeaders() {
-  const token = localStorage.getItem('auth_token');
-  return token ? {
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  } : {
-    'Content-Type': 'application/json'
-  };
-}
+// 모듈화된 API 및 UI 컴포넌트 사용
 
 // 대시보드 로드
 async function loadDashboard() {
   try {
-    // 직원 통계 로드
-    const employeesResponse = await fetch(`${API_BASE_URL}/employees`, {
-      headers: getAuthHeaders()
-    });
-    const employeesData = await employeesResponse.json();
+    // 로딩 상태 표시
+    loading.showDataLoading(
+      document.getElementById('recent-activities'), 
+      '대시보드 데이터를 불러오는 중...'
+    );
+    
+    // 모듈화된 EmployeeApi 사용
+    const employeesData = await employeeApi.getEmployees();
     
     const totalEmployees = employeesData.employees.length;
     const activeEmployees = employeesData.employees.filter(emp => emp.status === 'active').length;
     const onLeaveEmployees = employeesData.employees.filter(emp => emp.status === 'on_leave').length;
     
+    // UIComponents로 통계 카드 업데이트
+    const stats = [
+      { label: '총 직원', value: `${totalEmployees}명`, icon: '👥', bgColor: 'bg-blue-500' },
+      { label: '오늘 출근', value: `${activeEmployees}명`, icon: '✅', bgColor: 'bg-green-500' },
+      { label: '휴가중', value: `${onLeaveEmployees}명`, icon: '🏖️', bgColor: 'bg-purple-500' },
+      { label: '승인 대기', value: '2건', icon: '⏳', bgColor: 'bg-yellow-500' }
+    ];
+    
     document.getElementById('total-employees').textContent = `${totalEmployees}명`;
     document.getElementById('today-present').textContent = `${activeEmployees}명`;
     document.getElementById('on-leave').textContent = `${onLeaveEmployees}명`;
-    
-    // 휴가 승인 대기 건수 (임시로 2건으로 설정)
     document.getElementById('pending-leaves').textContent = '2건';
     
     // 최근 활동 표시 (실제 데이터 기반)
@@ -402,9 +418,10 @@ async function loadDashboard() {
             <p class="text-sm text-gray-500">${activity.user} • ${activity.time}</p>
           </div>
           <div class="flex-shrink-0">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.status === 'completed' ? 'text-green-800 bg-green-100' : activity.status === 'approved' ? 'text-blue-800 bg-blue-100' : 'text-yellow-800 bg-yellow-100'}">
-              ${activity.status === 'completed' ? '완료' : activity.status === 'approved' ? '승인' : '대기'}
-            </span>
+            ${UIComponents.createBadge(
+              activity.status === 'completed' ? '완료' : activity.status === 'approved' ? '승인' : '대기',
+              activity.status === 'completed' ? 'success' : activity.status === 'approved' ? 'info' : 'warning'
+            )}
           </div>
         </div>
       </li>
@@ -414,6 +431,8 @@ async function loadDashboard() {
     
   } catch (error) {
     console.error('대시보드 로드 실패:', error);
+    toast.error('대시보드 데이터를 불러올 수 없습니다.');
+    
     // 에러 발생시 기본값 표시
     document.getElementById('total-employees').textContent = '-';
     document.getElementById('today-present').textContent = '-';
@@ -431,57 +450,57 @@ async function loadDashboard() {
 // 직원 목록 로드
 async function loadEmployees() {
   try {
-    document.getElementById('employees-list').innerHTML = `
-      <div class="text-center py-8">
-        <div class="text-sm text-gray-500">직원 목록을 불러오는 중...</div>
-      </div>
-    `;
+    // 로딩 상태 표시
+    loading.showDataLoading(
+      document.getElementById('employees-list'),
+      '직원 목록을 불러오는 중...'
+    );
     
-    const response = await fetch(`${API_BASE_URL}/employees`, {
-      headers: getAuthHeaders()
-    });
-    const data = await response.json();
+    // 모듈화된 EmployeeApi 사용
+    const data = await employeeApi.getEmployees();
     
     if (data.employees && data.employees.length > 0) {
-      const employeesHtml = data.employees.map(emp => `
-        <div class="border-b border-gray-200 py-4">
-          <div class="flex items-center justify-between">
-            <div class="flex-1">
+      // UIComponents를 사용한 테이블 생성
+      const columns = [
+        { key: 'name', label: '이름', render: (value, row) => {
+          return `
+            <div>
               <div class="flex items-center">
-                <h4 class="text-sm font-medium text-gray-900">${emp.name}</h4>
-                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-blue-800 bg-blue-100">
-                  ${emp.employment_type_text}
-                </span>
+                <span class="font-medium text-gray-900">${value}</span>
+                ${UIComponents.createBadge(row.employment_type_text, 'info')}
               </div>
-              <div class="mt-1 text-sm text-gray-500">
-                ${emp.department} • ${emp.position}
-              </div>
-              <div class="mt-1 text-xs text-gray-400">
-                입사일: ${emp.hire_date} • 근속: ${emp.years_of_service}년
-              </div>
+              <div class="text-sm text-gray-500">${row.department} • ${row.position}</div>
+              <div class="text-xs text-gray-400">입사일: ${row.hire_date} • 근속: ${row.years_of_service}년</div>
             </div>
-            <div class="flex items-center space-x-2">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${emp.status === 'active' ? 'text-green-800 bg-green-100' : 'text-yellow-800 bg-yellow-100'}">
-                ${emp.status_text}
-              </span>
-              <button class="text-blue-600 hover:text-blue-800 text-sm" onclick="viewEmployee(${emp.id})">상세보기</button>
-              <button class="text-red-600 hover:text-red-800 text-sm" onclick="deleteEmployee(${emp.id}, '${emp.name}')">삭제</button>
+          `;
+        }},
+        { key: 'status_text', label: '상태', render: (value, row) => {
+          return UIComponents.createBadge(value, row.status === 'active' ? 'success' : 'warning');
+        }},
+        { key: 'actions', label: '작업', render: (value, row) => {
+          return `
+            <div class="flex space-x-2">
+              <button class="text-blue-600 hover:text-blue-800 text-sm" onclick="viewEmployee(${row.id})">상세보기</button>
+              <button class="text-red-600 hover:text-red-800 text-sm" onclick="deleteEmployee(${row.id}, '${row.name}')">삭제</button>
             </div>
-          </div>
-        </div>
-      `).join('');
+          `;
+        }}
+      ];
       
-      document.getElementById('employees-list').innerHTML = employeesHtml;
+      const tableHtml = UIComponents.createDataTable(data.employees, columns, {
+        emptyMessage: '등록된 직원이 없습니다'
+      });
+      
+      document.getElementById('employees-list').innerHTML = tableHtml;
     } else {
-      document.getElementById('employees-list').innerHTML = `
-        <div class="text-center py-8">
-          <div class="text-sm text-gray-500">등록된 직원이 없습니다.</div>
-        </div>
-      `;
+      document.getElementById('employees-list').innerHTML = UIComponents.createDataTable([], [], {
+        emptyMessage: '등록된 직원이 없습니다'
+      });
     }
     
   } catch (error) {
     console.error('직원 목록 로드 실패:', error);
+    toast.error('직원 목록을 불러올 수 없습니다.');
     document.getElementById('employees-list').innerHTML = `
       <div class="text-center py-8">
         <div class="text-sm text-red-500">직원 목록을 불러올 수 없습니다.</div>
@@ -526,26 +545,26 @@ async function loadLeaveRequests() {
   document.getElementById('leave-list').innerHTML = leavesHtml;
 }
 
-// 모달 관리
+// 모달 관리 - UIComponents 사용
 function openNewEmployeeModal() {
-  document.getElementById('new-employee-modal').classList.remove('hidden');
+  UIComponents.openModal('new-employee-modal');
 }
 
 function closeNewEmployeeModal() {
-  document.getElementById('new-employee-modal').classList.add('hidden');
-  document.getElementById('new-employee-form').reset();
+  UIComponents.closeModal('new-employee-modal');
+  UIComponents.resetForm('new-employee-form');
 }
 
 function openNewLeaveModal() {
   // 휴가 신청 모달 구현 (간단한 알림으로 대체)
-  alert('휴가 신청 기능이 구현될 예정입니다.');
+  toast.info('휴가 신청 기능이 구현될 예정입니다.');
 }
 
 // 근태 조회
 function loadAttendance() {
   const date = document.getElementById('attendance-date').value;
   if (!date) {
-    alert('날짜를 선택하세요');
+    toast.warning('날짜를 선택하세요');
     return;
   }
   
@@ -564,7 +583,7 @@ function loadAttendance() {
 function loadPayroll() {
   const month = document.getElementById('payroll-month').value;
   if (!month) {
-    alert('급여 월을 선택하세요');
+    toast.warning('급여 월을 선택하세요');
     return;
   }
   
@@ -600,109 +619,177 @@ function initializePayrollMonths() {
 document.getElementById('new-employee-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   
-  const formData = new FormData(e.target);
-  const employeeData = {
-    name: formData.get('name'),
-    department: formData.get('department'),
-    position: formData.get('position'),
-    employment_type: formData.get('employment_type'),
-    hire_date: formData.get('hire_date'),
-    phone: formData.get('phone'),
-    email: formData.get('email'),
-    salary_type: formData.get('salary_type')
-  };
+  const form = e.target;
+  const submitButton = form.querySelector('button[type="submit"]');
+  
+  // 폼 검증
+  if (!validator.validateForm(form)) {
+    toast.warning('입력 내용을 확인해주세요');
+    return;
+  }
+  
+  loading.setButtonLoading(submitButton, true);
   
   try {
-    const response = await fetch(`${API_BASE_URL}/employees`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ employee: employeeData })
-    });
+    // UIComponents로 폼 데이터 변환
+    const employeeData = UIComponents.formDataToObject(form);
     
-    const result = await response.json();
+    // 모듈화된 EmployeeApi 사용
+    const result = await employeeApi.createEmployee(employeeData);
     
-    if (response.ok) {
-      alert(result.message);
-      closeNewEmployeeModal();
-      if (currentTab === 'employees') {
-        loadEmployees();
-      }
-      if (currentTab === 'dashboard') {
-        loadDashboard();
-      }
-    } else {
-      alert(`등록 실패: ${result.errors ? result.errors.join(', ') : result.message}`);
+    toast.success(result.message || '직원이 성공적으로 등록되었습니다.');
+    closeNewEmployeeModal();
+    
+    if (currentTab === 'employees') {
+      loadEmployees();
     }
+    if (currentTab === 'dashboard') {
+      loadDashboard();
+    }
+    
   } catch (error) {
     console.error('직원 등록 실패:', error);
-    alert('직원 등록 중 오류가 발생했습니다.');
+    
+    if (error.details) {
+      const errorMsg = Array.isArray(error.details) ? error.details.join(', ') : error.details;
+      toast.error(`등록 실패: ${errorMsg}`);
+    } else {
+      toast.error(error.message || '직원 등록 중 오류가 발생했습니다.');
+    }
+  } finally {
+    loading.setButtonLoading(submitButton, false);
   }
 });
 
 // 직원 상세보기
 async function viewEmployee(employeeId) {
   try {
-    const response = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
-      headers: getAuthHeaders()
-    });
-    const data = await response.json();
+    // 모듈화된 EmployeeApi 사용
+    const data = await employeeApi.getEmployee(employeeId);
+    const emp = data.employee;
     
-    if (response.ok) {
-      const emp = data.employee;
-      const details = `
-직원 정보:
-- 이름: ${emp.name}
-- 부서: ${emp.department}
-- 직책: ${emp.position}
-- 고용형태: ${emp.employment_type_text}
-- 입사일: ${emp.hire_date}
-- 근속년수: ${emp.years_of_service}년
-- 전화번호: ${emp.phone || '미입력'}
-- 이메일: ${emp.email}
-- 급여형태: ${emp.salary_type_text}
-- 기본급: ${emp.base_salary ? emp.base_salary.toLocaleString() + '원' : '미입력'}
-- 시급: ${emp.hourly_rate ? emp.hourly_rate.toLocaleString() + '원' : '미입력'}
-- 연차 잔여: ${emp.annual_leave_balance}일
-- 상태: ${emp.status_text}
-      `;
-      alert(details);
-    } else {
-      alert('직원 정보를 불러올 수 없습니다.');
+    // UIComponents로 모달 생성
+    const employeeDetails = `
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">이름</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.name}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">부서</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.department}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">직책</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.position}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">고용형태</label>
+            <div class="mt-1">${UIComponents.createBadge(emp.employment_type_text, 'info')}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">입사일</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.hire_date}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">근속년수</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.years_of_service}년</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">전화번호</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.phone || '미입력'}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">이메일</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.email}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">급여형태</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.salary_type_text}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">연차 잔여</label>
+            <div class="mt-1 text-sm text-gray-900">${emp.annual_leave_balance}일</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">기본급/시급</label>
+            <div class="mt-1 text-sm text-gray-900">
+              ${emp.base_salary ? emp.base_salary.toLocaleString() + '원' : ''}
+              ${emp.hourly_rate ? emp.hourly_rate.toLocaleString() + '원/시' : ''}
+              ${!emp.base_salary && !emp.hourly_rate ? '미입력' : ''}
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">상태</label>
+            <div class="mt-1">${UIComponents.createBadge(emp.status_text, emp.status === 'active' ? 'success' : 'warning')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    const modalHtml = UIComponents.createModal(
+      'employee-detail-modal',
+      '직원 정보',
+      employeeDetails,
+      [{
+        label: '닫기',
+        onclick: "UIComponents.closeModal('employee-detail-modal')",
+        className: 'px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
+      }]
+    );
+    
+    // 기존 모달이 있으면 제거
+    const existingModal = document.getElementById('employee-detail-modal');
+    if (existingModal) {
+      existingModal.remove();
     }
+    
+    // 새 모달 추가
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    UIComponents.openModal('employee-detail-modal');
+    
   } catch (error) {
     console.error('직원 상세 조회 실패:', error);
-    alert('직원 정보 조회 중 오류가 발생했습니다.');
+    toast.error(error.message || '직원 정보 조회 중 오류가 발생했습니다.');
   }
 }
 
 // 직원 삭제
 async function deleteEmployee(employeeId, employeeName) {
-  if (!confirm(`정말로 '${employeeName}' 직원을 삭제하시겠습니까?`)) {
+  // UIComponents의 confirm 사용
+  const confirmed = UIComponents.confirm(`정말로 '${employeeName}' 직원을 삭제하시겠습니까?`);
+  
+  if (!confirmed) {
     return;
   }
   
   try {
-    const response = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
-      method: 'DELETE',
-      headers: getAuthHeaders()
-    });
+    // 모듈화된 EmployeeApi 사용
+    const result = await employeeApi.deleteEmployee(employeeId);
     
-    const result = await response.json();
+    toast.success(result.message || '직원이 성공적으로 삭제되었습니다.');
     
-    if (response.ok) {
-      alert(result.message);
-      if (currentTab === 'employees') {
-        loadEmployees();
-      }
-      if (currentTab === 'dashboard') {
-        loadDashboard();
-      }
-    } else {
-      alert(`삭제 실패: ${result.message}`);
+    if (currentTab === 'employees') {
+      loadEmployees();
     }
+    if (currentTab === 'dashboard') {
+      loadDashboard();
+    }
+    
   } catch (error) {
     console.error('직원 삭제 실패:', error);
-    alert('직원 삭제 중 오류가 발생했습니다.');
+    toast.error(error.message || '직원 삭제 중 오류가 발생했습니다.');
   }
 }
 
@@ -710,5 +797,49 @@ async function deleteEmployee(employeeId, employeeName) {
 document.addEventListener('DOMContentLoaded', () => {
   initializePayrollMonths();
   loadDashboard();
+  
+  // 폼 검증 설정
+  setupFormValidation();
 });
+
+// 폼 검증 설정
+function setupFormValidation() {
+  // 이름 필드 검증 규칙
+  validator.addRule('name', FormValidator.rules.required('이름을 입력해주세요'));
+  validator.addRule('name', FormValidator.rules.minLength(2));
+  validator.addRule('name', FormValidator.rules.maxLength(50));
+  validator.addRule('name', FormValidator.rules.korean());
+
+  // 부서 필드 검증 규칙
+  validator.addRule('department', FormValidator.rules.required('부서를 선택해주세요'));
+
+  // 직책 필드 검증 규칙  
+  validator.addRule('position', FormValidator.rules.required('직책을 입력해주세요'));
+  validator.addRule('position', FormValidator.rules.minLength(2));
+  validator.addRule('position', FormValidator.rules.maxLength(30));
+
+  // 고용형태 필드 검증 규칙
+  validator.addRule('employment_type', FormValidator.rules.required('고용형태를 선택해주세요'));
+
+  // 입사일 필드 검증 규칙
+  validator.addRule('hire_date', FormValidator.rules.required('입사일을 입력해주세요'));
+
+  // 급여형태 필드 검증 규칙
+  validator.addRule('salary_type', FormValidator.rules.required('급여형태를 선택해주세요'));
+
+  // 전화번호 필드 검증 규칙 (선택적)
+  validator.addRule('phone', FormValidator.rules.phone());
+
+  // 이메일 필드 검증 규칙
+  validator.addRule('email', FormValidator.rules.required('이메일을 입력해주세요'));
+  validator.addRule('email', FormValidator.rules.email());
+
+  // 폼 필드들에 실시간 검증 바인딩
+  const form = document.getElementById('new-employee-form');
+  const fields = form.querySelectorAll('[name]');
+  
+  fields.forEach(field => {
+    validator.bindField(field);
+  });
+}
 </script>

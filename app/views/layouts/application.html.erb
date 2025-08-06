@@ -138,6 +138,301 @@
       </div>
     </div>
 
+    <!-- 토스트 알림 컨테이너 -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 로딩 오버레이 -->
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loading-text">처리 중...</div>
+      </div>
+    </div>
+
+    <script>
+      // 토스트 알림 시스템
+      class ToastManager {
+        constructor() {
+          this.container = document.getElementById('toast-container');
+          this.toasts = [];
+        }
+
+        show(message, type = 'info', title = null, duration = 5000) {
+          const toast = this.createToast(message, type, title, duration);
+          this.container.appendChild(toast);
+          
+          // 애니메이션을 위한 지연
+          setTimeout(() => {
+            toast.classList.add('show');
+          }, 10);
+
+          // 자동 제거
+          setTimeout(() => {
+            this.removeToast(toast);
+          }, duration);
+
+          return toast;
+        }
+
+        createToast(message, type, title, duration) {
+          const toast = document.createElement('div');
+          toast.className = `toast toast-${type}`;
+          
+          const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+          };
+
+          const icon = icons[type] || icons.info;
+          
+          toast.innerHTML = `
+            <div class="toast-icon">${icon}</div>
+            <div class="toast-content">
+              ${title ? `<div class="toast-title">${title}</div>` : ''}
+              <div class="toast-message">${message}</div>
+            </div>
+            <button class="toast-close" onclick="window.toast.removeToast(this.parentElement)">&times;</button>
+          `;
+
+          return toast;
+        }
+
+        removeToast(toast) {
+          toast.classList.add('hide');
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 300);
+        }
+
+        // 편의 메서드들
+        success(message, title = null) {
+          return this.show(message, 'success', title);
+        }
+
+        error(message, title = null) {
+          return this.show(message, 'error', title || '오류');
+        }
+
+        warning(message, title = null) {
+          return this.show(message, 'warning', title || '경고');
+        }
+
+        info(message, title = null) {
+          return this.show(message, 'info', title || '알림');
+        }
+      }
+
+      // 전역 토스트 인스턴스 생성
+      window.toast = new ToastManager();
+
+      // 로딩 관리자
+      class LoadingManager {
+        constructor() {
+          this.overlay = document.getElementById('loading-overlay');
+          this.textElement = document.getElementById('loading-text');
+          this.isShowing = false;
+        }
+
+        show(message = '처리 중...') {
+          this.textElement.textContent = message;
+          this.overlay.classList.add('show');
+          this.isShowing = true;
+        }
+
+        hide() {
+          this.overlay.classList.remove('show');
+          this.isShowing = false;
+        }
+
+        // 버튼 로딩 상태 관리
+        setButtonLoading(button, loading = true) {
+          if (loading) {
+            button.classList.add('btn-loading');
+            button.disabled = true;
+          } else {
+            button.classList.remove('btn-loading');
+            button.disabled = false;
+          }
+        }
+
+        // 데이터 영역 로딩 상태 관리
+        showDataLoading(container, message = '데이터를 불러오는 중...') {
+          container.innerHTML = `
+            <div class="data-loading">
+              <div class="data-loading-spinner"></div>
+              <div class="data-loading-text">${message}</div>
+            </div>
+          `;
+        }
+      }
+
+      // 전역 로딩 인스턴스 생성
+      window.loading = new LoadingManager();
+
+      // 폼 검증 관리자
+      class FormValidator {
+        constructor() {
+          this.rules = {};
+          this.debounceTimers = {};
+        }
+
+        // 검증 규칙 추가
+        addRule(fieldName, rule) {
+          if (!this.rules[fieldName]) {
+            this.rules[fieldName] = [];
+          }
+          this.rules[fieldName].push(rule);
+        }
+
+        // 필드 검증
+        validateField(field) {
+          const fieldName = field.name;
+          const value = field.value.trim();
+          const fieldContainer = field.closest('.form-field') || field.parentElement;
+          
+          if (!this.rules[fieldName]) return true;
+
+          // 검증 중 상태 표시
+          this.setFieldState(fieldContainer, 'validating');
+
+          let isValid = true;
+          let errorMessage = '';
+
+          for (const rule of this.rules[fieldName]) {
+            const result = rule.validate(value);
+            if (!result.valid) {
+              isValid = false;
+              errorMessage = result.message;
+              break;
+            }
+          }
+
+          // 결과 표시
+          setTimeout(() => {
+            if (isValid) {
+              this.setFieldState(fieldContainer, 'valid');
+            } else {
+              this.setFieldState(fieldContainer, 'invalid', errorMessage);
+            }
+          }, 300); // 검증 중 효과를 위한 지연
+
+          return isValid;
+        }
+
+        // 필드 상태 설정
+        setFieldState(container, state, message = '') {
+          container.classList.remove('valid', 'invalid', 'validating');
+          
+          if (state !== 'neutral') {
+            container.classList.add(state);
+          }
+
+          const errorElement = container.querySelector('.field-error');
+          const successElement = container.querySelector('.field-success');
+
+          if (errorElement) errorElement.textContent = message;
+          if (successElement && state === 'valid') {
+            successElement.textContent = '입력이 올바릅니다';
+          }
+        }
+
+        // 실시간 검증 이벤트 연결
+        bindField(field, debounceMs = 500) {
+          const fieldName = field.name;
+          
+          // 입력 이벤트
+          field.addEventListener('input', (e) => {
+            clearTimeout(this.debounceTimers[fieldName]);
+            this.debounceTimers[fieldName] = setTimeout(() => {
+              this.validateField(e.target);
+            }, debounceMs);
+          });
+
+          // 포커스 해제 이벤트
+          field.addEventListener('blur', (e) => {
+            clearTimeout(this.debounceTimers[fieldName]);
+            this.validateField(e.target);
+          });
+        }
+
+        // 전체 폼 검증
+        validateForm(form) {
+          const fields = form.querySelectorAll('[name]');
+          let isValid = true;
+
+          fields.forEach(field => {
+            if (!this.validateField(field)) {
+              isValid = false;
+            }
+          });
+
+          return isValid;
+        }
+
+        // 공통 검증 규칙들
+        static rules = {
+          required: (message = '필수 입력 항목입니다') => ({
+            validate: (value) => ({
+              valid: value.length > 0,
+              message: message
+            })
+          }),
+
+          minLength: (min, message = null) => ({
+            validate: (value) => ({
+              valid: value.length >= min,
+              message: message || `최소 ${min}자 이상 입력해주세요`
+            })
+          }),
+
+          maxLength: (max, message = null) => ({
+            validate: (value) => ({
+              valid: value.length <= max,
+              message: message || `최대 ${max}자까지 입력 가능합니다`
+            })
+          }),
+
+          email: (message = '올바른 이메일 형식을 입력해주세요') => ({
+            validate: (value) => {
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              return {
+                valid: value === '' || emailRegex.test(value),
+                message: message
+              };
+            }
+          }),
+
+          phone: (message = '올바른 전화번호 형식을 입력해주세요') => ({
+            validate: (value) => {
+              const phoneRegex = /^[0-9\-\s()]+$/;
+              return {
+                valid: value === '' || phoneRegex.test(value),
+                message: message
+              };
+            }
+          }),
+
+          korean: (message = '한글, 영문, 공백만 입력 가능합니다') => ({
+            validate: (value) => {
+              const koreanRegex = /^[가-힣a-zA-Z\s]*$/;
+              return {
+                valid: koreanRegex.test(value),
+                message: message
+              };
+            }
+          })
+        }
+      }
+
+      // 전역 폼 검증 인스턴스 생성
+      window.validator = new FormValidator();
+      
+    </script>
+    
     <script>
       // 로그인 상태 확인 및 UI 업데이트
       function updateAuthUI() {

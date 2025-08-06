@@ -853,3 +853,55 @@ Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2025-
   
 ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
   
+Started GET "/login" for ::1 at 2025-08-06 11:47:22 +0900
+Processing by HomeController#login as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/login.html.erb within layouts/application
+  Rendered home/login.html.erb within layouts/application (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.8ms | GC: 0.0ms)
+Completed 200 OK in 278ms (Views: 40.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2025-08-06 11:47:22 +0900
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
+Started GET "/" for ::1 at 2025-08-06 11:47:25 +0900
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | GC: 0.0ms)
+Completed 200 OK in 460ms (Views: 2.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2025-08-06 11:47:26 +0900
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
+Started GET "/hr" for ::1 at 2025-08-06 11:47:27 +0900
+Processing by HrController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering hr/index.html.erb within layouts/application
+  Rendered hr/index.html.erb within layouts/application (Duration: 1.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.2ms | GC: 0.0ms)
+Completed 200 OK in 437ms (Views: 6.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2025-08-06 11:47:28 +0900
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
+Started GET "/hr" for ::1 at 2025-08-06 11:47:38 +0900
+Processing by HrController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering hr/index.html.erb within layouts/application
+  Rendered hr/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.6ms | GC: 0.0ms)
+Completed 200 OK in 464ms (Views: 2.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/.well-known/appspecific/com.chrome.devtools.json" for ::1 at 2025-08-06 11:47:39 +0900
+  
+ActionController::RoutingError (No route matches [GET] "/.well-known/appspecific/com.chrome.devtools.json"):
+  
