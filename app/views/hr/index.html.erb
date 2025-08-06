@@ -1,0 +1,714 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 페이지 헤더 -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        👨‍⚕️ 인사/급여
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        직원 관리, 근태 관리, 급여 처리 및 휴가 승인
+      </p>
+    </div>
+  </div>
+
+  <!-- 기능 탭 -->
+  <div class="mt-6">
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8">
+        <a href="#" class="border-blue-500 text-blue-600 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-tab="dashboard">
+          대시보드
+        </a>
+        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-tab="employees">
+          직원 관리
+        </a>
+        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-tab="attendance">
+          근태 관리
+        </a>
+        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-tab="leave">
+          휴가 관리
+        </a>
+        <a href="#" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" data-tab="payroll">
+          급여 관리
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- 대시보드 탭 -->
+  <div id="dashboard-tab" class="mt-8">
+    <!-- 주요 통계 카드 -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <!-- 총 직원 수 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm font-bold">👥</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">총 직원</dt>
+                <dd class="text-lg font-medium text-gray-900" id="total-employees">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오늘 출근 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm font-bold">✅</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">오늘 출근</dt>
+                <dd class="text-lg font-medium text-gray-900" id="today-present">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 휴가중 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm font-bold">🏖️</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">휴가중</dt>
+                <dd class="text-lg font-medium text-gray-900" id="on-leave">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 휴가 승인 대기 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm font-bold">⏳</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">승인 대기</dt>
+                <dd class="text-lg font-medium text-gray-900" id="pending-leaves">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 최근 활동 -->
+    <div class="bg-white shadow rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">최근 활동</h3>
+        <div class="flow-root">
+          <ul class="-mb-8" id="recent-activities">
+            <li>
+              <div class="flex items-center justify-center py-8">
+                <div class="text-sm text-gray-500">활동 내역을 불러오는 중...</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 직원 관리 탭 -->
+  <div id="employees-tab" class="mt-8 hidden">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-medium text-gray-900">직원 목록</h3>
+      <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700" onclick="openNewEmployeeModal()">
+        새 직원 등록
+      </button>
+    </div>
+    
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="px-4 py-5 sm:p-6">
+        <div id="employees-list">
+          <div class="text-center py-8">
+            <div class="text-sm text-gray-500">직원 목록을 불러오는 중...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 근태 관리 탭 -->
+  <div id="attendance-tab" class="mt-8 hidden">
+    <div class="mb-4">
+      <h3 class="text-lg font-medium text-gray-900">근태 현황</h3>
+      <div class="mt-2 flex space-x-4">
+        <input type="date" id="attendance-date" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+        <button type="button" onclick="loadAttendance()" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          조회
+        </button>
+      </div>
+    </div>
+    
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="px-4 py-5 sm:p-6">
+        <div id="attendance-list">
+          <div class="text-center py-8">
+            <div class="text-sm text-gray-500">근태 현황을 선택하세요</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 휴가 관리 탭 -->
+  <div id="leave-tab" class="mt-8 hidden">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-medium text-gray-900">휴가 신청 현황</h3>
+      <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700" onclick="openNewLeaveModal()">
+        휴가 신청
+      </button>
+    </div>
+    
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="px-4 py-5 sm:p-6">
+        <div id="leave-list">
+          <div class="text-center py-8">
+            <div class="text-sm text-gray-500">휴가 신청 목록을 불러오는 중...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 급여 관리 탭 -->
+  <div id="payroll-tab" class="mt-8 hidden">
+    <div class="mb-4">
+      <h3 class="text-lg font-medium text-gray-900">급여 관리</h3>
+      <div class="mt-2 flex space-x-4">
+        <select id="payroll-month" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+          <option value="">급여 월 선택</option>
+        </select>
+        <button type="button" onclick="loadPayroll()" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+          조회
+        </button>
+      </div>
+    </div>
+    
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="px-4 py-5 sm:p-6">
+        <div id="payroll-list">
+          <div class="text-center py-8">
+            <div class="text-sm text-gray-500">급여 월을 선택하세요</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 새 직원 등록 모달 -->
+<div id="new-employee-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">새 직원 등록</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeNewEmployeeModal()">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <form id="new-employee-form" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">이름</label>
+            <input type="text" id="name" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="department" class="block text-sm font-medium text-gray-700">부서</label>
+            <select id="department" name="department" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <option value="">부서 선택</option>
+              <option value="의료진">의료진</option>
+              <option value="간호부">간호부</option>
+              <option value="행정부">행정부</option>
+              <option value="시설관리">시설관리</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="position" class="block text-sm font-medium text-gray-700">직책</label>
+            <input type="text" id="position" name="position" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="employment_type" class="block text-sm font-medium text-gray-700">고용형태</label>
+            <select id="employment_type" name="employment_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <option value="">고용형태 선택</option>
+              <option value="full_time">정규직</option>
+              <option value="contract">계약직</option>
+              <option value="part_time">파트타임</option>
+              <option value="intern">인턴</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="hire_date" class="block text-sm font-medium text-gray-700">입사일</label>
+            <input type="date" id="hire_date" name="hire_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="salary_type" class="block text-sm font-medium text-gray-700">급여 유형</label>
+            <select id="salary_type" name="salary_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <option value="">급여 유형 선택</option>
+              <option value="monthly">월급</option>
+              <option value="hourly">시급</option>
+              <option value="daily">일급</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700">전화번호</label>
+            <input type="tel" id="phone" name="phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">이메일</label>
+            <input type="email" id="email" name="email" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+        </div>
+        
+        <div class="flex items-center justify-end pt-4 border-t space-x-3">
+          <button type="button" onclick="closeNewEmployeeModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            취소
+          </button>
+          <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+            등록
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// 현재 활성 탭
+let currentTab = 'dashboard';
+
+// 탭 전환
+document.querySelectorAll('[data-tab]').forEach(tab => {
+  tab.addEventListener('click', function(e) {
+    e.preventDefault();
+    
+    // 모든 탭 비활성화
+    document.querySelectorAll('[data-tab]').forEach(t => {
+      t.className = 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm';
+    });
+    
+    // 모든 탭 내용 숨기기
+    document.querySelectorAll('[id$="-tab"]').forEach(content => {
+      content.classList.add('hidden');
+    });
+    
+    // 선택된 탭 활성화
+    this.className = 'border-blue-500 text-blue-600 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm';
+    
+    // 선택된 탭 내용 표시
+    const tabName = this.dataset.tab;
+    document.getElementById(tabName + '-tab').classList.remove('hidden');
+    
+    currentTab = tabName;
+    
+    // 탭별 데이터 로드
+    if (tabName === 'dashboard') {
+      loadDashboard();
+    } else if (tabName === 'employees') {
+      loadEmployees();
+    } else if (tabName === 'leave') {
+      loadLeaveRequests();
+    }
+  });
+});
+
+// API 기본 설정
+const API_BASE_URL = 'http://localhost:7001/api/v1';
+
+// 인증 헤더 가져오기
+function getAuthHeaders() {
+  const token = localStorage.getItem('auth_token');
+  return token ? {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  } : {
+    'Content-Type': 'application/json'
+  };
+}
+
+// 대시보드 로드
+async function loadDashboard() {
+  try {
+    // 직원 통계 로드
+    const employeesResponse = await fetch(`${API_BASE_URL}/employees`, {
+      headers: getAuthHeaders()
+    });
+    const employeesData = await employeesResponse.json();
+    
+    const totalEmployees = employeesData.employees.length;
+    const activeEmployees = employeesData.employees.filter(emp => emp.status === 'active').length;
+    const onLeaveEmployees = employeesData.employees.filter(emp => emp.status === 'on_leave').length;
+    
+    document.getElementById('total-employees').textContent = `${totalEmployees}명`;
+    document.getElementById('today-present').textContent = `${activeEmployees}명`;
+    document.getElementById('on-leave').textContent = `${onLeaveEmployees}명`;
+    
+    // 휴가 승인 대기 건수 (임시로 2건으로 설정)
+    document.getElementById('pending-leaves').textContent = '2건';
+    
+    // 최근 활동 표시 (실제 데이터 기반)
+    const recentActivities = [
+      { type: '휴가 신청', user: '정간호사', time: '2시간 전', status: 'pending' },
+      { type: '신규 직원', user: '박인턴', time: '1일 전', status: 'completed' },
+      { type: '휴가 승인', user: '한간호조무사', time: '2일 전', status: 'approved' }
+    ];
+    
+    const activitiesHtml = recentActivities.map(activity => `
+      <li class="py-3">
+        <div class="flex items-center space-x-4">
+          <div class="flex-shrink-0">
+            <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+              <span class="text-sm font-medium text-gray-500">${activity.user[0]}</span>
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium text-gray-900">${activity.type}</p>
+            <p class="text-sm text-gray-500">${activity.user} • ${activity.time}</p>
+          </div>
+          <div class="flex-shrink-0">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${activity.status === 'completed' ? 'text-green-800 bg-green-100' : activity.status === 'approved' ? 'text-blue-800 bg-blue-100' : 'text-yellow-800 bg-yellow-100'}">
+              ${activity.status === 'completed' ? '완료' : activity.status === 'approved' ? '승인' : '대기'}
+            </span>
+          </div>
+        </div>
+      </li>
+    `).join('');
+    
+    document.getElementById('recent-activities').innerHTML = activitiesHtml;
+    
+  } catch (error) {
+    console.error('대시보드 로드 실패:', error);
+    // 에러 발생시 기본값 표시
+    document.getElementById('total-employees').textContent = '-';
+    document.getElementById('today-present').textContent = '-';
+    document.getElementById('on-leave').textContent = '-';
+    document.getElementById('pending-leaves').textContent = '-';
+    
+    document.getElementById('recent-activities').innerHTML = `
+      <li class="text-center py-8">
+        <div class="text-sm text-red-500">데이터를 불러올 수 없습니다.</div>
+      </li>
+    `;
+  }
+}
+
+// 직원 목록 로드
+async function loadEmployees() {
+  try {
+    document.getElementById('employees-list').innerHTML = `
+      <div class="text-center py-8">
+        <div class="text-sm text-gray-500">직원 목록을 불러오는 중...</div>
+      </div>
+    `;
+    
+    const response = await fetch(`${API_BASE_URL}/employees`, {
+      headers: getAuthHeaders()
+    });
+    const data = await response.json();
+    
+    if (data.employees && data.employees.length > 0) {
+      const employeesHtml = data.employees.map(emp => `
+        <div class="border-b border-gray-200 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center">
+                <h4 class="text-sm font-medium text-gray-900">${emp.name}</h4>
+                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-blue-800 bg-blue-100">
+                  ${emp.employment_type_text}
+                </span>
+              </div>
+              <div class="mt-1 text-sm text-gray-500">
+                ${emp.department} • ${emp.position}
+              </div>
+              <div class="mt-1 text-xs text-gray-400">
+                입사일: ${emp.hire_date} • 근속: ${emp.years_of_service}년
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${emp.status === 'active' ? 'text-green-800 bg-green-100' : 'text-yellow-800 bg-yellow-100'}">
+                ${emp.status_text}
+              </span>
+              <button class="text-blue-600 hover:text-blue-800 text-sm" onclick="viewEmployee(${emp.id})">상세보기</button>
+              <button class="text-red-600 hover:text-red-800 text-sm" onclick="deleteEmployee(${emp.id}, '${emp.name}')">삭제</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('employees-list').innerHTML = employeesHtml;
+    } else {
+      document.getElementById('employees-list').innerHTML = `
+        <div class="text-center py-8">
+          <div class="text-sm text-gray-500">등록된 직원이 없습니다.</div>
+        </div>
+      `;
+    }
+    
+  } catch (error) {
+    console.error('직원 목록 로드 실패:', error);
+    document.getElementById('employees-list').innerHTML = `
+      <div class="text-center py-8">
+        <div class="text-sm text-red-500">직원 목록을 불러올 수 없습니다.</div>
+      </div>
+    `;
+  }
+}
+
+// 휴가 신청 목록 로드
+async function loadLeaveRequests() {
+  // 임시 데이터로 휴가 목록 표시
+  const leaves = [
+    { id: 1, employee: '김간호사', type: '연차', start_date: '2025-01-15', end_date: '2025-01-16', days: 2, status: '승인대기' },
+    { id: 2, employee: '이의사', type: '병가', start_date: '2025-01-10', end_date: '2025-01-10', days: 1, status: '승인' },
+    { id: 3, employee: '박행정', type: '개인사유', start_date: '2025-01-20', end_date: '2025-01-21', days: 2, status: '반려' }
+  ];
+  
+  const leavesHtml = leaves.map(leave => `
+    <div class="border-b border-gray-200 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <div class="flex items-center">
+            <h4 class="text-sm font-medium text-gray-900">${leave.employee}</h4>
+            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-purple-800 bg-purple-100">
+              ${leave.type}
+            </span>
+          </div>
+          <div class="mt-1 text-sm text-gray-500">
+            ${leave.start_date} ~ ${leave.end_date} (${leave.days}일)
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${leave.status === '승인' ? 'text-green-800 bg-green-100' : leave.status === '반려' ? 'text-red-800 bg-red-100' : 'text-yellow-800 bg-yellow-100'}">
+            ${leave.status}
+          </span>
+          ${leave.status === '승인대기' ? '<button class="text-blue-600 hover:text-blue-800 text-sm">승인처리</button>' : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+  
+  document.getElementById('leave-list').innerHTML = leavesHtml;
+}
+
+// 모달 관리
+function openNewEmployeeModal() {
+  document.getElementById('new-employee-modal').classList.remove('hidden');
+}
+
+function closeNewEmployeeModal() {
+  document.getElementById('new-employee-modal').classList.add('hidden');
+  document.getElementById('new-employee-form').reset();
+}
+
+function openNewLeaveModal() {
+  // 휴가 신청 모달 구현 (간단한 알림으로 대체)
+  alert('휴가 신청 기능이 구현될 예정입니다.');
+}
+
+// 근태 조회
+function loadAttendance() {
+  const date = document.getElementById('attendance-date').value;
+  if (!date) {
+    alert('날짜를 선택하세요');
+    return;
+  }
+  
+  // 임시 데이터로 근태 현황 표시
+  const attendanceHtml = `
+    <div class="text-center py-8">
+      <div class="text-sm text-gray-500">${date} 근태 현황</div>
+      <div class="mt-4 text-lg font-medium text-gray-900">출근: 42명 / 총 45명</div>
+    </div>
+  `;
+  
+  document.getElementById('attendance-list').innerHTML = attendanceHtml;
+}
+
+// 급여 조회
+function loadPayroll() {
+  const month = document.getElementById('payroll-month').value;
+  if (!month) {
+    alert('급여 월을 선택하세요');
+    return;
+  }
+  
+  // 임시 데이터로 급여 현황 표시
+  const payrollHtml = `
+    <div class="text-center py-8">
+      <div class="text-sm text-gray-500">${month} 급여 현황</div>
+      <div class="mt-4 text-lg font-medium text-gray-900">총 급여: 125,000,000원</div>
+    </div>
+  `;
+  
+  document.getElementById('payroll-list').innerHTML = payrollHtml;
+}
+
+// 급여 월 옵션 생성
+function initializePayrollMonths() {
+  const select = document.getElementById('payroll-month');
+  const currentDate = new Date();
+  
+  for (let i = 0; i < 12; i++) {
+    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+    const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+    const text = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+    
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = text;
+    select.appendChild(option);
+  }
+}
+
+// 새 직원 등록
+document.getElementById('new-employee-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const employeeData = {
+    name: formData.get('name'),
+    department: formData.get('department'),
+    position: formData.get('position'),
+    employment_type: formData.get('employment_type'),
+    hire_date: formData.get('hire_date'),
+    phone: formData.get('phone'),
+    email: formData.get('email'),
+    salary_type: formData.get('salary_type')
+  };
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/employees`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ employee: employeeData })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      alert(result.message);
+      closeNewEmployeeModal();
+      if (currentTab === 'employees') {
+        loadEmployees();
+      }
+      if (currentTab === 'dashboard') {
+        loadDashboard();
+      }
+    } else {
+      alert(`등록 실패: ${result.errors ? result.errors.join(', ') : result.message}`);
+    }
+  } catch (error) {
+    console.error('직원 등록 실패:', error);
+    alert('직원 등록 중 오류가 발생했습니다.');
+  }
+});
+
+// 직원 상세보기
+async function viewEmployee(employeeId) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
+      headers: getAuthHeaders()
+    });
+    const data = await response.json();
+    
+    if (response.ok) {
+      const emp = data.employee;
+      const details = `
+직원 정보:
+- 이름: ${emp.name}
+- 부서: ${emp.department}
+- 직책: ${emp.position}
+- 고용형태: ${emp.employment_type_text}
+- 입사일: ${emp.hire_date}
+- 근속년수: ${emp.years_of_service}년
+- 전화번호: ${emp.phone || '미입력'}
+- 이메일: ${emp.email}
+- 급여형태: ${emp.salary_type_text}
+- 기본급: ${emp.base_salary ? emp.base_salary.toLocaleString() + '원' : '미입력'}
+- 시급: ${emp.hourly_rate ? emp.hourly_rate.toLocaleString() + '원' : '미입력'}
+- 연차 잔여: ${emp.annual_leave_balance}일
+- 상태: ${emp.status_text}
+      `;
+      alert(details);
+    } else {
+      alert('직원 정보를 불러올 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('직원 상세 조회 실패:', error);
+    alert('직원 정보 조회 중 오류가 발생했습니다.');
+  }
+}
+
+// 직원 삭제
+async function deleteEmployee(employeeId, employeeName) {
+  if (!confirm(`정말로 '${employeeName}' 직원을 삭제하시겠습니까?`)) {
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/employees/${employeeId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      alert(result.message);
+      if (currentTab === 'employees') {
+        loadEmployees();
+      }
+      if (currentTab === 'dashboard') {
+        loadDashboard();
+      }
+    } else {
+      alert(`삭제 실패: ${result.message}`);
+    }
+  } catch (error) {
+    console.error('직원 삭제 실패:', error);
+    alert('직원 삭제 중 오류가 발생했습니다.');
+  }
+}
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', () => {
+  initializePayrollMonths();
+  loadDashboard();
+});
+</script>

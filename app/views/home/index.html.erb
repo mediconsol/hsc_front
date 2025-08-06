@@ -1,0 +1,217 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 대시보드 헤더 -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        병원 관리 대시보드
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        오늘의 병원 운영 현황을 한눈에 확인하세요
+      </p>
+    </div>
+  </div>
+
+  <!-- 주요 통계 카드 -->
+  <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- 오늘 예약 -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-bold">📅</span>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                오늘 예약
+              </dt>
+              <dd class="text-lg font-medium text-gray-900">
+                24건
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 대기 환자 -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-bold">⏰</span>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                대기 환자
+              </dt>
+              <dd class="text-lg font-medium text-gray-900">
+                8명
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 진료 완료 -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-bold">✅</span>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                진료 완료
+              </dt>
+              <dd class="text-lg font-medium text-gray-900">
+                16건
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 입원 환자 -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+              <span class="text-white text-sm font-bold">🏥</span>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                입원 환자
+              </dt>
+              <dd class="text-lg font-medium text-gray-900">
+                32명
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 주요 기능 메뉴 -->
+  <div class="mt-8">
+    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">주요 기능</h3>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- 예약 관리 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="text-2xl mr-3">📋</div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900">예약 관리</h4>
+              <p class="text-sm text-gray-500">환자 예약 현황 및 일정 관리</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 환자 관리 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="text-2xl mr-3">👥</div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900">환자 관리</h4>
+              <p class="text-sm text-gray-500">환자 정보 및 진료 이력 관리</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 진료 관리 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="text-2xl mr-3">🩺</div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900">진료 관리</h4>
+              <p class="text-sm text-gray-500">진료 기록 및 처방전 관리</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 인사 관리 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="text-2xl mr-3">👨‍⚕️</div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900">인사 관리</h4>
+              <p class="text-sm text-gray-500">직원 정보 및 근무 일정 관리</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 재고 관리 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="text-2xl mr-3">📦</div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900">재고 관리</h4>
+              <p class="text-sm text-gray-500">의료용품 및 약품 재고 관리</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 통계 분석 -->
+      <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-md transition-shadow cursor-pointer">
+        <div class="p-6">
+          <div class="flex items-center">
+            <div class="text-2xl mr-3">📊</div>
+            <div>
+              <h4 class="text-lg font-medium text-gray-900">통계 분석</h4>
+              <p class="text-sm text-gray-500">병원 운영 데이터 및 분석</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- API 연동 상태 -->
+  <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="flex items-center">
+      <div class="text-blue-500 mr-2">🔗</div>
+      <div>
+        <h4 class="text-sm font-medium text-blue-800">API 연동 상태</h4>
+        <p class="text-sm text-blue-600">백엔드 API 서버: <span id="api-status" class="font-mono">확인 중...</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// API 상태 확인
+fetch('http://localhost:7001/')
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById('api-status').textContent = '연결됨 ✅';
+    document.getElementById('api-status').className += ' text-green-600';
+  })
+  .catch(error => {
+    document.getElementById('api-status').textContent = '연결 실패 ❌';
+    document.getElementById('api-status').className += ' text-red-600';
+  });
+</script>

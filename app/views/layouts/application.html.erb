@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>병원 통합 관리 시스템</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %>
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="min-h-screen flex">
+      <!-- 사이드바 -->
+      <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" id="sidebar">
+        <div class="flex items-center justify-center h-16 px-4 border-b border-gray-200">
+          <h1 class="text-lg font-bold text-gray-900">🏥 병원 인트라넷</h1>
+        </div>
+        
+        <nav class="mt-5 px-2">
+          <div class="space-y-1">
+            <!-- 홈 -->
+            <a href="/" class="bg-blue-100 text-blue-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="mr-3">🏠</span>
+              홈
+            </a>
+            
+            <!-- 인트라넷 핵심 기능들 -->
+            <a href="/announcements" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="mr-3">📢</span>
+              공지사항
+            </a>
+            
+            <a href="/boards" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="mr-3">📋</span>
+              부서별 게시판
+            </a>
+            
+            <a href="/documents" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="mr-3">📄</span>
+              문서/전자결재
+            </a>
+            
+            <a href="/hr" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="mr-3">👨‍⚕️</span>
+              인사/급여
+            </a>
+            
+            <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="mr-3">💰</span>
+              예산/재무
+            </a>
+            
+            <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="mr-3">🏢</span>
+              시설/자산
+            </a>
+            
+            <!-- 구분선 -->
+            <div class="border-t border-gray-200 my-4"></div>
+            
+            <!-- 향후 개발 예정 (회색 처리) -->
+            <div class="text-xs font-medium text-gray-400 uppercase tracking-wider px-2 py-2">향후 개발 예정</div>
+            
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
+              <span class="mr-3">📅</span>
+              예약/접수
+            </a>
+            
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
+              <span class="mr-3">💬</span>
+              상담/CRM
+            </a>
+            
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
+              <span class="mr-3">🩺</span>
+              진료/검진
+            </a>
+            
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
+              <span class="mr-3">👥</span>
+              환자관리
+            </a>
+            
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
+              <span class="mr-3">📦</span>
+              재고/구매
+            </a>
+            
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
+              <span class="mr-3">📊</span>
+              통계
+            </a>
+          </div>
+        </nav>
+        
+        <!-- 사용자 정보 영역 -->
+        <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
+          <div class="flex items-center">
+            <div class="flex-1">
+              <span id="user-welcome" class="text-sm text-gray-600">환영합니다!</span>
+              <div id="auth-buttons">
+                <%= link_to "로그인", login_path, class: "text-blue-600 text-sm hover:text-blue-800" %>
+              </div>
+            </div>
+            <div>
+              <a href="#" class="text-gray-400 hover:text-gray-600">
+                <span class="sr-only">설정</span>
+                ⚙️
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 모바일 오버레이 -->
+      <div class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 transition-opacity duration-300 ease-linear lg:hidden hidden" id="sidebar-overlay"></div>
+
+      <!-- 메인 콘텐츠 영역 -->
+      <div class="flex-1 flex flex-col lg:ml-0">
+        <!-- 상단 모바일 네비게이션 -->
+        <div class="sticky top-0 z-10 bg-white pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
+          <button type="button" class="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" id="sidebar-toggle">
+            <span class="sr-only">사이드바 열기</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none">
+          <div class="py-6">
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      // 로그인 상태 확인 및 UI 업데이트
+      function updateAuthUI() {
+        const token = localStorage.getItem('auth_token');
+        const userInfo = localStorage.getItem('user_info');
+        const welcomeSpan = document.getElementById('user-welcome');
+        const authButtons = document.getElementById('auth-buttons');
+        
+        if (token && userInfo) {
+          const user = JSON.parse(userInfo);
+          welcomeSpan.textContent = `${user.name}님, 환영합니다!`;
+          authButtons.innerHTML = `
+            <span class="text-sm text-gray-600 mr-2">${user.role}</span>
+            <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700">
+              로그아웃
+            </button>
+          `;
+        }
+      }
+      
+      // 로그아웃 함수
+      function logout() {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_info');
+        window.location.href = '/login';
+      }
+      
+      // 페이지 로드 시 인증 상태 확인
+      document.addEventListener('DOMContentLoaded', updateAuthUI);
+      
+      // 모바일 사이드바 토글 기능
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      
+      if (sidebarToggle && sidebar && sidebarOverlay) {
+        sidebarToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('-translate-x-full');
+          sidebarOverlay.classList.toggle('hidden');
+        });
+        
+        sidebarOverlay.addEventListener('click', function() {
+          sidebar.classList.add('-translate-x-full');
+          sidebarOverlay.classList.add('hidden');
+        });
+      }
+    </script>
+  </body>
+</html>

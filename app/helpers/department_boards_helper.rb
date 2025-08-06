@@ -1,0 +1,2 @@
+module DepartmentBoardsHelper
+end

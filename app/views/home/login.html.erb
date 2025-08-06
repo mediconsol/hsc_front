@@ -1,0 +1,108 @@
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <div class="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
+        <span class="text-2xl">🏥</span>
+      </div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        병원 관리 시스템 로그인
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        관리자 계정으로 로그인하세요
+      </p>
+    </div>
+    
+    <form class="mt-8 space-y-6" id="login-form">
+      <div class="rounded-md shadow-sm -space-y-px">
+        <div>
+          <label for="email" class="sr-only">이메일</label>
+          <input 
+            id="email" 
+            name="email" 
+            type="email" 
+            required 
+            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+            placeholder="이메일 주소"
+            value="admin@hospital.com"
+          >
+        </div>
+        <div>
+          <label for="password" class="sr-only">비밀번호</label>
+          <input 
+            id="password" 
+            name="password" 
+            type="password" 
+            required 
+            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" 
+            placeholder="비밀번호"
+            value="password123"
+          >
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between">
+        <div class="text-sm">
+          <span class="text-gray-600">
+            기본 계정: admin@hospital.com / password123
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <button 
+          type="submit" 
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          로그인
+        </button>
+      </div>
+      
+      <div id="login-status" class="text-center text-sm"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const statusDiv = document.getElementById('login-status');
+  
+  statusDiv.textContent = '로그인 중...';
+  statusDiv.className = 'text-center text-sm text-blue-600';
+  
+  try {
+    const response = await fetch('http://localhost:7001/api/v1/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password })
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      statusDiv.textContent = '로그인 성공! 대시보드로 이동합니다...';
+      statusDiv.className = 'text-center text-sm text-green-600';
+      
+      // JWT 토큰 저장
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('user_info', JSON.stringify(data.user));
+      
+      // 1.5초 후 홈으로 이동
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
+    } else {
+      statusDiv.textContent = '로그인 실패: ' + (data.message || '알 수 없는 오류');
+      statusDiv.className = 'text-center text-sm text-red-600';
+    }
+  } catch (error) {
+    statusDiv.textContent = 'API 연결 실패. 백엔드 서버가 실행 중인지 확인하세요.';
+    statusDiv.className = 'text-center text-sm text-red-600';
+  }
+});
+</script>
