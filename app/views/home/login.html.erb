@@ -88,8 +88,9 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
       statusDiv.textContent = '로그인 성공! 대시보드로 이동합니다...';
       statusDiv.className = 'text-center text-sm text-green-600';
       
-      // JWT 토큰 저장
-      localStorage.setItem('auth_token', data.token);
+      // JWT 토큰 저장 (access_token 사용)
+      localStorage.setItem('auth_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
       localStorage.setItem('user_info', JSON.stringify(data.user));
       
       // 1.5초 후 홈으로 이동

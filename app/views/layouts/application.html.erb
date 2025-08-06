@@ -433,6 +433,17 @@
       
     </script>
     
+    <!-- API 및 UI 모듈 인라인 로드 -->
+    <script>
+      <%= File.read(Rails.root.join('app', 'assets', 'javascripts', 'modules', 'api.js')).html_safe %>
+    </script>
+    
+    <script>
+      <%= File.read(Rails.root.join('app', 'assets', 'javascripts', 'modules', 'ui-components.js')).html_safe %>
+    </script>
+    
+    <!-- 모듈 인스턴스는 각 모듈에서 자동으로 생성됨 -->
+    
     <script>
       // 로그인 상태 확인 및 UI 업데이트
       function updateAuthUI() {
