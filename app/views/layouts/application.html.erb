@@ -21,9 +21,9 @@
         <nav class="mt-5 px-2">
           <div class="space-y-1">
             <!-- 홈 -->
-            <a href="/" class="bg-blue-100 text-blue-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+            <a href="/dashboard" class="bg-blue-100 text-blue-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
               <span class="mr-3">🏠</span>
-              홈
+              대시보드
             </a>
             
             <!-- 인트라넷 핵심 기능들 -->
@@ -442,6 +442,10 @@
       <%= File.read(Rails.root.join('app', 'assets', 'javascripts', 'modules', 'ui-components.js')).html_safe %>
     </script>
     
+    <script>
+      <%= File.read(Rails.root.join('app', 'assets', 'javascripts', 'modules', 'auth.js')).html_safe %>
+    </script>
+    
     <!-- 모듈 인스턴스는 각 모듈에서 자동으로 생성됨 -->
     
     <script>
@@ -453,21 +457,41 @@
         const authButtons = document.getElementById('auth-buttons');
         
         if (token && userInfo) {
-          const user = JSON.parse(userInfo);
-          welcomeSpan.textContent = `${user.name}님, 환영합니다!`;
-          authButtons.innerHTML = `
-            <span class="text-sm text-gray-600 mr-2">${user.role}</span>
-            <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded-md text-sm hover:bg-red-700">
-              로그아웃
-            </button>
-          `;
+          try {
+            const user = JSON.parse(userInfo);
+            const roleDisplay = window.authManager ? window.authManager.getRoleDisplayName(user.role) : '직원';
+            
+            welcomeSpan.textContent = `${user.name || '사용자'}님, 환영합니다!`;
+            authButtons.innerHTML = `
+              <span class="text-xs text-gray-500 block">${roleDisplay}</span>
+              <button onclick="logout()" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 mt-1 w-full">
+                로그아웃
+              </button>
+            `;
+          } catch (error) {
+            console.error('사용자 정보 파싱 오류:', error);
+            showLoginButton();
+          }
+        } else {
+          showLoginButton();
         }
       }
       
+      function showLoginButton() {
+        const welcomeSpan = document.getElementById('user-welcome');
+        const authButtons = document.getElementById('auth-buttons');
+        welcomeSpan.textContent = '로그인이 필요합니다';
+        authButtons.innerHTML = `<a href="/login" class="text-blue-600 text-sm hover:text-blue-800">로그인</a>`;
+      }
+      
       // 로그아웃 함수
-      function logout() {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_info');
+      async function logout() {
+        if (window.authManager) {
+          await window.authManager.logout();
+        } else {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_info');
+        }
         window.location.href = '/login';
       }
       

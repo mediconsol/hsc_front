@@ -9,6 +9,22 @@
         오늘의 병원 운영 현황을 한눈에 확인하세요
       </p>
     </div>
+    <div class="mt-4 flex md:mt-0 md:ml-4">
+      <!-- 사용자 정보 및 로그아웃 -->
+      <div class="flex items-center space-x-4">
+        <div class="text-sm">
+          <span class="text-gray-600">안녕하세요, </span>
+          <span id="user-name" class="font-medium text-gray-900">사용자</span>님
+          <span class="text-gray-500">(<span id="user-role" class="capitalize">admin</span>)</span>
+        </div>
+        <button 
+          id="logout-btn"
+          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+        >
+          로그아웃
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- 주요 통계 카드 -->
@@ -203,6 +219,104 @@
 </div>
 
 <script>
+// 페이지 로드 시 인증 체크
+(function() {
+  const token = localStorage.getItem('auth_token');
+  
+  if (!token) {
+    // 토큰이 없으면 로그인 페이지로 리다이렉트
+    window.location.href = '/login';
+    return;
+  }
+  
+  // 토큰 유효성 검증
+  fetch('http://localhost:7001/api/v1/auth/me', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Token validation failed');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.status !== 'success') {
+      throw new Error('Invalid token response');
+    }
+    // 토큰이 유효하면 사용자 정보 업데이트
+    localStorage.setItem('user_info', JSON.stringify(data.user));
+  })
+  .catch(error => {
+    // 토큰이 유효하지 않으면 제거하고 로그인 페이지로 리다이렉트
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_info');
+    window.location.href = '/login';
+  });
+})();
+
+// 페이지 로드 시 사용자 정보 표시
+(function() {
+  const userInfo = localStorage.getItem('user_info');
+  
+  if (userInfo) {
+    try {
+      const user = JSON.parse(userInfo);
+      document.getElementById('user-name').textContent = user.name || '사용자';
+      
+      // 역할 이름 매핑
+      const roleNames = {
+        0: 'read_only',
+        1: 'staff', 
+        2: 'manager',
+        3: 'admin'
+      };
+      
+      const roleKorean = {
+        'read_only': '읽기전용',
+        'staff': '직원',
+        'manager': '관리자', 
+        'admin': '시스템관리자'
+      };
+      
+      const roleName = roleNames[user.role] || 'staff';
+      document.getElementById('user-role').textContent = roleKorean[roleName] || roleName;
+    } catch (error) {
+      console.error('사용자 정보 파싱 오류:', error);
+    }
+  }
+})();
+
+// 로그아웃 기능
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    // 백엔드 로그아웃 API 호출
+    await fetch('http://localhost:7001/api/v1/auth/logout', {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (error) {
+    console.error('로그아웃 API 호출 오류:', error);
+  } finally {
+    // 로컬 저장소에서 인증 정보 제거
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user_info');
+    
+    // 로그인 페이지로 리다이렉트
+    window.location.href = '/login';
+  }
+});
+
 // API 상태 확인
 fetch('http://localhost:7001/')
   .then(response => response.json())

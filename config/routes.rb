@@ -15,8 +15,9 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Hospital Management System routes
-  root 'home#index'
+  root 'home#login'
   get 'login', to: 'home#login'
+  get 'dashboard', to: 'home#index'
   
   # Intranet features
   resources :announcements, only: [:index, :show]

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>병원 관리 시스템 - 로그인</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %>
+  </head>
+
+  <body class="bg-gradient-to-br from-blue-50 to-indigo-100">
+    <!-- 로그인 페이지 전용 레이아웃 (사이드바 없음) -->
+    <%= yield %>
+
+    <!-- 토스트 알림 컨테이너 -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- 로딩 오버레이 -->
+    <div id="loading-overlay" class="loading-overlay">
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loading-text">처리 중...</div>
+      </div>
+    </div>
+
+    <script>
+      // 토스트 알림 시스템 (간단한 버전)
+      class ToastManager {
+        constructor() {
+          this.container = document.getElementById('toast-container');
+        }
+
+        show(message, type = 'info', duration = 5000) {
+          const toast = this.createToast(message, type, duration);
+          this.container.appendChild(toast);
+          
+          setTimeout(() => {
+            toast.classList.add('show');
+          }, 10);
+
+          setTimeout(() => {
+            this.removeToast(toast);
+          }, duration);
+
+          return toast;
+        }
+
+        createToast(message, type, duration) {
+          const toast = document.createElement('div');
+          toast.className = `toast toast-${type}`;
+          
+          const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+          };
+
+          const icon = icons[type] || icons.info;
+          
+          toast.innerHTML = `
+            <div class="toast-icon">${icon}</div>
+            <div class="toast-content">
+              <div class="toast-message">${message}</div>
+            </div>
+            <button class="toast-close" onclick="window.toast.removeToast(this.parentElement)">&times;</button>
+          `;
+
+          return toast;
+        }
+
+        removeToast(toast) {
+          toast.classList.add('hide');
+          setTimeout(() => {
+            if (toast.parentNode) {
+              toast.parentNode.removeChild(toast);
+            }
+          }, 300);
+        }
+
+        success(message) {
+          return this.show(message, 'success');
+        }
+
+        error(message) {
+          return this.show(message, 'error');
+        }
+
+        info(message) {
+          return this.show(message, 'info');
+        }
+      }
+
+      // 전역 토스트 인스턴스 생성
+      window.toast = new ToastManager();
+
+      // 로딩 관리자 (간단한 버전)
+      class LoadingManager {
+        constructor() {
+          this.overlay = document.getElementById('loading-overlay');
+          this.textElement = document.getElementById('loading-text');
+        }
+
+        show(message = '처리 중...') {
+          this.textElement.textContent = message;
+          this.overlay.classList.add('show');
+        }
+
+        hide() {
+          this.overlay.classList.remove('show');
+        }
+      }
+
+      // 전역 로딩 인스턴스 생성
+      window.loading = new LoadingManager();
+    </script>
+    
+    <!-- 인증 모듈 인라인 로드 -->
+    <script>
+      <%= File.read(Rails.root.join('app', 'assets', 'javascripts', 'modules', 'auth.js')).html_safe %>
+    </script>
+  </body>
+</html>
