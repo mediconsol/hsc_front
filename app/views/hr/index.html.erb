@@ -657,82 +657,117 @@
       
       <form id="new-employee-form" class="space-y-4">
         <div class="grid grid-cols-2 gap-4">
-          <div class="form-field">
-            <label for="name" class="block text-sm font-medium text-gray-700">이름</label>
-            <input type="text" id="name" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-            <div class="validation-icon success">✓</div>
-            <div class="validation-icon error">✕</div>
-            <div class="validation-icon loading">⋯</div>
-            <div class="field-error"></div>
-            <div class="field-success"></div>
+          <!-- 좌측 컬럼 -->
+          <div class="space-y-4">
+            <!-- 이름 -->
+            <div class="form-field">
+              <label for="name" class="block text-sm font-medium text-gray-700">이름</label>
+              <input type="text" id="name" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <div class="validation-icon success">✓</div>
+              <div class="validation-icon error">✕</div>
+              <div class="validation-icon loading">⋯</div>
+              <div class="field-error"></div>
+              <div class="field-success"></div>
+            </div>
+            
+            <!-- 직책 -->
+            <div>
+              <label for="position" class="block text-sm font-medium text-gray-700">직책</label>
+              <input type="text" id="position" name="position" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            
+            <!-- 입사일 -->
+            <div>
+              <label for="hire_date" class="block text-sm font-medium text-gray-700">입사일</label>
+              <input type="date" id="hire_date" name="hire_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            
+            <!-- 전화번호 -->
+            <div class="form-field">
+              <label for="phone" class="block text-sm font-medium text-gray-700">전화번호</label>
+              <input type="tel" id="phone" name="phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <div class="validation-icon success">✓</div>
+              <div class="validation-icon error">✕</div>
+              <div class="validation-icon loading">⋯</div>
+              <div class="field-error"></div>
+              <div class="field-success"></div>
+            </div>
+            
+            <!-- 이메일 -->
+            <div class="form-field">
+              <label for="email" class="block text-sm font-medium text-gray-700">이메일</label>
+              <input type="email" id="email" name="email" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <div class="validation-icon success">✓</div>
+              <div class="validation-icon error">✕</div>
+              <div class="validation-icon loading">⋯</div>
+              <div class="field-error"></div>
+              <div class="field-success"></div>
+            </div>
           </div>
-          <div class="form-field">
-            <label for="department" class="block text-sm font-medium text-gray-700">부서</label>
-            <select id="department" name="department" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-              <option value="">부서 선택</option>
-              <option value="의료진">의료진</option>
-              <option value="간호부">간호부</option>
-              <option value="행정부">행정부</option>
-              <option value="시설관리">시설관리</option>
-            </select>
-            <div class="validation-icon success">✓</div>
-            <div class="validation-icon error">✕</div>
-            <div class="field-error"></div>
-            <div class="field-success"></div>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="position" class="block text-sm font-medium text-gray-700">직책</label>
-            <input type="text" id="position" name="position" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          </div>
-          <div>
-            <label for="employment_type" class="block text-sm font-medium text-gray-700">고용형태</label>
-            <select id="employment_type" name="employment_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-              <option value="">고용형태 선택</option>
-              <option value="full_time">정규직</option>
-              <option value="contract">계약직</option>
-              <option value="part_time">파트타임</option>
-              <option value="intern">인턴</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="hire_date" class="block text-sm font-medium text-gray-700">입사일</label>
-            <input type="date" id="hire_date" name="hire_date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-          </div>
-          <div>
-            <label for="salary_type" class="block text-sm font-medium text-gray-700">급여 유형</label>
-            <select id="salary_type" name="salary_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-              <option value="">급여 유형 선택</option>
-              <option value="monthly">월급</option>
-              <option value="hourly">시급</option>
-              <option value="daily">일급</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-2 gap-4">
-          <div class="form-field">
-            <label for="phone" class="block text-sm font-medium text-gray-700">전화번호</label>
-            <input type="tel" id="phone" name="phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-            <div class="validation-icon success">✓</div>
-            <div class="validation-icon error">✕</div>
-            <div class="validation-icon loading">⋯</div>
-            <div class="field-error"></div>
-            <div class="field-success"></div>
-          </div>
-          <div class="form-field">
-            <label for="email" class="block text-sm font-medium text-gray-700">이메일</label>
-            <input type="email" id="email" name="email" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-            <div class="validation-icon success">✓</div>
-            <div class="validation-icon error">✕</div>
-            <div class="validation-icon loading">⋯</div>
-            <div class="field-error"></div>
-            <div class="field-success"></div>
+          
+          <!-- 우측 컬럼 -->
+          <div class="space-y-4">
+            <!-- 부서 -->
+            <div class="form-field">
+              <label for="department" class="block text-sm font-medium text-gray-700">부서</label>
+              <select id="department" name="department" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="">부서 선택</option>
+                <option value="의료진">의료진</option>
+                <option value="간호부">간호부</option>
+                <option value="행정부">행정부</option>
+                <option value="시설관리">시설관리</option>
+              </select>
+              <div class="validation-icon success">✓</div>
+              <div class="validation-icon error">✕</div>
+              <div class="field-error"></div>
+              <div class="field-success"></div>
+            </div>
+            
+            <!-- 고용형태 -->
+            <div>
+              <label for="employment_type" class="block text-sm font-medium text-gray-700">고용형태</label>
+              <select id="employment_type" name="employment_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="">고용형태 선택</option>
+                <option value="full_time">정규직</option>
+                <option value="contract">계약직</option>
+                <option value="part_time">파트타임</option>
+                <option value="intern">인턴</option>
+              </select>
+            </div>
+            
+            <!-- 급여 유형 -->
+            <div>
+              <label for="salary_type" class="block text-sm font-medium text-gray-700">급여 유형</label>
+              <select id="salary_type" name="salary_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="">급여 유형 선택</option>
+                <option value="monthly">월급</option>
+                <option value="hourly">시급</option>
+                <option value="daily">일급</option>
+              </select>
+            </div>
+            
+            <!-- 급여 정보 -->
+            <div id="salary-fields" class="space-y-4">
+              <!-- 월급/일급용 기본급 필드 -->
+              <div id="base-salary-field" class="form-field" style="display: none;">
+                <label for="base_salary" class="block text-sm font-medium text-gray-700">기본급 (원)</label>
+                <input type="number" id="base_salary" name="base_salary" min="0" step="10000" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="예: 3000000">
+                <div class="validation-icon success">✓</div>
+                <div class="validation-icon error">✕</div>
+                <div class="field-error"></div>
+                <div class="field-success"></div>
+              </div>
+              
+              <!-- 시급용 시급 필드 -->
+              <div id="hourly-rate-field" class="form-field" style="display: none;">
+                <label for="hourly_rate" class="block text-sm font-medium text-gray-700">시급 (원)</label>
+                <input type="number" id="hourly_rate" name="hourly_rate" min="0" step="100" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="예: 15000">
+                <div class="validation-icon success">✓</div>
+                <div class="validation-icon error">✕</div>
+                <div class="field-error"></div>
+                <div class="field-success"></div>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -1015,6 +1050,7 @@
   </div>
 </div>
 
+
 <script>
 // 현재 활성 탭
 let currentTab = 'dashboard';
@@ -1251,40 +1287,6 @@ async function loadEmployees() {
 }
 
 // 휴가 신청 목록 로드
-async function loadLeaveRequests() {
-  // 임시 데이터로 휴가 목록 표시
-  const leaves = [
-    { id: 1, employee: '김간호사', type: '연차', start_date: '2025-01-15', end_date: '2025-01-16', days: 2, status: '승인대기' },
-    { id: 2, employee: '이의사', type: '병가', start_date: '2025-01-10', end_date: '2025-01-10', days: 1, status: '승인' },
-    { id: 3, employee: '박행정', type: '개인사유', start_date: '2025-01-20', end_date: '2025-01-21', days: 2, status: '반려' }
-  ];
-  
-  const leavesHtml = leaves.map(leave => `
-    <div class="border-b border-gray-200 py-4">
-      <div class="flex items-center justify-between">
-        <div class="flex-1">
-          <div class="flex items-center">
-            <h4 class="text-sm font-medium text-gray-900">${leave.employee}</h4>
-            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-purple-800 bg-purple-100">
-              ${leave.type}
-            </span>
-          </div>
-          <div class="mt-1 text-sm text-gray-500">
-            ${leave.start_date} ~ ${leave.end_date} (${leave.days}일)
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${leave.status === '승인' ? 'text-green-800 bg-green-100' : leave.status === '반려' ? 'text-red-800 bg-red-100' : 'text-yellow-800 bg-yellow-100'}">
-            ${leave.status}
-          </span>
-          ${leave.status === '승인대기' ? '<button class="text-blue-600 hover:text-blue-800 text-sm">승인처리</button>' : ''}
-        </div>
-      </div>
-    </div>
-  `).join('');
-  
-  document.getElementById('leave-list').innerHTML = leavesHtml;
-}
 
 // 모달 관리 - UIComponents 사용
 function openNewEmployeeModal() {
@@ -1294,6 +1296,23 @@ function openNewEmployeeModal() {
 function closeNewEmployeeModal() {
   UIComponents.closeModal('new-employee-modal');
   UIComponents.resetForm('new-employee-form');
+  
+  // 급여 필드 초기화
+  const baseSalaryField = document.getElementById('base-salary-field');
+  const hourlyRateField = document.getElementById('hourly-rate-field');
+  const baseSalaryInput = document.getElementById('base_salary');
+  const hourlyRateInput = document.getElementById('hourly_rate');
+  
+  if (baseSalaryField) baseSalaryField.style.display = 'none';
+  if (hourlyRateField) hourlyRateField.style.display = 'none';
+  if (baseSalaryInput) {
+    baseSalaryInput.required = false;
+    baseSalaryInput.value = '';
+  }
+  if (hourlyRateInput) {
+    hourlyRateInput.required = false;
+    hourlyRateInput.value = '';
+  }
 }
 
 // 휴가 관리 초기화
@@ -1312,34 +1331,6 @@ function initializeLeave() {
   document.getElementById('leave-employee').addEventListener('change', loadEmployeeAnnualLeaveStatus);
 }
 
-// 휴가용 직원 목록 로드
-async function loadEmployeesForLeave() {
-  try {
-    const response = await employeeApi.get('/employees');
-    const employees = response.employees || [];
-    
-    // 휴가 관리 섹션의 직원 선택
-    const leaveEmployeeSelect = document.getElementById('leave-employee');
-    leaveEmployeeSelect.innerHTML = '<option value="">직원을 선택하세요</option>';
-    
-    // 휴가 신청 모달의 직원 선택
-    const modalEmployeeSelect = document.getElementById('leave_employee_id');
-    modalEmployeeSelect.innerHTML = '<option value="">직원을 선택하세요</option>';
-    
-    employees.forEach(emp => {
-      const option = document.createElement('option');
-      option.value = emp.id;
-      option.textContent = `${emp.name} (${emp.department})`;
-      
-      leaveEmployeeSelect.appendChild(option);
-      modalEmployeeSelect.appendChild(option.cloneNode(true));
-    });
-    
-  } catch (error) {
-    console.error('직원 목록 로드 실패:', error);
-    toast.error('직원 목록을 불러오지 못했습니다.');
-  }
-}
 
 // 선택된 직원의 연차 현황 로드
 async function loadEmployeeAnnualLeaveStatus() {
@@ -1391,14 +1382,19 @@ async function loadLeaveStatistics() {
     const response = await employeeApi.get('/leave_requests/statistics');
     const stats = response.data;
     
-    document.getElementById('pending-leave-count').textContent = stats.pending_requests || 0;
-    document.getElementById('approved-leave-count').textContent = stats.approved_requests || 0;
-    document.getElementById('used-annual-leave').textContent = stats.total_days_requested || 0;
+    const pendingElement = document.getElementById('pending-leave-count');
+    const approvedElement = document.getElementById('approved-leave-count');
+    const usedElement = document.getElementById('used-annual-leave');
+    const remainingElement = document.getElementById('remaining-annual-leave');
+    
+    if (pendingElement) pendingElement.textContent = stats.pending_requests || 0;
+    if (approvedElement) approvedElement.textContent = stats.approved_requests || 0;
+    if (usedElement) usedElement.textContent = stats.total_days_requested || 0;
     
     // 전체 직원 잔여 연차 계산 (별도 API 호출)
     const annualLeaveResponse = await employeeApi.get('/leave_requests/annual_leave_status');
     const annualStats = annualLeaveResponse.data;
-    document.getElementById('remaining-annual-leave').textContent = annualStats.summary.total_remaining || 0;
+    if (remainingElement) remainingElement.textContent = annualStats.summary.total_remaining || 0;
     
   } catch (error) {
     console.error('휴가 통계 로드 실패:', error);
@@ -1406,68 +1402,6 @@ async function loadLeaveStatistics() {
 }
 
 // 휴가 신청 목록 조회
-async function loadLeaveRequests() {
-  const status = document.getElementById('leave-status-filter').value;
-  const leaveType = document.getElementById('leave-type-filter').value;
-  const month = document.getElementById('leave-month-filter').value;
-  
-  try {
-    let url = '/leave_requests';
-    const params = [];
-    
-    if (status) params.push(`status=${status}`);
-    if (leaveType) params.push(`leave_type=${leaveType}`);
-    if (month) {
-      const [year, monthNum] = month.split('-');
-      const startDate = `${year}-${monthNum}-01`;
-      const endDate = new Date(year, monthNum, 0).toISOString().split('T')[0];
-      params.push(`start_date=${startDate}`);
-      params.push(`end_date=${endDate}`);
-    }
-    
-    if (params.length > 0) {
-      url += '?' + params.join('&');
-    }
-    
-    const response = await employeeApi.get(url);
-    const leaveRequests = response.data.leave_requests || [];
-    
-    if (leaveRequests.length === 0) {
-      document.getElementById('leave-list').innerHTML = `
-        <div class="text-center py-8">
-          <div class="text-sm text-gray-500">조건에 맞는 휴가 신청이 없습니다.</div>
-        </div>
-      `;
-      return;
-    }
-    
-    const columns = [
-      { key: 'employee_name', label: '신청자' },
-      { key: 'employee_department', label: '부서' },
-      { key: 'leave_type_text', label: '휴가종류' },
-      { key: 'start_date', label: '시작일', render: (value) => formatDate(value) },
-      { key: 'end_date', label: '종료일', render: (value) => formatDate(value) },
-      { key: 'days_requested', label: '일수', render: (value) => `${value}일` },
-      { key: 'status_text', label: '상태', render: (value, row) => `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getLeaveStatusClass(row.status)}">${value}</span>` },
-      { key: 'reason', label: '사유', render: (value) => value.length > 20 ? value.substring(0, 20) + '...' : value },
-      { 
-        key: 'actions', 
-        label: '작업', 
-        render: (value, row) => generateLeaveActions(row)
-      }
-    ];
-    
-    const tableHtml = UIComponents.createDataTable(leaveRequests, columns, {
-      emptyMessage: '휴가 신청이 없습니다'
-    });
-    
-    document.getElementById('leave-list').innerHTML = tableHtml;
-    
-  } catch (error) {
-    console.error('휴가 목록 로드 실패:', error);
-    toast.error('휴가 목록을 불러오지 못했습니다.');
-  }
-}
 
 // 휴가 신청 모달 열기
 function openLeaveRequestModal() {
@@ -1909,7 +1843,7 @@ function initializeLeave() {
 async function loadEmployeesForLeave() {
   try {
     const response = await employeeApi.get('/employees');
-    const employees = response.data.employees || [];
+    const employees = response.employees || [];
     
     const selectElements = [
       document.getElementById('leave-employee'),
@@ -1930,20 +1864,6 @@ async function loadEmployeesForLeave() {
   }
 }
 
-// 휴가 통계 로드
-async function loadLeaveStatistics() {
-  try {
-    const response = await employeeApi.get('/leave_requests/statistics');
-    const stats = response.data;
-    
-    document.getElementById('pending-leave-count').textContent = stats.pending_requests || 0;
-    document.getElementById('approved-leave-count').textContent = stats.approved_requests || 0;
-    document.getElementById('total-leave-days').textContent = stats.total_days_requested || 0;
-    
-  } catch (error) {
-    console.error('휴가 통계 로드 실패:', error);
-  }
-}
 
 // 선택된 직원의 연차 현황 로드
 async function loadEmployeeAnnualLeaveStatus() {
@@ -2107,9 +2027,15 @@ async function loadLeaveRequests() {
     
     const response = await employeeApi.get(url);
     const leaveRequests = response.data.leave_requests || [];
+    const leaveListElement = document.getElementById('leave-list');
+    
+    if (!leaveListElement) {
+      console.error('leave-list 요소를 찾을 수 없습니다.');
+      return;
+    }
     
     if (leaveRequests.length === 0) {
-      document.getElementById('leave-requests-list').innerHTML = `
+      leaveListElement.innerHTML = `
         <div class="text-center py-8">
           <div class="text-sm text-gray-500">해당 조건의 휴가 신청이 없습니다.</div>
         </div>
@@ -2155,7 +2081,7 @@ async function loadLeaveRequests() {
       emptyMessage: '휴가 신청이 없습니다'
     });
     
-    document.getElementById('leave-requests-list').innerHTML = tableHtml;
+    document.getElementById('leave-list').innerHTML = tableHtml;
     
   } catch (error) {
     console.error('휴가 목록 로드 실패:', error);
@@ -2251,22 +2177,179 @@ function viewLeaveRequest(id) {
 }
 
 // 급여 조회
-function loadPayroll() {
+async function loadPayroll() {
   const month = document.getElementById('payroll-month').value;
   if (!month) {
     toast.warning('급여 월을 선택하세요');
     return;
   }
   
-  // 임시 데이터로 급여 현황 표시
+  try {
+    const [year, monthNum] = month.split('-');
+    const response = await employeeApi.get(`/payrolls/monthly_summary?year=${year}&month=${monthNum}`);
+    
+    if (response.status === 'success' && response.data) {
+      renderPayrollDetails(response.data);
+    } else {
+      document.getElementById('payroll-list').innerHTML = `
+        <div class="text-center py-8">
+          <div class="text-sm text-gray-500">해당 월의 급여 데이터가 없습니다.</div>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('급여 데이터 로드 실패:', error);
+    toast.error('급여 데이터를 불러오지 못했습니다.');
+  }
+}
+
+// 급여 세부 내역 렌더링
+function renderPayrollDetails(data) {
+  const { payrolls, department_summary, total, month_name } = data;
+  
+  if (!payrolls || payrolls.length === 0) {
+    document.getElementById('payroll-list').innerHTML = `
+      <div class="text-center py-8">
+        <div class="text-sm text-gray-500">해당 월의 급여 데이터가 없습니다.</div>
+      </div>
+    `;
+    return;
+  }
+  
   const payrollHtml = `
-    <div class="text-center py-8">
-      <div class="text-sm text-gray-500">${month} 급여 현황</div>
-      <div class="mt-4 text-lg font-medium text-gray-900">총 급여: 125,000,000원</div>
+    <div class="space-y-6">
+      <!-- 급여 현황 요약 -->
+      <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
+        <h4 class="text-lg font-semibold text-gray-900 mb-4">${month_name} 급여 현황</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-blue-600">${total.employee_count.toLocaleString()}명</div>
+            <div class="text-sm text-gray-500">지급 대상</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-green-600">${total.total_base_pay.toLocaleString()}원</div>
+            <div class="text-sm text-gray-500">기본급 총합</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-purple-600">${(total.total_overtime_pay + total.total_night_pay + total.total_allowances).toLocaleString()}원</div>
+            <div class="text-sm text-gray-500">수당 총합</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-indigo-600">${total.total_net_pay.toLocaleString()}원</div>
+            <div class="text-sm text-gray-500">실지급액</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 부서별 급여 현황 -->
+      ${department_summary && department_summary.length > 0 ? `
+      <div class="bg-white rounded-lg border p-6">
+        <h5 class="text-md font-semibold text-gray-900 mb-4">부서별 급여 현황</h5>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">부서</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">인원</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">기본급</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">수당</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">공제</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">실지급액</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">평균</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${department_summary.map(dept => `
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${dept.department}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${dept.employee_count}명</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${dept.total_base_pay.toLocaleString()}원</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${(dept.total_overtime_pay + dept.total_night_pay + dept.total_allowances).toLocaleString()}원</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">-${(dept.total_deductions + dept.total_tax).toLocaleString()}원</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">${dept.total_net_pay.toLocaleString()}원</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">${dept.average_net_pay.toLocaleString()}원</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      ` : ''}
+      
+      <!-- 직원별 급여 세부 내역 -->
+      <div class="bg-white rounded-lg border">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h5 class="text-md font-semibold text-gray-900">직원별 급여 세부 내역</h5>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">직원명</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">부서</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">기본급</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">시간외수당</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">야간수당</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">기타수당</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">공제액</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">세금</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">실지급액</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">상태</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              ${payrolls.map(payroll => {
+                const breakdown = payroll.salary_breakdown;
+                return `
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">${payroll.employee_name}</div>
+                    <div class="text-sm text-gray-500">${payroll.employee_position}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${payroll.employee_department}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right font-medium">${breakdown.base_pay.toLocaleString()}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 text-right">${breakdown.overtime_pay.toLocaleString()}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-purple-600 text-right">${breakdown.night_pay.toLocaleString()}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 text-right">${breakdown.allowances.toLocaleString()}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">-${breakdown.deductions.toLocaleString()}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 text-right">-${breakdown.tax.toLocaleString()}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">${breakdown.net_pay.toLocaleString()}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(payroll.status)}">${getStatusText(payroll.status)}</span>
+                  </td>
+                </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   `;
   
   document.getElementById('payroll-list').innerHTML = payrollHtml;
+}
+
+// 급여 상태 텍스트 반환
+function getStatusText(status) {
+  const statusMap = {
+    'draft': '임시저장',
+    'pending': '검토중',
+    'approved': '승인됨',
+    'paid': '지급완료'
+  };
+  return statusMap[status] || status;
+}
+
+// 급여 상태 색상 반환
+function getStatusColor(status) {
+  const colorMap = {
+    'draft': 'bg-gray-100 text-gray-800',
+    'pending': 'bg-yellow-100 text-yellow-800',
+    'approved': 'bg-green-100 text-green-800',
+    'paid': 'bg-blue-100 text-blue-800'
+  };
+  return colorMap[status] || 'bg-gray-100 text-gray-800';
 }
 
 // 급여 월 옵션 생성
@@ -2285,6 +2368,34 @@ function initializePayrollMonths() {
     select.appendChild(option);
   }
 }
+
+// 급여 유형 변경에 따른 필드 표시/숨김
+document.getElementById('salary_type').addEventListener('change', function(e) {
+  const salaryType = e.target.value;
+  const baseSalaryField = document.getElementById('base-salary-field');
+  const hourlyRateField = document.getElementById('hourly-rate-field');
+  const baseSalaryInput = document.getElementById('base_salary');
+  const hourlyRateInput = document.getElementById('hourly_rate');
+  
+  // 모든 필드 초기화
+  baseSalaryField.style.display = 'none';
+  hourlyRateField.style.display = 'none';
+  baseSalaryInput.required = false;
+  hourlyRateInput.required = false;
+  baseSalaryInput.value = '';
+  hourlyRateInput.value = '';
+  
+  // 급여 유형에 따라 적절한 필드 표시
+  if (salaryType === 'monthly' || salaryType === 'daily') {
+    // 월급 또는 일급: 기본급 필드 표시
+    baseSalaryField.style.display = 'block';
+    baseSalaryInput.required = true;
+  } else if (salaryType === 'hourly') {
+    // 시급: 시급 필드 표시
+    hourlyRateField.style.display = 'block';
+    hourlyRateInput.required = true;
+  }
+});
 
 // 새 직원 등록
 document.getElementById('new-employee-form').addEventListener('submit', async (e) => {
@@ -2466,7 +2577,11 @@ async function deleteEmployee(employeeId, employeeName) {
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', () => {
-  initializePayrollMonths();
+  // 급여 관리 초기화 (급여 탭이 존재할 때만)
+  if (document.getElementById('payroll-month')) {
+    initializePayrollMonths();
+  }
+  
   loadDashboard();
   
   // 폼 검증 설정
@@ -2859,4 +2974,5 @@ function scheduleInterview(id) {
 function updateApplicantStatus(id) {
   toast.info(`지원자 ${id}번 상태변경 기능 구현 예정`);
 }
+
 </script>

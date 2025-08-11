@@ -1,0 +1,2192 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 페이지 헤더 -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        📅 예약/접수 관리
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        환자 예약 관리, 온라인 예약 승인 및 접수 처리
+      </p>
+    </div>
+    <div class="mt-4 md:mt-0">
+      <button onclick="showCreateAppointmentModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+        새 예약 등록
+      </button>
+    </div>
+  </div>
+
+  <!-- 예약 현황 통계 -->
+  <div class="mt-8">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mb-6">
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">📅</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">오늘 예약</dt>
+                <dd class="text-lg font-medium text-gray-900" id="today-appointments-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">⏳</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">대기중</dt>
+                <dd class="text-lg font-medium text-gray-900" id="pending-appointments-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">✅</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">확정</dt>
+                <dd class="text-lg font-medium text-gray-900" id="confirmed-appointments-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">💻</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">온라인 신청</dt>
+                <dd class="text-lg font-medium text-gray-900" id="online-appointments-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">📊</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">이번 주</dt>
+                <dd class="text-lg font-medium text-gray-900" id="weekly-appointments-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+  <!-- 온라인 예약 대기 목록 -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-medium text-gray-900">🌐 온라인 예약 신청 대기</h3>
+      <div class="flex items-center space-x-3">
+        <select id="online-status-filter" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+          <option value="pending">대기중만</option>
+          <option value="">전체 온라인</option>
+        </select>
+        <button onclick="refreshOnlineAppointments()" class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+          새로고침
+        </button>
+      </div>
+    </div>
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <ul id="pending-online-appointments" class="divide-y divide-gray-200">
+        <!-- 대기중인 온라인 예약 목록이 여기에 표시됩니다 -->
+        <li class="px-6 py-4">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-900">김환자 (45세)</p>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  예약 대기
+                </span>
+              </div>
+              <div class="mt-1 flex items-center text-sm text-gray-500">
+                <span class="mr-3">📞 010-1234-5678</span>
+                <span class="mr-3">📅 2025년 01월 15일 14:30</span>
+                <span class="mr-3">🏥 건강검진</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 ml-2">온라인</span>
+              </div>
+              <p class="mt-1 text-sm text-gray-600">정기 건강검진을 받고 싶습니다. 당뇨 가족력이 있어서 혈당 검사 포함해서 종합적으로 검사 받고 싶습니다.</p>
+              <div class="mt-2 text-xs text-gray-400">
+                신청일시: 2025년 01월 11일 09:15
+              </div>
+            </div>
+            <div class="ml-4 flex flex-col space-y-2">
+              <button onclick="showOnlineAppointmentActions(1)" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">
+                승인
+              </button>
+              <button onclick="viewOnlineAppointmentDetail(1)" class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                상세
+              </button>
+              <button onclick="rejectOnlineAppointment(1)" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">
+                거부
+              </button>
+            </div>
+          </div>
+        </li>
+        
+        <li class="px-6 py-4 hover:bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-900">이환자 (32세)</p>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  예약 대기
+                </span>
+              </div>
+              <div class="mt-1 flex items-center text-sm text-gray-500">
+                <span class="mr-3">📞 010-9876-5432</span>
+                <span class="mr-3">📅 2025년 01월 16일 10:00</span>
+                <span class="mr-3">🏥 진료 상담</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 ml-2">온라인</span>
+              </div>
+              <p class="mt-1 text-sm text-gray-600">최근 복통이 지속되고 있습니다. 소화불량인 것 같은데 정확한 진단을 받고 싶습니다.</p>
+              <div class="mt-2 text-xs text-gray-400">
+                신청일시: 2025년 01월 11일 14:22
+              </div>
+            </div>
+            <div class="ml-4 flex flex-col space-y-2">
+              <button onclick="showOnlineAppointmentActions(2)" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">
+                승인
+              </button>
+              <button onclick="viewOnlineAppointmentDetail(2)" class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                상세
+              </button>
+              <button onclick="rejectOnlineAppointment(2)" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">
+                거부
+              </button>
+            </div>
+          </div>
+        </li>
+        
+        <li class="px-6 py-4 hover:bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <p class="text-sm font-medium text-gray-900">박환자 (28세)</p>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  예약 대기
+                </span>
+              </div>
+              <div class="mt-1 flex items-center text-sm text-gray-500">
+                <span class="mr-3">📞 010-1111-2222</span>
+                <span class="mr-3">📅 2025년 01월 17일 16:00</span>
+                <span class="mr-3">🏥 예방접종</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 ml-2">온라인</span>
+              </div>
+              <p class="mt-1 text-sm text-gray-600">해외여행 예정이라 A형 간염 예방접종을 받고 싶습니다. 다른 필수 예방접종도 함께 상담 받을 수 있나요?</p>
+              <div class="mt-2 text-xs text-gray-400">
+                신청일시: 2025년 01월 11일 16:45
+              </div>
+            </div>
+            <div class="ml-4 flex flex-col space-y-2">
+              <button onclick="showOnlineAppointmentActions(3)" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">
+                승인
+              </button>
+              <button onclick="viewOnlineAppointmentDetail(3)" class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                상세
+              </button>
+              <button onclick="rejectOnlineAppointment(3)" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">
+                거부
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+  <!-- 뷰 전환 탭 -->
+  <div class="mb-6">
+    <div class="sm:hidden">
+      <select id="view-tab-select" class="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+        <option value="list">예약 목록</option>
+        <option value="calendar">예약 캘린더</option>
+      </select>
+    </div>
+    <div class="hidden sm:block">
+      <nav class="flex space-x-8" aria-label="Tabs">
+        <button id="list-view-tab" onclick="switchView('list')" class="view-tab-active whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+          📋 예약 목록
+        </button>
+        <button id="calendar-view-tab" onclick="switchView('calendar')" class="view-tab-inactive whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+          📅 예약 캘린더
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- 예약 목록 뷰 -->
+  <div id="list-view" class="bg-white shadow sm:rounded-md">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900">전체 예약 목록</h3>
+        <div class="flex space-x-3">
+          <select id="appointment-status-filter" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체 상태</option>
+            <option value="pending">대기중</option>
+            <option value="confirmed">확정</option>
+            <option value="arrived">내원</option>
+            <option value="completed">완료</option>
+            <option value="cancelled">취소</option>
+          </select>
+          <select id="appointment-department-filter" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체 부서</option>
+            <option value="의료진">의료진</option>
+            <option value="간호부">간호부</option>
+            <option value="행정부">행정부</option>
+          </select>
+          <input type="date" id="appointment-date-filter" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+          <button onclick="filterAppointments()" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm">
+            검색
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">환자 정보</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">예약 일시</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">유형</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">담당의</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">주증상</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
+          </tr>
+        </thead>
+        <tbody id="appointments-table-body" class="bg-white divide-y divide-gray-200">
+          <!-- 예약 목록이 여기에 표시됩니다 -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 캘린더 뷰 -->
+  <div id="calendar-view" class="bg-white shadow sm:rounded-md hidden">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900">예약 캘린더</h3>
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
+            <button onclick="navigateCalendar('prev')" class="p-2 text-gray-600 hover:text-gray-900">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h4 id="calendar-month-year" class="text-lg font-medium text-gray-900 min-w-32 text-center"></h4>
+            <button onclick="navigateCalendar('next')" class="p-2 text-gray-600 hover:text-gray-900">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+          <button onclick="goToToday()" class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+            오늘
+          </button>
+          <select id="calendar-department-filter" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체 부서</option>
+            <option value="의료진">의료진</option>
+            <option value="간호부">간호부</option>
+            <option value="행정부">행정부</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="p-6">
+      <!-- 캘린더 그리드 -->
+      <div class="grid grid-cols-7 gap-px bg-gray-200 rounded-lg overflow-hidden">
+        <!-- 요일 헤더 -->
+        <div class="bg-gray-50 p-2 text-center text-xs font-medium text-gray-500">일</div>
+        <div class="bg-gray-50 p-2 text-center text-xs font-medium text-gray-500">월</div>
+        <div class="bg-gray-50 p-2 text-center text-xs font-medium text-gray-500">화</div>
+        <div class="bg-gray-50 p-2 text-center text-xs font-medium text-gray-500">수</div>
+        <div class="bg-gray-50 p-2 text-center text-xs font-medium text-gray-500">목</div>
+        <div class="bg-gray-50 p-2 text-center text-xs font-medium text-gray-500">금</div>
+        <div class="bg-gray-50 p-2 text-center text-xs font-medium text-gray-500">토</div>
+        
+        <!-- 캘린더 날짜 셀들 -->
+        <div id="calendar-grid" class="contents">
+          <!-- 동적으로 생성됩니다 -->
+        </div>
+      </div>
+      
+      <!-- 선택된 날짜의 예약 목록 -->
+      <div id="selected-date-appointments" class="mt-6 hidden">
+        <h4 class="text-md font-medium text-gray-900 mb-4">
+          <span id="selected-date-text"></span> 예약 목록
+        </h4>
+        <div class="bg-gray-50 rounded-lg">
+          <div id="selected-date-appointments-list" class="divide-y divide-gray-200">
+            <!-- 선택된 날짜의 예약 목록이 여기에 표시됩니다 -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 새 예약 등록 모달 -->
+<div id="appointment-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">새 예약 등록</h3>
+        <form id="appointment-form">
+          <div class="space-y-4">
+            <div>
+              <label for="patient-search" class="block text-sm font-medium text-gray-700">환자 검색</label>
+              <input type="text" id="patient-search" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="환자명 또는 전화번호 입력">
+              <div id="patient-search-results" class="mt-2 max-h-32 overflow-y-auto"></div>
+              <input type="hidden" id="selected-patient-id">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="appointment-date" class="block text-sm font-medium text-gray-700">예약 날짜</label>
+                <input type="date" id="appointment-date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+              <div>
+                <label for="appointment-time" class="block text-sm font-medium text-gray-700">예약 시간</label>
+                <input type="time" id="appointment-time" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="appointment-type" class="block text-sm font-medium text-gray-700">예약 유형</label>
+                <select id="appointment-type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  <option value="">선택해주세요</option>
+                  <option value="consultation">진료 상담</option>
+                  <option value="checkup">건강검진</option>
+                  <option value="treatment">치료</option>
+                  <option value="emergency">응급진료</option>
+                  <option value="follow_up">재진</option>
+                  <option value="vaccination">예방접종</option>
+                  <option value="procedure">처치</option>
+                </select>
+              </div>
+              <div>
+                <label for="appointment-department" class="block text-sm font-medium text-gray-700">부서</label>
+                <select id="appointment-department" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  <option value="">선택해주세요</option>
+                  <option value="의료진">의료진</option>
+                  <option value="간호부">간호부</option>
+                  <option value="행정부">행정부</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label for="doctor-select" class="block text-sm font-medium text-gray-700">담당의 (선택)</label>
+              <select id="doctor-select" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="">담당의 선택</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="chief-complaint" class="block text-sm font-medium text-gray-700">주증상</label>
+              <textarea id="chief-complaint" rows="3" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="환자의 주증상을 상세히 입력해주세요 (최소 5글자)"></textarea>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-end pt-4 space-x-3">
+            <button type="button" onclick="closeAppointmentModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              취소
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+              예약 등록
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 온라인 예약 승인 모달 -->
+<div id="online-appointment-approval-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900">온라인 예약 승인</h3>
+          <button onclick="closeOnlineApprovalModal()" class="text-gray-400 hover:text-gray-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="online-approval-form">
+          <div class="space-y-4">
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-900 mb-2">환자 정보</h4>
+              <div id="online-patient-info" class="text-sm text-gray-600">
+                <!-- 환자 정보가 여기에 표시됩니다 -->
+              </div>
+            </div>
+            
+            <div class="bg-blue-50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-900 mb-2">예약 신청 내용</h4>
+              <div id="online-appointment-info" class="text-sm text-gray-600">
+                <!-- 예약 정보가 여기에 표시됩니다 -->
+              </div>
+            </div>
+            
+            <div>
+              <label for="assigned-doctor" class="block text-sm font-medium text-gray-700">담당의 배정</label>
+              <select id="assigned-doctor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <option value="">담당의 선택</option>
+                <option value="1">김의사 (내과 전문의)</option>
+                <option value="2">이의사 (가정의학과 전문의)</option>
+                <option value="3">박의사 (외과 전문의)</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="appointment-notes" class="block text-sm font-medium text-gray-700">승인 메모</label>
+              <textarea id="appointment-notes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="환자에게 전달할 메시지나 주의사항을 입력하세요 (선택사항)"></textarea>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-end pt-6 space-x-3">
+            <button type="button" onclick="closeOnlineApprovalModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              취소
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+              승인 및 예약 확정
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 온라인 예약 거부 모달 -->
+<div id="online-appointment-rejection-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900">온라인 예약 거부</h3>
+          <button onclick="closeOnlineRejectionModal()" class="text-gray-400 hover:text-gray-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="online-rejection-form">
+          <div class="space-y-4">
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h4 class="text-sm font-medium text-gray-900 mb-2">예약 신청 정보</h4>
+              <div id="rejection-appointment-info" class="text-sm text-gray-600">
+                <!-- 예약 정보가 여기에 표시됩니다 -->
+              </div>
+            </div>
+            
+            <div>
+              <label for="rejection-reason" class="block text-sm font-medium text-gray-700">거부 사유 <span class="text-red-500">*</span></label>
+              <select id="rejection-reason" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                <option value="">선택해주세요</option>
+                <option value="schedule_full">해당 시간대 예약 마감</option>
+                <option value="doctor_unavailable">담당의 부재</option>
+                <option value="insufficient_info">정보 부족</option>
+                <option value="duplicate_booking">중복 예약</option>
+                <option value="system_maintenance">시스템 점검</option>
+                <option value="other">기타 사유</option>
+              </select>
+            </div>
+            
+            <div>
+              <label for="rejection-message" class="block text-sm font-medium text-gray-700">환자 전달 메시지</label>
+              <textarea id="rejection-message" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm" placeholder="환자에게 전달할 거부 사유와 대안을 안내해주세요"></textarea>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-end pt-6 space-x-3">
+            <button type="button" onclick="closeOnlineRejectionModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              취소
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+              거부 처리
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 예약 상세 모달 -->
+<div id="appointment-detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900">예약 상세 정보</h3>
+          <button onclick="closeAppointmentDetailModal()" class="text-gray-400 hover:text-gray-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="appointment-detail-content">
+          <!-- 예약 상세 내용이 여기에 표시됩니다 -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* 탭 스타일 */
+.view-tab-active {
+  border-color: #3B82F6;
+  color: #3B82F6;
+}
+
+.view-tab-inactive {
+  border-color: transparent;
+  color: #6B7280;
+}
+
+.view-tab-inactive:hover {
+  color: #374151;
+  border-color: #D1D5DB;
+}
+
+/* 캘린더 셀 스타일 */
+.calendar-cell {
+  min-height: 120px;
+  background-color: white;
+  padding: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-cell:hover {
+  background-color: #F3F4F6;
+  border-color: #D1D5DB;
+}
+
+.calendar-cell.selected {
+  background-color: #DBEAFE;
+  border-color: #3B82F6;
+}
+
+.calendar-cell.other-month {
+  color: #9CA3AF;
+  background-color: #F9FAFB;
+}
+
+.calendar-cell.today {
+  background-color: #FEF3C7;
+  border-color: #F59E0B;
+}
+
+.calendar-cell.has-appointments {
+  border-left: 4px solid #3B82F6;
+}
+
+/* 예약 이벤트 스타일 */
+.appointment-event {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  margin: 1px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.appointment-event.pending {
+  background-color: #FEF3C7;
+  color: #92400E;
+}
+
+.appointment-event.confirmed {
+  background-color: #DBEAFE;
+  color: #1E40AF;
+}
+
+.appointment-event.arrived {
+  background-color: #E0E7FF;
+  color: #5B21B6;
+}
+
+.appointment-event.completed {
+  background-color: #D1FAE5;
+  color: #065F46;
+}
+
+.appointment-event.cancelled {
+  background-color: #F3F4F6;
+  color: #6B7280;
+  text-decoration: line-through;
+}
+
+.appointment-event:hover {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+</style>
+
+<script>
+// 전역 변수
+let currentCalendarDate = new Date();
+let calendarAppointments = [];
+let selectedCalendarDate = null;
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await loadAppointmentDashboard();
+    await loadAppointments();
+    initializePatientSearch();
+    loadDoctorsList();
+    initializeCalendar();
+    setupViewSwitching();
+  } catch (error) {
+    console.error('예약 관리 초기화 오류:', error);
+    toast.error('예약 관리 데이터를 불러올 수 없습니다.');
+  }
+});
+
+// 예약 대시보드 데이터 로드
+async function loadAppointmentDashboard() {
+  try {
+    const response = await api.get('/appointments/dashboard');
+    
+    if (response.data.status === 'success') {
+      const { statistics, today_appointments, pending_appointments } = response.data.data;
+      
+      // 통계 업데이트
+      document.getElementById('today-appointments-count').textContent = statistics.today.total;
+      document.getElementById('pending-appointments-count').textContent = statistics.today.pending;
+      document.getElementById('confirmed-appointments-count').textContent = statistics.today.confirmed;
+      document.getElementById('online-appointments-count').textContent = statistics.pending_online;
+      document.getElementById('weekly-appointments-count').textContent = statistics.upcoming_week;
+      
+      // 온라인 예약 대기 목록 표시
+      displayPendingOnlineAppointments(pending_appointments);
+    }
+  } catch (error) {
+    console.error('예약 대시보드 로드 오류:', error);
+  }
+}
+
+// 온라인 예약 대기 목록 표시
+function displayPendingOnlineAppointments(appointments) {
+  const container = document.getElementById('pending-online-appointments');
+  
+  if (!appointments || appointments.length === 0) {
+    container.innerHTML = '<li class="px-6 py-4 text-center text-gray-500">대기중인 온라인 예약이 없습니다.</li>';
+    return;
+  }
+  
+  const html = appointments.map(appointment => `
+    <li class="px-6 py-4 hover:bg-gray-50">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-gray-900">${appointment.patient_name} (${appointment.patient_age}세)</p>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${appointment.status_color}">
+              ${appointment.status_text}
+            </span>
+          </div>
+          <div class="mt-1 flex items-center text-sm text-gray-500">
+            <span class="mr-3">📞 ${appointment.patient_phone}</span>
+            <span class="mr-3">📅 ${appointment.formatted_appointment_date}</span>
+            <span class="mr-3">🏥 ${appointment.appointment_type_text}</span>
+          </div>
+          <p class="mt-1 text-sm text-gray-600">${appointment.chief_complaint}</p>
+        </div>
+        <div class="ml-4 flex space-x-2">
+          <button onclick="confirmAppointment(${appointment.id})" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">
+            확정
+          </button>
+          <button onclick="viewAppointmentDetail(${appointment.id})" class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+            상세
+          </button>
+        </div>
+      </div>
+    </li>
+  `).join('');
+  
+  container.innerHTML = html;
+}
+
+// 예약 목록 로드
+async function loadAppointments(filters = {}) {
+  try {
+    const params = new URLSearchParams();
+    
+    if (filters.status) params.append('status', filters.status);
+    if (filters.department) params.append('department', filters.department);
+    if (filters.date) params.append('date', filters.date);
+    
+    const response = await api.get(`/appointments?${params.toString()}`);
+    
+    if (response.data.status === 'success') {
+      displayAppointments(response.data.data.appointments);
+    }
+  } catch (error) {
+    console.error('예약 목록 로드 오류:', error);
+    toast.error('예약 목록을 불러올 수 없습니다.');
+  }
+}
+
+// 예약 목록 표시 (샘플 데이터 포함)
+function displayAppointments(appointments) {
+  const tbody = document.getElementById('appointments-table-body');
+  
+  // 샘플 데이터가 없으면 생성
+  if (!appointments || appointments.length === 0) {
+    appointments = generateSampleListAppointments();
+  }
+  
+  const html = appointments.map(appointment => `
+    <tr class="hover:bg-gray-50 cursor-pointer" ondblclick="viewAppointmentDetail(${appointment.id})">
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 h-10 w-10">
+            <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+              <span class="text-sm font-medium text-gray-700">${appointment.patient_name.charAt(0)}</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <div class="text-sm font-medium text-gray-900">${appointment.patient_name}</div>
+            <div class="text-sm text-gray-500">${appointment.patient_age}세 · ${appointment.patient_gender} · 📞 ${appointment.patient_phone}</div>
+            ${appointment.created_by_patient ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 mt-1">온라인 신청</span>' : ''}
+          </div>
+        </div>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">${appointment.formatted_appointment_date}</div>
+        <div class="text-sm text-gray-500">${appointment.time_until_appointment || '시간 경과'}</div>
+        ${appointment.is_urgent ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mt-1">긴급</span>' : ''}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">${appointment.appointment_type_text}</div>
+        <div class="text-sm text-gray-500">${appointment.department}</div>
+        ${appointment.insurance_type ? `<div class="text-xs text-gray-400 mt-1">${appointment.insurance_type}</div>` : ''}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">${appointment.doctor_name || '미배정'}</div>
+        ${appointment.doctor_name ? `<div class="text-sm text-gray-500">${appointment.doctor_specialty || '전문의'}</div>` : ''}
+      </td>
+      <td class="px-6 py-4 max-w-xs">
+        <div class="text-sm text-gray-900 truncate" title="${appointment.chief_complaint}">
+          ${appointment.chief_complaint}
+        </div>
+        ${appointment.medical_history ? `<div class="text-xs text-gray-500 truncate mt-1" title="${appointment.medical_history}">과거력: ${appointment.medical_history}</div>` : ''}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${appointment.status_color}">
+          ${appointment.status_text}
+        </span>
+        ${appointment.last_updated ? `<div class="text-xs text-gray-400 mt-1">${appointment.last_updated}</div>` : ''}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+        <div class="flex flex-col space-y-1">
+          <div class="flex space-x-2">
+            ${appointment.can_confirm ? `<button onclick="event.stopPropagation(); confirmAppointment(${appointment.id})" class="text-green-600 hover:text-green-900 text-xs">확정</button>` : ''}
+            ${appointment.can_cancel ? `<button onclick="event.stopPropagation(); cancelAppointment(${appointment.id})" class="text-red-600 hover:text-red-900 text-xs">취소</button>` : ''}
+            ${appointment.can_arrive ? `<button onclick="event.stopPropagation(); arriveAppointment(${appointment.id})" class="text-blue-600 hover:text-blue-900 text-xs">내원</button>` : ''}
+          </div>
+          <button onclick="event.stopPropagation(); viewAppointmentDetail(${appointment.id})" class="text-indigo-600 hover:text-indigo-900 text-xs">상세보기</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  
+  tbody.innerHTML = html;
+}
+
+// 예약 목록용 샘플 데이터 생성
+function generateSampleListAppointments() {
+  const sampleAppointments = [
+    {
+      id: 'list-1',
+      patient_name: '김환자',
+      patient_age: 45,
+      patient_gender: '남성',
+      patient_phone: '010-1234-5678',
+      appointment_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 13일 14:30',
+      formatted_appointment_time: '14:30',
+      appointment_type_text: '건강검진',
+      department: '의료진',
+      doctor_name: '이내과',
+      doctor_specialty: '내과 전문의',
+      chief_complaint: '정기 건강검진을 받고 싶습니다. 당뇨 가족력이 있어서 혈당 검사 포함해서 종합적으로 검사 받고 싶어요.',
+      medical_history: '고혈압, 당뇨 가족력',
+      insurance_type: '건강보험',
+      status: 'confirmed',
+      status_text: '예약 확정',
+      status_color: 'bg-blue-100 text-blue-800',
+      created_by_patient: false,
+      is_urgent: false,
+      time_until_appointment: '2일 후',
+      last_updated: '1시간 전',
+      can_confirm: false,
+      can_cancel: true,
+      can_arrive: false
+    },
+    {
+      id: 'list-2',
+      patient_name: '박환자',
+      patient_age: 32,
+      patient_gender: '여성',
+      patient_phone: '010-9876-5432',
+      appointment_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 12일 10:00',
+      formatted_appointment_time: '10:00',
+      appointment_type_text: '진료 상담',
+      department: '의료진',
+      doctor_name: '김가정의학',
+      doctor_specialty: '가정의학과 전문의',
+      chief_complaint: '최근 복통이 지속되고 있습니다. 소화불량인 것 같은데 정확한 진단을 받고 싶습니다.',
+      medical_history: '위염',
+      insurance_type: '의료급여',
+      status: 'pending',
+      status_text: '예약 대기',
+      status_color: 'bg-yellow-100 text-yellow-800',
+      created_by_patient: true,
+      is_urgent: false,
+      time_until_appointment: '내일',
+      last_updated: '2시간 전',
+      can_confirm: true,
+      can_cancel: true,
+      can_arrive: false
+    },
+    {
+      id: 'list-3',
+      patient_name: '최환자',
+      patient_age: 28,
+      patient_gender: '남성',
+      patient_phone: '010-1111-2222',
+      appointment_date: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 11일 16:30',
+      formatted_appointment_time: '16:30',
+      appointment_type_text: '응급진료',
+      department: '의료진',
+      doctor_name: '응급의료진',
+      doctor_specialty: '응급의학과',
+      chief_complaint: '갑작스런 흉통과 호흡곤란 증상이 있습니다. 응급진료가 필요합니다.',
+      medical_history: '없음',
+      insurance_type: '건강보험',
+      status: 'arrived',
+      status_text: '내원 완료',
+      status_color: 'bg-purple-100 text-purple-800',
+      created_by_patient: false,
+      is_urgent: true,
+      time_until_appointment: '진행중',
+      last_updated: '30분 전',
+      can_confirm: false,
+      can_cancel: false,
+      can_arrive: false
+    },
+    {
+      id: 'list-4',
+      patient_name: '정환자',
+      patient_age: 65,
+      patient_gender: '여성',
+      patient_phone: '010-3333-4444',
+      appointment_date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 11일 13:00',
+      formatted_appointment_time: '13:00',
+      appointment_type_text: '재진',
+      department: '의료진',
+      doctor_name: '박순환기',
+      doctor_specialty: '순환기내과 전문의',
+      chief_complaint: '고혈압 약물 조정 및 경과 관찰을 위한 재진입니다.',
+      medical_history: '고혈압, 당뇨, 고지혈증',
+      insurance_type: '건강보험',
+      status: 'completed',
+      status_text: '진료 완료',
+      status_color: 'bg-green-100 text-green-800',
+      created_by_patient: false,
+      is_urgent: false,
+      time_until_appointment: '완료',
+      last_updated: '2시간 전',
+      can_confirm: false,
+      can_cancel: false,
+      can_arrive: false
+    },
+    {
+      id: 'list-5',
+      patient_name: '강환자',
+      patient_age: 24,
+      patient_gender: '남성',
+      patient_phone: '010-5555-6666',
+      appointment_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 18일 11:00',
+      formatted_appointment_time: '11:00',
+      appointment_type_text: '예방접종',
+      department: '간호부',
+      doctor_name: '간호팀장',
+      doctor_specialty: '예방접종 담당',
+      chief_complaint: '해외여행 예정이라 A형 간염 예방접종을 받고 싶습니다. 다른 필수 예방접종도 함께 상담 받을 수 있나요?',
+      medical_history: '알레르기 없음',
+      insurance_type: '건강보험',
+      status: 'pending',
+      status_text: '예약 대기',
+      status_color: 'bg-yellow-100 text-yellow-800',
+      created_by_patient: true,
+      is_urgent: false,
+      time_until_appointment: '7일 후',
+      last_updated: '5시간 전',
+      can_confirm: true,
+      can_cancel: true,
+      can_arrive: false
+    }
+  ];
+  
+  return sampleAppointments;
+}
+
+// 예약 필터링
+function filterAppointments() {
+  const filters = {
+    status: document.getElementById('appointment-status-filter').value,
+    department: document.getElementById('appointment-department-filter').value,
+    date: document.getElementById('appointment-date-filter').value
+  };
+  
+  loadAppointments(filters);
+}
+
+// 새 예약 등록 모달 표시
+function showCreateAppointmentModal() {
+  document.getElementById('appointment-modal').classList.remove('hidden');
+  // 오늘 날짜를 기본값으로 설정
+  document.getElementById('appointment-date').value = new Date().toISOString().split('T')[0];
+}
+
+// 새 예약 등록 모달 닫기
+function closeAppointmentModal() {
+  document.getElementById('appointment-modal').classList.add('hidden');
+  document.getElementById('appointment-form').reset();
+  document.getElementById('selected-patient-id').value = '';
+  document.getElementById('patient-search-results').innerHTML = '';
+}
+
+// 환자 검색 초기화
+function initializePatientSearch() {
+  const searchInput = document.getElementById('patient-search');
+  let debounceTimer;
+  
+  searchInput.addEventListener('input', function(e) {
+    const query = e.target.value.trim();
+    
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      if (query.length >= 2) {
+        searchPatients(query);
+      } else {
+        document.getElementById('patient-search-results').innerHTML = '';
+      }
+    }, 300);
+  });
+}
+
+// 환자 검색
+async function searchPatients(query) {
+  try {
+    const response = await api.get(`/patients/search?q=${encodeURIComponent(query)}`);
+    
+    if (response.data.status === 'success') {
+      displayPatientSearchResults(response.data.data.patients);
+    }
+  } catch (error) {
+    console.error('환자 검색 오류:', error);
+  }
+}
+
+// 환자 검색 결과 표시
+function displayPatientSearchResults(patients) {
+  const container = document.getElementById('patient-search-results');
+  
+  if (!patients || patients.length === 0) {
+    container.innerHTML = '<div class="p-2 text-sm text-gray-500">검색 결과가 없습니다.</div>';
+    return;
+  }
+  
+  const html = patients.map(patient => `
+    <div class="p-2 hover:bg-gray-100 cursor-pointer border-b" onclick="selectPatient(${patient.id}, '${patient.name}', '${patient.phone}')">
+      <div class="text-sm font-medium text-gray-900">${patient.name}</div>
+      <div class="text-sm text-gray-500">${patient.age}세 · ${patient.gender_text} · 📞 ${patient.phone}</div>
+    </div>
+  `).join('');
+  
+  container.innerHTML = html;
+}
+
+// 환자 선택
+function selectPatient(patientId, patientName, patientPhone) {
+  document.getElementById('selected-patient-id').value = patientId;
+  document.getElementById('patient-search').value = `${patientName} (${patientPhone})`;
+  document.getElementById('patient-search-results').innerHTML = '';
+}
+
+// 의사 목록 로드
+async function loadDoctorsList() {
+  try {
+    const response = await api.get('/employees?department=의료진');
+    
+    if (response.data.status === 'success') {
+      const select = document.getElementById('doctor-select');
+      const doctors = response.data.data.employees;
+      
+      // 기존 옵션 제거 (첫 번째 옵션 제외)
+      while (select.children.length > 1) {
+        select.removeChild(select.lastChild);
+      }
+      
+      // 의사 옵션 추가
+      doctors.forEach(doctor => {
+        const option = document.createElement('option');
+        option.value = doctor.id;
+        option.textContent = `${doctor.name} (${doctor.position})`;
+        select.appendChild(option);
+      });
+    }
+  } catch (error) {
+    console.error('의사 목록 로드 오류:', error);
+  }
+}
+
+// 새 예약 등록
+document.getElementById('appointment-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const patientId = document.getElementById('selected-patient-id').value;
+  if (!patientId) {
+    toast.warning('환자를 선택해주세요.');
+    return;
+  }
+  
+  const formData = {
+    patient_id: parseInt(patientId),
+    employee_id: document.getElementById('doctor-select').value || null,
+    appointment_date: `${document.getElementById('appointment-date').value}T${document.getElementById('appointment-time').value}:00`,
+    appointment_type: document.getElementById('appointment-type').value,
+    department: document.getElementById('appointment-department').value,
+    chief_complaint: document.getElementById('chief-complaint').value
+  };
+  
+  try {
+    const response = await api.post('/appointments', { appointment: formData });
+    
+    if (response.data.status === 'success') {
+      toast.success(response.data.message);
+      closeAppointmentModal();
+      await loadAppointmentDashboard();
+      await loadAppointments();
+    }
+  } catch (error) {
+    console.error('예약 등록 오류:', error);
+    toast.error(error.response?.data?.message || '예약 등록에 실패했습니다.');
+  }
+});
+
+// 예약 확정
+async function confirmAppointment(appointmentId) {
+  const employeeId = prompt('담당의 ID를 입력하세요 (선택사항):');
+  
+  try {
+    const data = {};
+    if (employeeId && employeeId.trim()) {
+      data.employee_id = parseInt(employeeId.trim());
+    }
+    
+    const response = await api.patch(`/appointments/${appointmentId}/confirm`, data);
+    
+    if (response.data.status === 'success') {
+      toast.success(response.data.message);
+      await loadAppointmentDashboard();
+      await loadAppointments();
+    }
+  } catch (error) {
+    console.error('예약 확정 오류:', error);
+    toast.error(error.response?.data?.message || '예약 확정에 실패했습니다.');
+  }
+}
+
+// 예약 취소
+async function cancelAppointment(appointmentId) {
+  const reason = prompt('취소 사유를 입력하세요:');
+  if (!reason) return;
+  
+  try {
+    const response = await api.patch(`/appointments/${appointmentId}/cancel`, {
+      reason: reason
+    });
+    
+    if (response.data.status === 'success') {
+      toast.success(response.data.message);
+      await loadAppointmentDashboard();
+      await loadAppointments();
+    }
+  } catch (error) {
+    console.error('예약 취소 오류:', error);
+    toast.error(error.response?.data?.message || '예약 취소에 실패했습니다.');
+  }
+}
+
+// 내원 확인
+async function arriveAppointment(appointmentId) {
+  try {
+    const response = await api.patch(`/appointments/${appointmentId}/arrive`);
+    
+    if (response.data.status === 'success') {
+      toast.success(response.data.message);
+      await loadAppointmentDashboard();
+      await loadAppointments();
+    }
+  } catch (error) {
+    console.error('내원 확인 오류:', error);
+    toast.error(error.response?.data?.message || '내원 확인에 실패했습니다.');
+  }
+}
+
+// 예약 상세 정보 보기
+async function viewAppointmentDetail(appointmentId) {
+  try {
+    // 실제 API 호출 대신 샘플 데이터 사용
+    // const response = await api.get(`/appointments/${appointmentId}`);
+    
+    const appointment = getDetailedAppointmentData(appointmentId);
+    
+    if (appointment) {
+      displayAppointmentDetail(appointment);
+      document.getElementById('appointment-detail-modal').classList.remove('hidden');
+    } else {
+      toast.error('해당 예약 정보를 찾을 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('예약 상세 정보 로드 오류:', error);
+    toast.error('예약 상세 정보를 불러올 수 없습니다.');
+  }
+}
+
+// 상세 예약 데이터 가져오기 (샘플)
+function getDetailedAppointmentData(appointmentId) {
+  const detailedData = {
+    'list-1': {
+      id: 'list-1',
+      patient_info: {
+        name: '김환자',
+        age: 45,
+        gender_text: '남성',
+        phone: '010-1234-5678',
+        email: 'kim@example.com',
+        address: '서울시 강남구 역삼동 123-45',
+        birth_date: '1979-03-15',
+        patient_number: 'P2025001234',
+        insurance_type_text: '건강보험',
+        emergency_contact: '010-9999-8888 (배우자)',
+        blood_type: 'A형',
+        allergies: '페니실린 알레르기'
+      },
+      appointment_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 13일 14:30',
+      appointment_type_text: '건강검진',
+      department: '의료진',
+      doctor_name: '이내과',
+      doctor_specialty: '내과 전문의',
+      chief_complaint: '정기 건강검진을 받고 싶습니다. 당뇨 가족력이 있어서 혈당 검사 포함해서 종합적으로 검사 받고 싶어요.',
+      status: 'confirmed',
+      status_text: '예약 확정',
+      status_color: 'bg-blue-100 text-blue-800',
+      created_by_patient: false,
+      notes: '가족력 확인 필요. 당뇨 검사 우선적으로 진행 예정',
+      medical_history: '고혈압 (2020년 진단), 당뇨 가족력 (부모)',
+      current_medications: '혈압약 (암로디핀 5mg), 종합비타민',
+      previous_visits: [
+        { date: '2024-07-15', type: '정기검진', result: '정상' },
+        { date: '2024-01-20', type: '혈압검사', result: '경미한 고혈압' }
+      ],
+      requested_tests: ['혈당검사', '콜레스테롤 검사', '간기능 검사', '신장기능 검사'],
+      estimated_duration: '2-3시간',
+      preparation_notes: '검사 12시간 전부터 금식해주세요',
+      can_confirm: false,
+      can_cancel: true,
+      can_arrive: false
+    },
+    'list-2': {
+      id: 'list-2',
+      patient_info: {
+        name: '박환자',
+        age: 32,
+        gender_text: '여성',
+        phone: '010-9876-5432',
+        email: 'park@example.com',
+        address: '서울시 서초구 서초동 567-89',
+        birth_date: '1992-11-22',
+        patient_number: 'P2025001235',
+        insurance_type_text: '의료급여 1종',
+        emergency_contact: '010-7777-6666 (모친)',
+        blood_type: 'B형',
+        allergies: '특이사항 없음'
+      },
+      appointment_date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 12일 10:00',
+      appointment_type_text: '진료 상담',
+      department: '의료진',
+      doctor_name: '김가정의학',
+      doctor_specialty: '가정의학과 전문의',
+      chief_complaint: '최근 복통이 지속되고 있습니다. 소화불량인 것 같은데 정확한 진단을 받고 싶습니다.',
+      status: 'pending',
+      status_text: '예약 대기',
+      status_color: 'bg-yellow-100 text-yellow-800',
+      created_by_patient: true,
+      notes: '온라인으로 신청된 예약입니다. 복통 증상 자세한 문진 필요',
+      medical_history: '위염 (2023년 진단)',
+      current_medications: '위장약 (오메프라졸 20mg)',
+      previous_visits: [
+        { date: '2023-09-10', type: '위내시경', result: '만성위염' },
+        { date: '2023-05-15', type: '복통 상담', result: '위염 진단' }
+      ],
+      symptoms_duration: '2주간 지속',
+      pain_scale: '5/10',
+      related_symptoms: ['식후 불편감', '속쓰림', '트림'],
+      estimated_duration: '30-45분',
+      preparation_notes: '증상 일지 작성해서 가져와주세요',
+      can_confirm: true,
+      can_cancel: true,
+      can_arrive: false
+    },
+    'list-3': {
+      id: 'list-3',
+      patient_info: {
+        name: '최환자',
+        age: 28,
+        gender_text: '남성',
+        phone: '010-1111-2222',
+        email: 'choi@example.com',
+        address: '서울시 마포구 상암동 111-22',
+        birth_date: '1996-05-08',
+        patient_number: 'P2025001236',
+        insurance_type_text: '건강보험',
+        emergency_contact: '010-5555-4444 (부친)',
+        blood_type: 'O형',
+        allergies: '특이사항 없음'
+      },
+      appointment_date: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
+      formatted_appointment_date: '2025년 01월 11일 16:30',
+      appointment_type_text: '응급진료',
+      department: '의료진',
+      doctor_name: '응급의료진',
+      doctor_specialty: '응급의학과 전문의',
+      chief_complaint: '갑작스런 흉통과 호흡곤란 증상이 있습니다. 응급진료가 필요합니다.',
+      status: 'arrived',
+      status_text: '내원 완료',
+      status_color: 'bg-purple-100 text-purple-800',
+      created_by_patient: false,
+      notes: '응급실 직접 내원. Triage Level 3. 현재 검사 진행중',
+      medical_history: '특이사항 없음',
+      current_medications: '없음',
+      vital_signs: {
+        blood_pressure: '140/90 mmHg',
+        heart_rate: '95 bpm',
+        temperature: '37.2°C',
+        oxygen_saturation: '98%'
+      },
+      triage_level: 'Level 3 (응급)',
+      arrival_method: '도보',
+      symptoms_onset: '1시간 전',
+      estimated_duration: '2-4시간',
+      current_status: '심전도 및 흉부 X-ray 촬영중',
+      can_confirm: false,
+      can_cancel: false,
+      can_arrive: false
+    }
+  };
+  
+  return detailedData[appointmentId] || null;
+}
+
+// 예약 상세 정보 표시
+function displayAppointmentDetail(appointment) {
+  const html = `
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- 환자 기본 정보 -->
+      <div class="space-y-4">
+        <h4 class="text-md font-semibold text-gray-900 flex items-center">
+          <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-2">
+            <span class="text-sm font-bold text-blue-600">${appointment.patient_info.name.charAt(0)}</span>
+          </span>
+          환자 정보
+        </h4>
+        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+          <div><span class="font-medium text-gray-700">이름:</span> <span class="text-gray-900">${appointment.patient_info.name}</span></div>
+          <div><span class="font-medium text-gray-700">나이/성별:</span> <span class="text-gray-900">${appointment.patient_info.age}세 · ${appointment.patient_info.gender_text}</span></div>
+          <div><span class="font-medium text-gray-700">생년월일:</span> <span class="text-gray-900">${appointment.patient_info.birth_date || '-'}</span></div>
+          <div><span class="font-medium text-gray-700">환자번호:</span> <span class="text-gray-900 font-mono text-sm">${appointment.patient_info.patient_number || '-'}</span></div>
+          <div><span class="font-medium text-gray-700">연락처:</span> <span class="text-gray-900">${appointment.patient_info.phone}</span></div>
+          <div><span class="font-medium text-gray-700">이메일:</span> <span class="text-gray-900">${appointment.patient_info.email || '-'}</span></div>
+          ${appointment.patient_info.address ? `<div><span class="font-medium text-gray-700">주소:</span> <span class="text-gray-900 text-sm">${appointment.patient_info.address}</span></div>` : ''}
+          <div><span class="font-medium text-gray-700">보험:</span> <span class="text-gray-900">${appointment.patient_info.insurance_type_text}</span></div>
+          ${appointment.patient_info.emergency_contact ? `<div><span class="font-medium text-gray-700">비상연락처:</span> <span class="text-gray-900 text-sm">${appointment.patient_info.emergency_contact}</span></div>` : ''}
+        </div>
+      </div>
+      
+      <!-- 예약 정보 -->
+      <div class="space-y-4">
+        <h4 class="text-md font-semibold text-gray-900 flex items-center">
+          <span class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-2">
+            <span class="text-sm">📅</span>
+          </span>
+          예약 정보
+        </h4>
+        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+          <div><span class="font-medium text-gray-700">예약일시:</span> <span class="text-gray-900 font-medium">${appointment.formatted_appointment_date}</span></div>
+          <div><span class="font-medium text-gray-700">예약유형:</span> <span class="text-gray-900">${appointment.appointment_type_text}</span></div>
+          <div><span class="font-medium text-gray-700">진료과:</span> <span class="text-gray-900">${appointment.department}</span></div>
+          <div><span class="font-medium text-gray-700">담당의:</span> <span class="text-gray-900">${appointment.doctor_name || '미배정'}</span>
+            ${appointment.doctor_specialty ? `<div class="text-sm text-gray-500 ml-2">${appointment.doctor_specialty}</div>` : ''}
+          </div>
+          <div><span class="font-medium text-gray-700">상태:</span> <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${appointment.status_color}">${appointment.status_text}</span></div>
+          <div><span class="font-medium text-gray-700">신청방식:</span> <span class="text-gray-900">${appointment.created_by_patient ? '온라인 신청' : '직접 접수'}</span></div>
+          ${appointment.estimated_duration ? `<div><span class="font-medium text-gray-700">예상 소요시간:</span> <span class="text-gray-900">${appointment.estimated_duration}</span></div>` : ''}
+        </div>
+      </div>
+      
+      <!-- 의료 정보 -->
+      <div class="space-y-4">
+        <h4 class="text-md font-semibold text-gray-900 flex items-center">
+          <span class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-2">
+            <span class="text-sm">🩺</span>
+          </span>
+          의료 정보
+        </h4>
+        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+          ${appointment.patient_info.blood_type ? `<div><span class="font-medium text-gray-700">혈액형:</span> <span class="text-gray-900">${appointment.patient_info.blood_type}</span></div>` : ''}
+          ${appointment.patient_info.allergies ? `<div><span class="font-medium text-gray-700">알레르기:</span> <span class="text-gray-900">${appointment.patient_info.allergies}</span></div>` : ''}
+          ${appointment.medical_history ? `<div><span class="font-medium text-gray-700">과거력:</span> <span class="text-gray-900 text-sm">${appointment.medical_history}</span></div>` : ''}
+          ${appointment.current_medications ? `<div><span class="font-medium text-gray-700">복용약물:</span> <span class="text-gray-900 text-sm">${appointment.current_medications}</span></div>` : ''}
+          
+          ${appointment.vital_signs ? `
+          <div class="pt-2 border-t border-gray-200">
+            <div class="font-medium text-gray-700 mb-2">생체징후:</div>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div>혈압: ${appointment.vital_signs.blood_pressure}</div>
+              <div>맥박: ${appointment.vital_signs.heart_rate}</div>
+              <div>체온: ${appointment.vital_signs.temperature}</div>
+              <div>산소포화도: ${appointment.vital_signs.oxygen_saturation}</div>
+            </div>
+          </div>
+          ` : ''}
+          
+          ${appointment.triage_level ? `<div><span class="font-medium text-gray-700">응급도:</span> <span class="text-red-600 font-medium">${appointment.triage_level}</span></div>` : ''}
+        </div>
+      </div>
+    </div>
+    
+    <!-- 주증상 및 상세 내용 -->
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div>
+        <h4 class="text-md font-semibold text-gray-900 mb-3">주증상 및 내원사유</h4>
+        <div class="bg-blue-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-800 leading-relaxed">${appointment.chief_complaint}</p>
+          ${appointment.symptoms_duration ? `<div class="mt-2 text-xs text-blue-600">지속기간: ${appointment.symptoms_duration}</div>` : ''}
+          ${appointment.pain_scale ? `<div class="mt-1 text-xs text-blue-600">통증강도: ${appointment.pain_scale}</div>` : ''}
+          ${appointment.related_symptoms ? `<div class="mt-2"><span class="text-xs text-blue-600 font-medium">관련증상:</span> <span class="text-xs text-gray-600">${appointment.related_symptoms.join(', ')}</span></div>` : ''}
+        </div>
+      </div>
+      
+      <div>
+        <h4 class="text-md font-semibold text-gray-900 mb-3">진료 정보</h4>
+        <div class="space-y-3">
+          ${appointment.notes ? `
+          <div class="bg-yellow-50 p-4 rounded-lg">
+            <div class="font-medium text-sm text-gray-700 mb-1">진료 메모:</div>
+            <p class="text-sm text-gray-800">${appointment.notes}</p>
+          </div>
+          ` : ''}
+          
+          ${appointment.preparation_notes ? `
+          <div class="bg-green-50 p-4 rounded-lg">
+            <div class="font-medium text-sm text-gray-700 mb-1">준비사항:</div>
+            <p class="text-sm text-gray-800">${appointment.preparation_notes}</p>
+          </div>
+          ` : ''}
+          
+          ${appointment.requested_tests ? `
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <div class="font-medium text-sm text-gray-700 mb-2">요청 검사:</div>
+            <div class="flex flex-wrap gap-1">
+              ${appointment.requested_tests.map(test => `<span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">${test}</span>`).join('')}
+            </div>
+          </div>
+          ` : ''}
+          
+          ${appointment.current_status ? `
+          <div class="bg-indigo-50 p-4 rounded-lg">
+            <div class="font-medium text-sm text-gray-700 mb-1">현재 상태:</div>
+            <p class="text-sm text-gray-800">${appointment.current_status}</p>
+          </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+    
+    <!-- 이전 방문 기록 -->
+    ${appointment.previous_visits && appointment.previous_visits.length > 0 ? `
+    <div class="mt-6">
+      <h4 class="text-md font-semibold text-gray-900 mb-3">이전 방문 기록</h4>
+      <div class="bg-gray-50 rounded-lg overflow-hidden">
+        <div class="divide-y divide-gray-200">
+          ${appointment.previous_visits.map(visit => `
+          <div class="p-4 hover:bg-gray-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-sm font-medium text-gray-900">${visit.date} - ${visit.type}</div>
+                <div class="text-sm text-gray-600">${visit.result}</div>
+              </div>
+              <span class="text-xs text-gray-400">완료</span>
+            </div>
+          </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    ` : ''}
+    
+    <!-- 액션 버튼 -->
+    <div class="mt-8 flex justify-end space-x-3 pt-6 border-t border-gray-200">
+      ${appointment.can_confirm ? `<button onclick="confirmAppointment('${appointment.id}'); closeAppointmentDetailModal();" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">예약 확정</button>` : ''}
+      ${appointment.can_cancel ? `<button onclick="cancelAppointment('${appointment.id}'); closeAppointmentDetailModal();" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">예약 취소</button>` : ''}
+      ${appointment.can_arrive ? `<button onclick="arriveAppointment('${appointment.id}'); closeAppointmentDetailModal();" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">내원 확인</button>` : ''}
+      <button onclick="printAppointmentDetail('${appointment.id}')" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">인쇄</button>
+      <button onclick="closeAppointmentDetailModal()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">닫기</button>
+    </div>
+  `;
+  
+  document.getElementById('appointment-detail-content').innerHTML = html;
+}
+
+// 예약 상세 정보 인쇄
+function printAppointmentDetail(appointmentId) {
+  const appointment = getDetailedAppointmentData(appointmentId);
+  if (!appointment) {
+    toast.error('인쇄할 데이터를 찾을 수 없습니다.');
+    return;
+  }
+  
+  const printWindow = window.open('', '_blank');
+  const printContent = `
+    <html>
+      <head>
+        <title>예약 상세 정보 - ${appointment.patient_info.name}</title>
+        <style>
+          body { font-family: 'Malgun Gothic', sans-serif; margin: 20px; line-height: 1.6; }
+          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+          .section { margin-bottom: 20px; }
+          .section h3 { background-color: #f5f5f5; padding: 8px; margin: 0 0 10px 0; border-left: 4px solid #333; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+          .info-item { margin-bottom: 8px; }
+          .label { font-weight: bold; display: inline-block; width: 120px; }
+          .value { color: #333; }
+          .complaint { background-color: #f9f9f9; padding: 15px; border-radius: 5px; }
+          @media print { body { margin: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>🏥 병원 예약 상세 정보</h1>
+          <p>출력일시: ${new Date().toLocaleDateString('ko-KR')} ${new Date().toLocaleTimeString('ko-KR')}</p>
+        </div>
+        
+        <div class="info-grid">
+          <div class="section">
+            <h3>환자 정보</h3>
+            <div class="info-item"><span class="label">환자명:</span> <span class="value">${appointment.patient_info.name}</span></div>
+            <div class="info-item"><span class="label">환자번호:</span> <span class="value">${appointment.patient_info.patient_number || '-'}</span></div>
+            <div class="info-item"><span class="label">나이/성별:</span> <span class="value">${appointment.patient_info.age}세 / ${appointment.patient_info.gender_text}</span></div>
+            <div class="info-item"><span class="label">연락처:</span> <span class="value">${appointment.patient_info.phone}</span></div>
+            <div class="info-item"><span class="label">보험유형:</span> <span class="value">${appointment.patient_info.insurance_type_text}</span></div>
+          </div>
+          
+          <div class="section">
+            <h3>예약 정보</h3>
+            <div class="info-item"><span class="label">예약일시:</span> <span class="value">${appointment.formatted_appointment_date}</span></div>
+            <div class="info-item"><span class="label">예약유형:</span> <span class="value">${appointment.appointment_type_text}</span></div>
+            <div class="info-item"><span class="label">진료과:</span> <span class="value">${appointment.department}</span></div>
+            <div class="info-item"><span class="label">담당의:</span> <span class="value">${appointment.doctor_name || '미배정'}</span></div>
+            <div class="info-item"><span class="label">현재상태:</span> <span class="value">${appointment.status_text}</span></div>
+          </div>
+        </div>
+        
+        <div class="section">
+          <h3>주증상 및 내원사유</h3>
+          <div class="complaint">${appointment.chief_complaint}</div>
+        </div>
+        
+        ${appointment.medical_history ? `
+        <div class="section">
+          <h3>과거력 및 복용약물</h3>
+          <div class="info-item"><span class="label">과거력:</span> <span class="value">${appointment.medical_history}</span></div>
+          ${appointment.current_medications ? `<div class="info-item"><span class="label">복용약물:</span> <span class="value">${appointment.current_medications}</span></div>` : ''}
+        </div>
+        ` : ''}
+        
+        ${appointment.notes ? `
+        <div class="section">
+          <h3>진료 메모</h3>
+          <div class="complaint">${appointment.notes}</div>
+        </div>
+        ` : ''}
+      </body>
+    </html>
+  `;
+  
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// 예약 상세 모달 닫기
+function closeAppointmentDetailModal() {
+  document.getElementById('appointment-detail-modal').classList.add('hidden');
+}
+
+// ==================== 캘린더 관련 함수들 ====================
+
+// 뷰 전환 설정
+function setupViewSwitching() {
+  // 모바일 셀렉트 박스
+  const selectElement = document.getElementById('view-tab-select');
+  if (selectElement) {
+    selectElement.addEventListener('change', (e) => {
+      switchView(e.target.value);
+    });
+  }
+}
+
+// 뷰 전환 함수
+function switchView(view) {
+  const listView = document.getElementById('list-view');
+  const calendarView = document.getElementById('calendar-view');
+  const listTab = document.getElementById('list-view-tab');
+  const calendarTab = document.getElementById('calendar-view-tab');
+  
+  if (view === 'calendar') {
+    listView.classList.add('hidden');
+    calendarView.classList.remove('hidden');
+    
+    if (listTab && calendarTab) {
+      listTab.classList.remove('view-tab-active');
+      listTab.classList.add('view-tab-inactive');
+      calendarTab.classList.remove('view-tab-inactive');
+      calendarTab.classList.add('view-tab-active');
+    }
+    
+    loadCalendarAppointments();
+  } else {
+    listView.classList.remove('hidden');
+    calendarView.classList.add('hidden');
+    
+    if (listTab && calendarTab) {
+      listTab.classList.remove('view-tab-inactive');
+      listTab.classList.add('view-tab-active');
+      calendarTab.classList.remove('view-tab-active');
+      calendarTab.classList.add('view-tab-inactive');
+    }
+  }
+}
+
+// 캘린더 초기화
+function initializeCalendar() {
+  currentCalendarDate = new Date();
+  renderCalendar();
+}
+
+// 캘린더 렌더링
+function renderCalendar() {
+  const monthYear = document.getElementById('calendar-month-year');
+  const calendarGrid = document.getElementById('calendar-grid');
+  
+  if (!monthYear || !calendarGrid) return;
+  
+  // 월/년 표시 업데이트
+  const year = currentCalendarDate.getFullYear();
+  const month = currentCalendarDate.getMonth();
+  const monthNames = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
+  monthYear.textContent = `${year}년 ${monthNames[month]}`;
+  
+  // 달력 그리드 생성
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const firstDayOfWeek = firstDay.getDay();
+  const daysInMonth = lastDay.getDate();
+  
+  // 이전 달의 마지막 날들
+  const prevMonthLastDay = new Date(year, month, 0).getDate();
+  
+  // 캘린더 셀 생성
+  let html = '';
+  let dayCount = 1;
+  let nextMonthDay = 1;
+  
+  for (let week = 0; week < 6; week++) {
+    for (let day = 0; day < 7; day++) {
+      const cellIndex = week * 7 + day;
+      let cellDate, cellDay, isCurrentMonth = true, isToday = false;
+      
+      if (cellIndex < firstDayOfWeek) {
+        // 이전 달
+        cellDay = prevMonthLastDay - firstDayOfWeek + cellIndex + 1;
+        cellDate = new Date(year, month - 1, cellDay);
+        isCurrentMonth = false;
+      } else if (dayCount <= daysInMonth) {
+        // 현재 달
+        cellDay = dayCount;
+        cellDate = new Date(year, month, cellDay);
+        dayCount++;
+        
+        // 오늘 날짜인지 확인
+        const today = new Date();
+        isToday = cellDate.toDateString() === today.toDateString();
+      } else {
+        // 다음 달
+        cellDay = nextMonthDay;
+        cellDate = new Date(year, month + 1, cellDay);
+        nextMonthDay++;
+        isCurrentMonth = false;
+      }
+      
+      // 해당 날짜의 예약 개수 확인
+      const dayAppointments = getAppointmentsForDate(cellDate);
+      const hasAppointments = dayAppointments.length > 0;
+      
+      // CSS 클래스 설정
+      let cellClasses = ['calendar-cell'];
+      if (!isCurrentMonth) cellClasses.push('other-month');
+      if (isToday) cellClasses.push('today');
+      if (hasAppointments) cellClasses.push('has-appointments');
+      if (selectedCalendarDate && cellDate.toDateString() === selectedCalendarDate.toDateString()) {
+        cellClasses.push('selected');
+      }
+      
+      // 예약 이벤트 HTML 생성
+      let eventsHtml = '';
+      if (isCurrentMonth) {
+        eventsHtml = dayAppointments.slice(0, 3).map(appointment => 
+          `<div class="appointment-event ${appointment.status}" 
+               onclick="viewAppointmentDetail(${appointment.id})" 
+               title="${appointment.patient_name} - ${appointment.formatted_appointment_time}">
+             ${appointment.formatted_appointment_time} ${appointment.patient_name}
+           </div>`
+        ).join('');
+        
+        if (dayAppointments.length > 3) {
+          eventsHtml += `<div class="text-xs text-gray-500 mt-1">+${dayAppointments.length - 3}개 더</div>`;
+        }
+      }
+      
+      html += `
+        <div class="${cellClasses.join(' ')}" 
+             data-date="${cellDate.toISOString().split('T')[0]}"
+             onclick="selectCalendarDate('${cellDate.toISOString().split('T')[0]}')">
+          <div class="font-medium text-sm mb-1">${cellDay}</div>
+          ${eventsHtml}
+        </div>
+      `;
+    }
+    
+    // 마지막 주가 모두 다음 달이면 더 이상 추가하지 않음
+    if (dayCount > daysInMonth && nextMonthDay > 7) break;
+  }
+  
+  calendarGrid.innerHTML = html;
+}
+
+// 특정 날짜의 예약 목록 가져오기
+function getAppointmentsForDate(date) {
+  const dateStr = date.toISOString().split('T')[0];
+  return calendarAppointments.filter(appointment => {
+    const appointmentDate = new Date(appointment.appointment_date).toISOString().split('T')[0];
+    return appointmentDate === dateStr;
+  });
+}
+
+// 캘린더용 예약 데이터 로드
+async function loadCalendarAppointments() {
+  try {
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    const startDate = new Date(year, month, 1).toISOString().split('T')[0];
+    const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+    
+    const params = new URLSearchParams({
+      start_date: startDate,
+      end_date: endDate
+    });
+    
+    // 부서 필터 적용
+    const departmentFilter = document.getElementById('calendar-department-filter');
+    if (departmentFilter && departmentFilter.value) {
+      params.append('department', departmentFilter.value);
+    }
+    
+    // API 호출 대신 샘플 데이터 사용 (실제 환경에서는 주석 해제)
+    // const response = await api.get(`/appointments?${params.toString()}`);
+    
+    // 샘플 데이터 생성 (월별로 다른 데이터)
+    calendarAppointments = generateSampleAppointments(year, month);
+    
+    // 캘린더 렌더링
+    renderCalendar();
+    
+    /*
+    // 실제 API 사용 시
+    if (response.data.status === 'success') {
+      calendarAppointments = response.data.data.appointments;
+      renderCalendar();
+    }
+    */
+  } catch (error) {
+    console.error('캘린더 예약 로드 오류:', error);
+    toast.error('캘린더 데이터를 불러올 수 없습니다.');
+  }
+}
+
+// 샘플 예약 데이터 생성 (월별로 다른 데이터)
+function generateSampleAppointments(year, month) {
+  const appointments = [];
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  // 월별로 다른 시드 값을 사용해서 다른 데이터 생성
+  const monthSeed = year * 12 + month;
+  
+  for (let day = 1; day <= daysInMonth; day++) {
+    // 각 날짜마다 0-4개의 예약 생성
+    const appointmentCount = Math.floor(Math.random() * 5);
+    
+    for (let i = 0; i < appointmentCount; i++) {
+      const hour = 9 + Math.floor(Math.random() * 8); // 9-16시
+      const minute = Math.floor(Math.random() * 4) * 15; // 0, 15, 30, 45분
+      
+      const appointmentDate = new Date(year, month, day, hour, minute);
+      const patientNames = ['김환자', '이환자', '박환자', '최환자', '정환자', '강환자', '조환자', '윤환자'];
+      const appointmentTypes = ['건강검진', '진료 상담', '치료', '재진', '예방접종'];
+      const statuses = ['pending', 'confirmed', 'arrived', 'completed'];
+      
+      // 월 시드를 사용해서 일관된 랜덤 데이터 생성
+      const patientIndex = (monthSeed + day + i) % patientNames.length;
+      const typeIndex = (monthSeed + day + i * 2) % appointmentTypes.length;
+      const statusIndex = (monthSeed + day + i * 3) % statuses.length;
+      
+      appointments.push({
+        id: `${monthSeed}-${day}-${i}`,
+        patient_name: patientNames[patientIndex],
+        patient_age: 25 + ((monthSeed + day + i) % 50),
+        appointment_date: appointmentDate.toISOString(),
+        formatted_appointment_time: `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+        formatted_appointment_date: appointmentDate.toLocaleDateString('ko-KR') + ' ' + `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`,
+        appointment_type_text: appointmentTypes[typeIndex],
+        department: '의료진',
+        status: statuses[statusIndex],
+        status_text: getStatusText(statuses[statusIndex]),
+        status_color: getStatusColor(statuses[statusIndex]),
+        doctor_name: '김의사',
+        can_confirm: statuses[statusIndex] === 'pending',
+        can_cancel: ['pending', 'confirmed'].includes(statuses[statusIndex]),
+        can_arrive: statuses[statusIndex] === 'confirmed'
+      });
+    }
+  }
+  
+  return appointments.sort((a, b) => new Date(a.appointment_date) - new Date(b.appointment_date));
+}
+
+// 상태 텍스트 반환
+function getStatusText(status) {
+  const statusTexts = {
+    pending: '예약 대기',
+    confirmed: '예약 확정', 
+    arrived: '내원 완료',
+    completed: '진료 완료'
+  };
+  return statusTexts[status] || status;
+}
+
+// 상태 색상 반환  
+function getStatusColor(status) {
+  const statusColors = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    confirmed: 'bg-blue-100 text-blue-800',
+    arrived: 'bg-purple-100 text-purple-800', 
+    completed: 'bg-green-100 text-green-800'
+  };
+  return statusColors[status] || 'bg-gray-100 text-gray-800';
+}
+
+// 캘린더 네비게이션
+function navigateCalendar(direction) {
+  if (direction === 'prev') {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+  } else if (direction === 'next') {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+  }
+  
+  // 선택된 날짜 초기화
+  selectedCalendarDate = null;
+  document.getElementById('selected-date-appointments').classList.add('hidden');
+  
+  // 캘린더 다시 그리기 및 데이터 로드
+  renderCalendar();
+  loadCalendarAppointments();
+}
+
+// 오늘로 이동
+function goToToday() {
+  currentCalendarDate = new Date();
+  
+  // 선택된 날짜 초기화
+  selectedCalendarDate = null;
+  document.getElementById('selected-date-appointments').classList.add('hidden');
+  
+  // 캘린더 다시 그리기 및 데이터 로드
+  renderCalendar();
+  loadCalendarAppointments();
+}
+
+// 캘린더 날짜 선택
+function selectCalendarDate(dateString) {
+  selectedCalendarDate = new Date(dateString);
+  
+  // 선택된 날짜 스타일 업데이트
+  document.querySelectorAll('.calendar-cell').forEach(cell => {
+    cell.classList.remove('selected');
+  });
+  
+  document.querySelector(`[data-date="${dateString}"]`).classList.add('selected');
+  
+  // 선택된 날짜의 예약 목록 표시
+  displaySelectedDateAppointments(dateString);
+}
+
+// 선택된 날짜의 예약 목록 표시
+function displaySelectedDateAppointments(dateString) {
+  const selectedDate = new Date(dateString);
+  const appointments = getAppointmentsForDate(selectedDate);
+  
+  const selectedDateText = document.getElementById('selected-date-text');
+  const selectedDateContainer = document.getElementById('selected-date-appointments');
+  const appointmentsList = document.getElementById('selected-date-appointments-list');
+  
+  if (!selectedDateText || !selectedDateContainer || !appointmentsList) return;
+  
+  // 날짜 텍스트 설정
+  const dateFormatted = selectedDate.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  });
+  selectedDateText.textContent = dateFormatted;
+  
+  // 예약 목록 표시
+  if (appointments.length === 0) {
+    appointmentsList.innerHTML = '<div class="p-4 text-center text-gray-500">해당 날짜에 예약이 없습니다.</div>';
+  } else {
+    const html = appointments.map(appointment => `
+      <div class="p-4 hover:bg-white cursor-pointer" onclick="viewAppointmentDetail(${appointment.id})">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <div class="flex items-center">
+              <span class="text-sm font-medium text-gray-900">${appointment.formatted_appointment_time}</span>
+              <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${appointment.status_color}">
+                ${appointment.status_text}
+              </span>
+            </div>
+            <div class="mt-1">
+              <span class="text-sm font-medium text-gray-900">${appointment.patient_name}</span>
+              <span class="text-sm text-gray-500">(${appointment.patient_age}세)</span>
+            </div>
+            <div class="mt-1 text-sm text-gray-600">
+              ${appointment.appointment_type_text} · ${appointment.department}
+            </div>
+            <div class="mt-1 text-sm text-gray-500">
+              담당의: ${appointment.doctor_name || '미배정'}
+            </div>
+          </div>
+          <div class="ml-4 flex space-x-2">
+            ${appointment.can_confirm ? `<button onclick="event.stopPropagation(); confirmAppointment(${appointment.id})" class="px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700">확정</button>` : ''}
+            ${appointment.can_cancel ? `<button onclick="event.stopPropagation(); cancelAppointment(${appointment.id})" class="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700">취소</button>` : ''}
+            ${appointment.can_arrive ? `<button onclick="event.stopPropagation(); arriveAppointment(${appointment.id})" class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">내원</button>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+    
+    appointmentsList.innerHTML = html;
+  }
+  
+  // 선택된 날짜 섹션 표시
+  selectedDateContainer.classList.remove('hidden');
+}
+
+// 캘린더 부서 필터 변경 시
+document.getElementById('calendar-department-filter').addEventListener('change', () => {
+  if (document.getElementById('calendar-view').classList.contains('hidden')) return;
+  loadCalendarAppointments();
+});
+
+// ==================== 온라인 예약 관련 함수들 ====================
+
+// 온라인 예약 목록 새로고침
+function refreshOnlineAppointments() {
+  loadAppointmentDashboard();
+  toast.info('온라인 예약 목록이 새로고침되었습니다.');
+}
+
+// 온라인 예약 승인 액션 표시
+function showOnlineAppointmentActions(appointmentId) {
+  // 샘플 데이터 (실제로는 API에서 가져와야 함)
+  const sampleData = {
+    1: {
+      patient: { name: '김환자', age: 45, phone: '010-1234-5678', gender: '남성' },
+      appointment: { date: '2025년 01월 15일 14:30', type: '건강검진', department: '의료진', complaint: '정기 건강검진을 받고 싶습니다. 당뇨 가족력이 있어서 혈당 검사 포함해서 종합적으로 검사 받고 싶습니다.' }
+    },
+    2: {
+      patient: { name: '이환자', age: 32, phone: '010-9876-5432', gender: '여성' },
+      appointment: { date: '2025년 01월 16일 10:00', type: '진료 상담', department: '의료진', complaint: '최근 복통이 지속되고 있습니다. 소화불량인 것 같은데 정확한 진단을 받고 싶습니다.' }
+    },
+    3: {
+      patient: { name: '박환자', age: 28, phone: '010-1111-2222', gender: '남성' },
+      appointment: { date: '2025년 01월 17일 16:00', type: '예방접종', department: '간호부', complaint: '해외여행 예정이라 A형 간염 예방접종을 받고 싶습니다. 다른 필수 예방접종도 함께 상담 받을 수 있나요?' }
+    }
+  };
+  
+  const data = sampleData[appointmentId];
+  if (!data) return;
+  
+  // 환자 정보 표시
+  document.getElementById('online-patient-info').innerHTML = `
+    <div class="space-y-1">
+      <div><span class="font-medium">이름:</span> ${data.patient.name}</div>
+      <div><span class="font-medium">나이:</span> ${data.patient.age}세</div>
+      <div><span class="font-medium">성별:</span> ${data.patient.gender}</div>
+      <div><span class="font-medium">연락처:</span> ${data.patient.phone}</div>
+    </div>
+  `;
+  
+  // 예약 정보 표시
+  document.getElementById('online-appointment-info').innerHTML = `
+    <div class="space-y-2">
+      <div><span class="font-medium">희망 일시:</span> ${data.appointment.date}</div>
+      <div><span class="font-medium">예약 유형:</span> ${data.appointment.type}</div>
+      <div><span class="font-medium">희망 부서:</span> ${data.appointment.department}</div>
+      <div class="pt-2">
+        <span class="font-medium">주증상:</span>
+        <p class="mt-1 text-gray-700">${data.appointment.complaint}</p>
+      </div>
+    </div>
+  `;
+  
+  // 승인 모달 열기
+  document.getElementById('online-appointment-approval-modal').classList.remove('hidden');
+  
+  // 현재 처리중인 예약 ID 저장
+  window.currentOnlineAppointmentId = appointmentId;
+}
+
+// 온라인 예약 상세 보기
+function viewOnlineAppointmentDetail(appointmentId) {
+  // 기존의 viewAppointmentDetail 함수 활용
+  // 실제 구현에서는 온라인 예약 전용 상세 모달을 만들 수 있음
+  toast.info(`온라인 예약 ID ${appointmentId} 상세 정보`);
+}
+
+// 온라인 예약 거부
+function rejectOnlineAppointment(appointmentId) {
+  // 샘플 데이터
+  const sampleData = {
+    1: { patient: '김환자 (45세)', date: '2025년 01월 15일 14:30', type: '건강검진' },
+    2: { patient: '이환자 (32세)', date: '2025년 01월 16일 10:00', type: '진료 상담' },
+    3: { patient: '박환자 (28세)', date: '2025년 01월 17일 16:00', type: '예방접종' }
+  };
+  
+  const data = sampleData[appointmentId];
+  if (!data) return;
+  
+  // 거부 모달 정보 표시
+  document.getElementById('rejection-appointment-info').innerHTML = `
+    <div class="space-y-1">
+      <div><span class="font-medium">환자:</span> ${data.patient}</div>
+      <div><span class="font-medium">희망 일시:</span> ${data.date}</div>
+      <div><span class="font-medium">예약 유형:</span> ${data.type}</div>
+    </div>
+  `;
+  
+  // 거부 모달 열기
+  document.getElementById('online-appointment-rejection-modal').classList.remove('hidden');
+  
+  // 현재 처리중인 예약 ID 저장
+  window.currentRejectingAppointmentId = appointmentId;
+}
+
+// 온라인 예약 승인 모달 닫기
+function closeOnlineApprovalModal() {
+  document.getElementById('online-appointment-approval-modal').classList.add('hidden');
+  document.getElementById('online-approval-form').reset();
+  window.currentOnlineAppointmentId = null;
+}
+
+// 온라인 예약 거부 모달 닫기
+function closeOnlineRejectionModal() {
+  document.getElementById('online-appointment-rejection-modal').classList.add('hidden');
+  document.getElementById('online-rejection-form').reset();
+  window.currentRejectingAppointmentId = null;
+}
+
+// 온라인 예약 승인 처리
+document.getElementById('online-approval-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const appointmentId = window.currentOnlineAppointmentId;
+  const doctorId = document.getElementById('assigned-doctor').value;
+  const notes = document.getElementById('appointment-notes').value;
+  
+  try {
+    // 실제 API 호출 (현재는 시뮬레이션)
+    await new Promise(resolve => setTimeout(resolve, 1000)); // API 호출 시뮬레이션
+    
+    toast.success(`온라인 예약 ID ${appointmentId}이 승인되었습니다.`);
+    closeOnlineApprovalModal();
+    
+    // UI에서 해당 항목 제거 또는 상태 업데이트
+    const listItem = document.querySelector(`button[onclick*="${appointmentId}"]`)?.closest('li');
+    if (listItem) {
+      listItem.style.opacity = '0.5';
+      listItem.querySelector('.bg-yellow-100').className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800';
+      listItem.querySelector('.bg-yellow-100').textContent = '승인 완료';
+      
+      // 버튼들 비활성화
+      const buttons = listItem.querySelectorAll('button');
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+      });
+    }
+    
+    // 통계 업데이트
+    loadAppointmentDashboard();
+    
+  } catch (error) {
+    console.error('온라인 예약 승인 오류:', error);
+    toast.error('온라인 예약 승인에 실패했습니다.');
+  }
+});
+
+// 온라인 예약 거부 처리
+document.getElementById('online-rejection-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const appointmentId = window.currentRejectingAppointmentId;
+  const reason = document.getElementById('rejection-reason').value;
+  const message = document.getElementById('rejection-message').value;
+  
+  if (!reason) {
+    toast.warning('거부 사유를 선택해주세요.');
+    return;
+  }
+  
+  try {
+    // 실제 API 호출 (현재는 시뮬레이션)
+    await new Promise(resolve => setTimeout(resolve, 1000)); // API 호출 시뮬레이션
+    
+    toast.success(`온라인 예약 ID ${appointmentId}이 거부 처리되었습니다.`);
+    closeOnlineRejectionModal();
+    
+    // UI에서 해당 항목 제거
+    const listItem = document.querySelector(`button[onclick*="rejectOnlineAppointment(${appointmentId})"]`)?.closest('li');
+    if (listItem) {
+      listItem.style.transition = 'all 0.3s ease-out';
+      listItem.style.opacity = '0';
+      listItem.style.transform = 'translateX(-100%)';
+      
+      setTimeout(() => {
+        listItem.remove();
+        
+        // 목록이 비어있으면 메시지 표시
+        const container = document.getElementById('pending-online-appointments');
+        if (container.children.length === 0) {
+          container.innerHTML = '<li class="px-6 py-4 text-center text-gray-500">대기중인 온라인 예약이 없습니다.</li>';
+        }
+      }, 300);
+    }
+    
+    // 통계 업데이트
+    loadAppointmentDashboard();
+    
+  } catch (error) {
+    console.error('온라인 예약 거부 오류:', error);
+    toast.error('온라인 예약 거부 처리에 실패했습니다.');
+  }
+});
+
+// 온라인 예약 상태 필터 변경 시
+document.getElementById('online-status-filter').addEventListener('change', function(e) {
+  const filterValue = e.target.value;
+  const listItems = document.querySelectorAll('#pending-online-appointments li');
+  
+  listItems.forEach(item => {
+    if (filterValue === '' || item.querySelector('.bg-yellow-100')) {
+      item.style.display = 'block';
+    } else if (filterValue === 'pending' && !item.querySelector('.bg-yellow-100')) {
+      item.style.display = 'none';
+    }
+  });
+});
+</script>

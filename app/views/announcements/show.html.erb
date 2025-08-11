@@ -1,4 +1,492 @@
-<div>
-  <h1 class="font-bold text-4xl">Announcements#show</h1>
-  <p>Find me in app/views/announcements/show.html.erb</p>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 로딩 상태 -->
+  <div id="loading-container" class="animate-pulse">
+    <div class="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
+    <div class="h-4 bg-gray-300 rounded w-1/2 mb-8"></div>
+    <div class="space-y-3">
+      <div class="h-4 bg-gray-300 rounded"></div>
+      <div class="h-4 bg-gray-300 rounded"></div>
+      <div class="h-4 bg-gray-300 rounded w-3/4"></div>
+    </div>
+  </div>
+
+  <!-- 공지사항 내용 -->
+  <div id="announcement-container" class="hidden">
+    <!-- 헤더 -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <button onclick="goBack()" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          목록으로
+        </button>
+        
+        <!-- 액션 버튼들 -->
+        <div id="action-buttons" class="flex space-x-2">
+          <!-- JavaScript로 동적 생성 -->
+        </div>
+      </div>
+      
+      <!-- 우선순위 배지 -->
+      <div class="mb-3">
+        <span id="priority-badge" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium">
+          <!-- JavaScript로 동적 설정 -->
+        </span>
+      </div>
+      
+      <!-- 제목 -->
+      <h1 id="announcement-title" class="text-3xl font-bold text-gray-900 mb-2">
+        <!-- JavaScript로 동적 설정 -->
+      </h1>
+      
+      <!-- 메타 정보 -->
+      <div class="flex flex-wrap items-center text-sm text-gray-500 space-x-4">
+        <div class="flex items-center">
+          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <span id="author-name"><!-- JavaScript로 동적 설정 --></span>
+        </div>
+        <div class="flex items-center">
+          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+          <span id="department"><!-- JavaScript로 동적 설정 --></span>
+        </div>
+        <div class="flex items-center">
+          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="time-ago"><!-- JavaScript로 동적 설정 --></span>
+        </div>
+        <div class="flex items-center">
+          <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          <span id="view-count"><!-- JavaScript로 동적 설정 --></span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 구분선 -->
+    <div class="border-t border-gray-200 mb-8"></div>
+    
+    <!-- 본문 내용 -->
+    <div class="prose prose-lg max-w-none">
+      <div id="announcement-content" class="text-gray-800 leading-relaxed whitespace-pre-wrap">
+        <!-- JavaScript로 동적 설정 -->
+      </div>
+    </div>
+    
+    <!-- 하단 액션 -->
+    <div class="mt-12 pt-6 border-t border-gray-200">
+      <div class="flex justify-between items-center">
+        <button onclick="goBack()" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          목록으로 돌아가기
+        </button>
+        
+        <div class="flex space-x-2">
+          <button onclick="printAnnouncement()" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            인쇄
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 에러 상태 -->
+  <div id="error-container" class="hidden text-center py-12">
+    <div class="max-w-md mx-auto">
+      <svg class="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">공지사항을 불러올 수 없습니다</h3>
+      <p class="text-gray-500 mb-4">요청하신 공지사항을 찾을 수 없거나 오류가 발생했습니다.</p>
+      <button onclick="goBack()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        목록으로 돌아가기
+      </button>
+    </div>
+  </div>
 </div>
+
+<!-- 수정/삭제 확인 모달 -->
+<div id="confirm-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+    <div class="mt-3 text-center">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+        <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900" id="confirm-title">확인</h3>
+      <div class="mt-2 px-7 py-3">
+        <p class="text-sm text-gray-500" id="confirm-message">
+          이 작업을 계속하시겠습니까?
+        </p>
+      </div>
+      <div class="flex justify-center space-x-3 mt-4">
+        <button onclick="closeConfirmModal()" class="px-4 py-2 bg-gray-300 text-gray-700 text-sm rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+          취소
+        </button>
+        <button id="confirm-action-btn" class="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+          확인
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentAnnouncement = null;
+
+// 페이지 로드 시 공지사항 로드
+document.addEventListener('DOMContentLoaded', () => {
+  const pathParts = window.location.pathname.split('/');
+  const announcementId = pathParts[pathParts.length - 1];
+  
+  if (announcementId && !isNaN(announcementId)) {
+    loadAnnouncement(announcementId);
+  } else {
+    showError();
+  }
+});
+
+// 공지사항 데이터 로드
+async function loadAnnouncement(id) {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
+
+  try {
+    showLoading();
+    
+    const response = await fetch(`http://localhost:7001/api/v1/announcements/${id}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+
+    if (data.status === 'success') {
+      currentAnnouncement = data.data;
+      displayAnnouncement(data.data);
+    } else {
+      showError();
+    }
+  } catch (error) {
+    console.error('공지사항 로드 오류:', error);
+    showError();
+  }
+}
+
+// 공지사항 표시
+function displayAnnouncement(announcement) {
+  // 로딩 숨기고 내용 표시
+  document.getElementById('loading-container').classList.add('hidden');
+  document.getElementById('announcement-container').classList.remove('hidden');
+
+  // 기본 정보 설정
+  document.getElementById('announcement-title').textContent = announcement.title;
+  document.getElementById('announcement-content').textContent = announcement.content;
+  document.getElementById('author-name').textContent = announcement.author;
+  document.getElementById('department').textContent = announcement.department;
+  document.getElementById('time-ago').textContent = announcement.time_ago_text;
+  document.getElementById('view-count').textContent = `조회 ${announcement.view_count}회`;
+
+  // 우선순위 배지 설정
+  const priorityBadge = document.getElementById('priority-badge');
+  priorityBadge.textContent = announcement.priority_text;
+  priorityBadge.className = `inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${announcement.priority_color}`;
+
+  // 액션 버튼 생성
+  createActionButtons(announcement);
+
+  // 페이지 제목 설정
+  document.title = `${announcement.title} - 공지사항`;
+}
+
+// 액션 버튼 생성
+function createActionButtons(announcement) {
+  const actionButtons = document.getElementById('action-buttons');
+  let buttonsHtml = '';
+
+  if (announcement.can_pin) {
+    const pinIcon = announcement.is_pinned ? 
+      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />' :
+      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7H4a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2V9a2 2 0 00-2-2H9z"/>';
+    
+    const pinButtonClass = announcement.is_pinned ? 
+      'border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100' : 
+      'border-gray-300 text-gray-700 bg-white hover:bg-gray-50';
+      
+    buttonsHtml += `
+      <button onclick="togglePin()" class="inline-flex items-center px-3 py-2 border ${pinButtonClass} shadow-sm text-sm leading-4 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          ${pinIcon}
+        </svg>
+        ${announcement.is_pinned ? '고정 해제' : '고정하기'}
+      </button>
+    `;
+  }
+
+  if (announcement.can_edit) {
+    buttonsHtml += `
+      <button onclick="editAnnouncement()" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        수정
+      </button>
+    `;
+  }
+
+  if (announcement.can_delete) {
+    buttonsHtml += `
+      <button onclick="confirmDelete()" class="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        </svg>
+        삭제
+      </button>
+    `;
+  }
+
+  actionButtons.innerHTML = buttonsHtml;
+}
+
+// 상태 표시 함수들
+function showLoading() {
+  document.getElementById('loading-container').classList.remove('hidden');
+  document.getElementById('announcement-container').classList.add('hidden');
+  document.getElementById('error-container').classList.add('hidden');
+}
+
+function showError() {
+  document.getElementById('loading-container').classList.add('hidden');
+  document.getElementById('announcement-container').classList.add('hidden');
+  document.getElementById('error-container').classList.remove('hidden');
+}
+
+// 뒤로가기
+function goBack() {
+  window.history.back();
+}
+
+// 인쇄 기능
+function printAnnouncement() {
+  if (!currentAnnouncement) return;
+  
+  const printContent = `
+    <html>
+    <head>
+      <title>${currentAnnouncement.title} - 공지사항</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        .header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px; }
+        .title { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
+        .meta { color: #666; font-size: 14px; margin-bottom: 20px; }
+        .content { white-space: pre-wrap; }
+        .priority { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .priority.urgent { background-color: #fee2e2; color: #dc2626; }
+        .priority.important { background-color: #fed7aa; color: #ea580c; }
+        .priority.normal { background-color: #dbeafe; color: #2563eb; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div class="title">${currentAnnouncement.title}</div>
+        <span class="priority ${currentAnnouncement.priority}">${currentAnnouncement.priority_text}</span>
+        <div class="meta">
+          작성자: ${currentAnnouncement.author} | 
+          부서: ${currentAnnouncement.department} | 
+          작성일: ${new Date(currentAnnouncement.created_at).toLocaleDateString('ko-KR')} |
+          조회수: ${currentAnnouncement.view_count}회
+        </div>
+      </div>
+      <div class="content">${currentAnnouncement.content}</div>
+    </body>
+    </html>
+  `;
+  
+  const printWindow = window.open('', '_blank');
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// 수정 기능
+function editAnnouncement() {
+  // 실제로는 수정 페이지로 이동하거나 수정 모달을 열어야 함
+  alert('수정 기능은 추후 구현됩니다.');
+}
+
+// 고정 토글 기능
+async function togglePin() {
+  if (!currentAnnouncement) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const response = await fetch(`http://localhost:7001/api/v1/announcements/${currentAnnouncement.id}/toggle_pin`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      // 현재 공지사항 데이터 업데이트
+      currentAnnouncement.is_pinned = data.data.is_pinned;
+      currentAnnouncement.pinned_at = data.data.pinned_at;
+      
+      // 액션 버튼 다시 생성
+      createActionButtons(currentAnnouncement);
+      
+      // 성공 메시지 표시
+      alert(data.message);
+    } else {
+      alert('고정 상태 변경에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('고정 토글 오류:', error);
+    alert('고정 상태 변경 중 오류가 발생했습니다.');
+  }
+}
+
+// 읽음 상태 조회 (관리자용)
+async function showReadStatus() {
+  if (!currentAnnouncement) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const response = await fetch(`http://localhost:7001/api/v1/announcements/${currentAnnouncement.id}/read_status`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      const readData = data.data;
+      let readListHtml = readData.readers.map(reader => 
+        `<li class="py-2 flex justify-between">
+          <span>${reader.user_name} (${reader.user_department})</span>
+          <span class="text-sm text-gray-500">${reader.read_at}</span>
+        </li>`
+      ).join('');
+      
+      if (readData.readers.length === 0) {
+        readListHtml = '<li class="py-2 text-gray-500 text-center">아직 읽은 사용자가 없습니다.</li>';
+      }
+      
+      const modalContent = `
+        <div class="bg-white p-6 rounded-lg max-w-md mx-auto">
+          <h3 class="text-lg font-medium mb-4">읽음 상태 현황</h3>
+          <div class="mb-4">
+            <div class="flex justify-between items-center mb-2">
+              <span>전체 사용자: ${readData.total_users}명</span>
+              <span class="text-green-600">${readData.read_percentage}% 읽음</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="bg-green-600 h-2 rounded-full" style="width: ${readData.read_percentage}%"></div>
+            </div>
+            <div class="flex justify-between text-sm text-gray-600 mt-1">
+              <span>읽음: ${readData.read_count}명</span>
+              <span>미읽음: ${readData.unread_count}명</span>
+            </div>
+          </div>
+          <div class="max-h-64 overflow-y-auto">
+            <h4 class="font-medium mb-2">읽은 사용자 목록</h4>
+            <ul class="divide-y divide-gray-200">
+              ${readListHtml}
+            </ul>
+          </div>
+          <button onclick="closeReadStatusModal()" class="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+            닫기
+          </button>
+        </div>
+      `;
+      
+      // 모달 표시 (간단한 구현)
+      const modalBg = document.createElement('div');
+      modalBg.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+      modalBg.id = 'read-status-modal';
+      modalBg.innerHTML = modalContent;
+      document.body.appendChild(modalBg);
+    } else {
+      alert('읽음 상태를 불러올 수 없습니다: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('읽음 상태 조회 오류:', error);
+    alert('읽음 상태 조회 중 오류가 발생했습니다.');
+  }
+}
+
+function closeReadStatusModal() {
+  const modal = document.getElementById('read-status-modal');
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// 삭제 확인
+function confirmDelete() {
+  document.getElementById('confirm-title').textContent = '공지사항 삭제';
+  document.getElementById('confirm-message').textContent = '이 공지사항을 삭제하시겠습니까? 삭제된 공지사항은 복구할 수 없습니다.';
+  document.getElementById('confirm-action-btn').onclick = deleteAnnouncement;
+  document.getElementById('confirm-modal').classList.remove('hidden');
+}
+
+// 삭제 실행
+async function deleteAnnouncement() {
+  if (!currentAnnouncement) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const response = await fetch(`http://localhost:7001/api/v1/announcements/${currentAnnouncement.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      closeConfirmModal();
+      alert('공지사항이 성공적으로 삭제되었습니다.');
+      window.location.href = '/announcements';
+    } else {
+      alert('삭제 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('삭제 오류:', error);
+    alert('삭제 중 오류가 발생했습니다.');
+  }
+}
+
+// 모달 닫기
+function closeConfirmModal() {
+  document.getElementById('confirm-modal').classList.add('hidden');
+}
+</script>

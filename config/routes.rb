@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'patients', to: 'patients#index'
   get "hr/index"
   get "documents/index"
   get "documents/show"
@@ -24,4 +25,5 @@ Rails.application.routes.draw do
   resources :department_boards, only: [:index, :show], path: 'boards'
   resources :documents, only: [:index, :show]
   get 'hr', to: 'hr#index'
+  get 'appointments', to: 'appointments#index'
 end

@@ -1,0 +1,13 @@
+# Railway Frontend Service Nixpacks Configuration
+
+[providers]
+ruby = "3.4.5"
+
+[variables]
+PORT = "7002"
+
+[build]
+cmd = "bundle install && bundle exec rails assets:precompile"
+
+[start]
+cmd = "bundle exec rails server -b 0.0.0.0 -p $PORT"

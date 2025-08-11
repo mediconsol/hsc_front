@@ -6,7 +6,7 @@ class AuthManager {
     this.TOKEN_KEY = 'auth_token';
     this.USER_INFO_KEY = 'user_info';
     this.REFRESH_TOKEN_KEY = 'refresh_token';
-    this.API_BASE_URL = 'http://localhost:7001/api/v1';
+    this.API_BASE_URL = window.BACKEND_API_URL || 'http://localhost:7001/api/v1';
   }
 
   // 토큰 저장

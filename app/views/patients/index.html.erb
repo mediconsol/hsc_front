@@ -1,0 +1,1465 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 페이지 헤더 -->
+  <div class="md:flex md:items-center md:justify-between">
+    <div class="flex-1 min-w-0">
+      <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+        👥 환자 관리
+      </h2>
+      <p class="mt-1 text-sm text-gray-500">
+        건강검진 환자 정보 관리, 검진 이력 및 결과 조회
+      </p>
+    </div>
+    <div class="mt-4 md:mt-0">
+      <button onclick="showCreatePatientModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+        신규 환자 등록
+      </button>
+    </div>
+  </div>
+
+  <!-- 환자 관리 통계 -->
+  <div class="mt-8">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5 mb-6">
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">👥</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">전체 환자</dt>
+                <dd class="text-lg font-medium text-gray-900" id="total-patients-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">✅</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">활성 환자</dt>
+                <dd class="text-lg font-medium text-gray-900" id="active-patients-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">🆕</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">신규 환자 (이번달)</dt>
+                <dd class="text-lg font-medium text-gray-900" id="new-patients-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">⚠️</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">검진 필요</dt>
+                <dd class="text-lg font-medium text-gray-900" id="needs-checkup-count">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm">📊</span>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">평균 연령</dt>
+                <dd class="text-lg font-medium text-gray-900" id="average-age">-</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 검색 및 필터 -->
+  <div class="bg-white shadow sm:rounded-md mb-6">
+    <div class="px-6 py-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- 통합 검색 -->
+        <div class="md:col-span-2">
+          <label for="patient-search" class="block text-sm font-medium text-gray-700">환자 검색</label>
+          <div class="mt-1 relative">
+            <input type="text" id="patient-search" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="환자명, 차트번호, 전화번호 입력">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 성별 필터 -->
+        <div>
+          <label for="gender-filter" class="block text-sm font-medium text-gray-700">성별</label>
+          <select id="gender-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체</option>
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+          </select>
+        </div>
+        
+        <!-- 나이대 필터 -->
+        <div>
+          <label for="age-filter" class="block text-sm font-medium text-gray-700">나이대</label>
+          <select id="age-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체</option>
+            <option value="20-29">20대</option>
+            <option value="30-39">30대</option>
+            <option value="40-49">40대</option>
+            <option value="50-59">50대</option>
+            <option value="60-69">60대</option>
+            <option value="70-999">70세 이상</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+        <!-- 보험유형 필터 -->
+        <div>
+          <label for="insurance-filter" class="block text-sm font-medium text-gray-700">보험유형</label>
+          <select id="insurance-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체</option>
+            <option value="national">건강보험</option>
+            <option value="employee">직장보험</option>
+            <option value="medical_aid">의료급여</option>
+            <option value="private">실손보험</option>
+            <option value="none">무보험</option>
+          </select>
+        </div>
+        
+        <!-- 상태 필터 -->
+        <div>
+          <label for="status-filter" class="block text-sm font-medium text-gray-700">상태</label>
+          <select id="status-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체</option>
+            <option value="active">활성</option>
+            <option value="inactive">비활성</option>
+            <option value="blocked">차단</option>
+          </select>
+        </div>
+        
+        <!-- 검진필요 필터 -->
+        <div>
+          <label for="checkup-filter" class="block text-sm font-medium text-gray-700">검진상태</label>
+          <select id="checkup-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="">전체</option>
+            <option value="needs">검진필요</option>
+            <option value="recent">최근검진완료</option>
+          </select>
+        </div>
+        
+        <!-- 정렬 -->
+        <div>
+          <label for="sort-filter" class="block text-sm font-medium text-gray-700">정렬</label>
+          <select id="sort-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+            <option value="recent">최근 등록순</option>
+            <option value="name">이름순</option>
+            <option value="checkup">최근 검진순</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="mt-4 flex justify-between">
+        <button onclick="resetFilters()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+          필터 초기화
+        </button>
+        <button onclick="searchPatients()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
+          검색
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 환자 목록 -->
+  <div class="bg-white shadow sm:rounded-md">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900">환자 목록</h3>
+        <div class="text-sm text-gray-500">
+          총 <span id="total-count">0</span>명
+        </div>
+      </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">이름</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">차트번호</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">연령</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">성별</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">연락처</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">보험정보</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">최근 검진</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
+          </tr>
+        </thead>
+        <tbody id="patients-table-body" class="bg-white divide-y divide-gray-200">
+          <!-- 환자 목록이 여기에 표시됩니다 -->
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- 페이지네이션 -->
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+      <div class="flex-1 flex justify-between sm:hidden">
+        <button id="prev-btn-mobile" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" onclick="prevPage()">
+          이전
+        </button>
+        <button id="next-btn-mobile" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" onclick="nextPage()">
+          다음
+        </button>
+      </div>
+      <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            <span id="pagination-info">1-20 of 100 results</span>
+          </p>
+        </div>
+        <div>
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" id="pagination-controls">
+            <!-- 페이지네이션 버튼들이 여기에 동적으로 생성됩니다 -->
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 신규 환자 등록 모달 -->
+<div id="patient-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900" id="patient-modal-title">신규 환자 등록</h3>
+          <button onclick="closePatientModal()" class="text-gray-400 hover:text-gray-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <form id="patient-form">
+          <div class="space-y-4">
+            <!-- 기본 정보 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="patient-name" class="block text-sm font-medium text-gray-700">환자명 *</label>
+                <input type="text" id="patient-name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+              <div>
+                <label for="patient-birth-date" class="block text-sm font-medium text-gray-700">생년월일 *</label>
+                <input type="date" id="patient-birth-date" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="patient-gender" class="block text-sm font-medium text-gray-700">성별 *</label>
+                <select id="patient-gender" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                  <option value="">선택해주세요</option>
+                  <option value="male">남성</option>
+                  <option value="female">여성</option>
+                </select>
+              </div>
+              <div>
+                <label for="patient-phone" class="block text-sm font-medium text-gray-700">전화번호 *</label>
+                <input type="tel" id="patient-phone" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="010-1234-5678">
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label for="patient-email" class="block text-sm font-medium text-gray-700">이메일</label>
+                <input type="email" id="patient-email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+              <div>
+                <label for="patient-occupation" class="block text-sm font-medium text-gray-700">직업</label>
+                <input type="text" id="patient-occupation" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              </div>
+            </div>
+            
+            <!-- 보험 정보 -->
+            <div class="border-t pt-4">
+              <h4 class="text-md font-medium text-gray-900 mb-3">보험 정보</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="patient-insurance-type" class="block text-sm font-medium text-gray-700">보험 유형</label>
+                  <select id="patient-insurance-type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <option value="national">건강보험</option>
+                    <option value="employee">직장보험</option>
+                    <option value="medical_aid">의료급여</option>
+                    <option value="private">실손보험</option>
+                    <option value="none">무보험</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="patient-insurance-number" class="block text-sm font-medium text-gray-700">보험 번호</label>
+                  <input type="text" id="patient-insurance-number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+              </div>
+            </div>
+            
+            <!-- 응급 연락처 -->
+            <div class="border-t pt-4">
+              <h4 class="text-md font-medium text-gray-900 mb-3">응급 연락처</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label for="emergency-contact-name" class="block text-sm font-medium text-gray-700">이름</label>
+                  <input type="text" id="emergency-contact-name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                  <label for="emergency-contact-phone" class="block text-sm font-medium text-gray-700">전화번호</label>
+                  <input type="tel" id="emergency-contact-phone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <label for="patient-address" class="block text-sm font-medium text-gray-700">주소</label>
+              <textarea id="patient-address" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+            </div>
+            
+            <div>
+              <label for="patient-notes" class="block text-sm font-medium text-gray-700">특이사항</label>
+              <textarea id="patient-notes" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-end pt-6 space-x-3">
+            <button type="button" onclick="closePatientModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+              취소
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+              등록
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 환자 상세 모달 -->
+<div id="patient-detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full max-h-screen overflow-y-auto">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-medium text-gray-900">환자 상세 정보</h3>
+          <button onclick="closePatientDetailModal()" class="text-gray-400 hover:text-gray-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- 탭 네비게이션 -->
+        <div class="border-b border-gray-200 mb-6">
+          <nav class="-mb-px flex space-x-8">
+            <a href="#" onclick="showPatientTab('basic')" class="patient-tab-link active border-blue-500 text-blue-600 py-2 px-1 border-b-2 font-medium text-sm" data-tab="basic">
+              기본 정보
+            </a>
+            <a href="#" onclick="showPatientTab('checkups')" class="patient-tab-link border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm" data-tab="checkups">
+              검진 이력
+            </a>
+            <a href="#" onclick="showPatientTab('results')" class="patient-tab-link border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm" data-tab="results">
+              검진 결과
+            </a>
+            <a href="#" onclick="showPatientTab('medical')" class="patient-tab-link border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm" data-tab="medical">
+              의료 정보
+            </a>
+            <a href="#" onclick="showPatientTab('appointments')" class="patient-tab-link border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm" data-tab="appointments">
+              예약 관리
+            </a>
+            <a href="#" onclick="showPatientTab('documents')" class="patient-tab-link border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 border-b-2 font-medium text-sm" data-tab="documents">
+              문서/청구
+            </a>
+          </nav>
+        </div>
+        
+        <!-- 탭 컨텐츠 -->
+        <div id="patient-detail-content">
+          <!-- 탭별 내용이 여기에 표시됩니다 -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 현재 페이지 상태
+let currentPage = 1;
+let currentFilters = {};
+let totalPages = 1;
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await loadPatientStatistics();
+    await searchPatients();
+  } catch (error) {
+    console.error('환자 관리 초기화 오류:', error);
+    toast.error('환자 관리 데이터를 불러올 수 없습니다.');
+  }
+});
+
+// 환자 통계 로드 (Mock 데이터)
+async function loadPatientStatistics() {
+  try {
+    // 실제 API가 없으므로 Mock 데이터 사용
+    document.getElementById('total-patients-count').textContent = '1,234';
+    document.getElementById('active-patients-count').textContent = '1,180';
+    document.getElementById('new-patients-count').textContent = '45';
+    document.getElementById('needs-checkup-count').textContent = '156';
+    document.getElementById('average-age').textContent = '45세';
+  } catch (error) {
+    console.error('환자 통계 로드 오류:', error);
+  }
+}
+
+// 환자 검색 (Mock 데이터)
+async function searchPatients() {
+  try {
+    loading.show('환자 목록을 불러오는 중...');
+    
+    // Mock 데이터 생성
+    const mockPatients = [
+      {
+        id: 1,
+        patient_number: 'P2411001',
+        name: '김철수',
+        age: 45,
+        gender_text: '남성',
+        phone: '010-1234-5678',
+        insurance_type_text: '건강보험',
+        last_checkup_date: '2024-03-15',
+        needs_checkup: false,
+        status_text: '활성',
+        status: 'active',
+        next_appointment: null
+      },
+      {
+        id: 2,
+        patient_number: 'P2411002',
+        name: '박영희',
+        age: 38,
+        gender_text: '여성',
+        phone: '010-9876-5432',
+        insurance_type_text: '직장보험',
+        last_checkup_date: '2023-12-10',
+        needs_checkup: true,
+        status_text: '활성',
+        status: 'active',
+        next_appointment: '2024-12-15'
+      },
+      {
+        id: 3,
+        patient_number: 'P2411003',
+        name: '이민수',
+        age: 52,
+        gender_text: '남성',
+        phone: '010-5555-1111',
+        insurance_type_text: '건강보험',
+        last_checkup_date: '2024-08-20',
+        needs_checkup: false,
+        status_text: '활성',
+        status: 'active',
+        next_appointment: null
+      }
+    ];
+    
+    // 검색 필터 적용 (간단한 예시)
+    const searchTerm = document.getElementById('patient-search').value.toLowerCase();
+    let filteredPatients = mockPatients;
+    
+    if (searchTerm) {
+      filteredPatients = mockPatients.filter(patient => 
+        patient.name.includes(searchTerm) || 
+        patient.patient_number.toLowerCase().includes(searchTerm) ||
+        patient.phone.includes(searchTerm)
+      );
+    }
+    
+    displayPatients(filteredPatients);
+    
+    // Mock 페이지네이션
+    const mockPagination = {
+      current_page: 1,
+      total_pages: 1,
+      total_count: filteredPatients.length,
+      per_page: 20
+    };
+    
+    updatePagination(mockPagination);
+    document.getElementById('total-count').textContent = filteredPatients.length;
+    
+  } catch (error) {
+    console.error('환자 검색 오류:', error);
+    toast.error('환자 목록을 불러올 수 없습니다.');
+  } finally {
+    loading.hide();
+  }
+}
+
+// 환자 목록 표시
+function displayPatients(patients) {
+  const tbody = document.getElementById('patients-table-body');
+  
+  if (!patients || patients.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">검색 조건에 맞는 환자가 없습니다.</td></tr>';
+    return;
+  }
+  
+  const html = patients.map(patient => `
+    <tr class="hover:bg-gray-50 cursor-pointer" onclick="viewPatientDetail(${patient.id})">
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+              <span class="text-gray-600 font-medium">${patient.name.charAt(0)}</span>
+            </div>
+          </div>
+          <div class="ml-4">
+            <div class="text-sm font-medium text-gray-900">${patient.name}</div>
+            <div class="text-sm text-gray-500">차트번호: ${patient.patient_number || '-'}</div>
+          </div>
+        </div>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">${patient.age}세</div>
+        <div class="text-sm text-gray-500">${patient.gender_text}</div>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">📞 ${patient.phone}</div>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">${patient.insurance_type_text}</div>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <div class="text-sm text-gray-900">${patient.last_checkup_date || '-'}</div>
+        ${patient.needs_checkup ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 mt-1">검진필요</span>' : ''}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${patient.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+          ${patient.status_text}
+        </span>
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+        <div class="flex space-x-2">
+          <button onclick="event.stopPropagation(); viewPatientDetail(${patient.id})" class="text-indigo-600 hover:text-indigo-900">상세</button>
+          <button onclick="event.stopPropagation(); editPatient(${patient.id})" class="text-blue-600 hover:text-blue-900">수정</button>
+          ${patient.next_appointment ? '' : '<button onclick="event.stopPropagation(); createAppointmentForPatient(' + patient.id + ')" class="text-green-600 hover:text-green-900">예약</button>'}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  
+  tbody.innerHTML = html;
+}
+
+// 페이지네이션 업데이트
+function updatePagination(pagination) {
+  totalPages = pagination.total_pages;
+  currentPage = pagination.current_page;
+  
+  const info = document.getElementById('pagination-info');
+  const start = ((currentPage - 1) * pagination.per_page) + 1;
+  const end = Math.min(currentPage * pagination.per_page, pagination.total_count);
+  info.textContent = `${start}-${end} of ${pagination.total_count} results`;
+}
+
+// 필터 초기화
+function resetFilters() {
+  document.getElementById('patient-search').value = '';
+  document.getElementById('gender-filter').value = '';
+  document.getElementById('age-filter').value = '';
+  document.getElementById('insurance-filter').value = '';
+  document.getElementById('status-filter').value = '';
+  document.getElementById('checkup-filter').value = '';
+  document.getElementById('sort-filter').value = 'recent';
+  
+  currentPage = 1;
+  searchPatients();
+}
+
+// 실시간 검색
+document.getElementById('patient-search').addEventListener('input', function() {
+  clearTimeout(this.searchTimer);
+  this.searchTimer = setTimeout(() => {
+    currentPage = 1;
+    searchPatients();
+  }, 500);
+});
+
+// 신규 환자 등록 모달 표시
+function showCreatePatientModal() {
+  document.getElementById('patient-modal-title').textContent = '신규 환자 등록';
+  document.getElementById('patient-form').reset();
+  document.getElementById('patient-modal').classList.remove('hidden');
+}
+
+// 환자 등록 모달 닫기
+function closePatientModal() {
+  document.getElementById('patient-modal').classList.add('hidden');
+}
+
+// 환자 등록 폼 제출
+document.getElementById('patient-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  // Mock 등록 처리
+  toast.success('환자가 성공적으로 등록되었습니다.');
+  closePatientModal();
+  await loadPatientStatistics();
+  await searchPatients();
+});
+
+// 환자 상세 정보 보기
+async function viewPatientDetail(patientId) {
+  // Mock 환자 데이터
+  const mockPatient = {
+    id: patientId,
+    patient_number: 'P2411001',
+    name: '김철수',
+    age: 45,
+    gender_text: '남성',
+    birth_date: '1979-05-15',
+    phone: '010-1234-5678',
+    email: 'kim@example.com',
+    occupation: '회사원',
+    insurance_type_text: '건강보험',
+    insurance_number: '12345678901',
+    emergency_contact_name: '김영희',
+    emergency_contact_phone: '010-9876-5432',
+    address: '서울시 강남구 테헤란로 123',
+    status_text: '활성',
+    status_color: 'bg-green-100 text-green-800',
+    notes: '특이사항 없음',
+    height: 175,
+    weight: 70,
+    bmi: 22.9,
+    bmi_status: '정상',
+    blood_type: 'A+',
+    smoking_status_text: '비흡연',
+    drinking_status_text: '가끔',
+    exercise_status_text: '규칙적'
+  };
+  
+  showPatientDetailModal(mockPatient);
+}
+
+// 환자 상세 모달 표시
+function showPatientDetailModal(patient) {
+  document.getElementById('patient-detail-modal').classList.remove('hidden');
+  window.currentPatient = patient;
+  showPatientTab('basic');
+}
+
+// 환자 ID로 상세 모달 열기
+function openPatientDetailModal(patientId) {
+  const patient = currentPatientList.find(p => p.id === patientId);
+  if (patient) {
+    showPatientDetailModal(patient);
+  } else {
+    window.toast.error('환자 정보를 찾을 수 없습니다.');
+  }
+}
+
+// 환자 상세 모달 닫기
+function closePatientDetailModal() {
+  document.getElementById('patient-detail-modal').classList.add('hidden');
+  window.currentPatient = null;
+}
+
+// 환자 상세 탭 전환
+function showPatientTab(tabName) {
+  // 탭 링크 스타일 업데이트
+  document.querySelectorAll('.patient-tab-link').forEach(link => {
+    link.classList.remove('border-blue-500', 'text-blue-600');
+    link.classList.add('border-transparent', 'text-gray-500');
+  });
+  
+  const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+  activeTab.classList.remove('border-transparent', 'text-gray-500');
+  activeTab.classList.add('border-blue-500', 'text-blue-600');
+  
+  // 탭 내용 표시
+  const content = document.getElementById('patient-detail-content');
+  
+  switch (tabName) {
+    case 'basic':
+      content.innerHTML = renderBasicInfo(window.currentPatient);
+      break;
+    case 'checkups':
+      content.innerHTML = renderCheckupHistory(window.currentPatient);
+      break;
+    case 'results':
+      content.innerHTML = renderCheckupResults(window.currentPatient);
+      break;
+    case 'medical':
+      content.innerHTML = renderMedicalInfo(window.currentPatient);
+      break;
+    case 'appointments':
+      content.innerHTML = renderAppointments(window.currentPatient);
+      break;
+    case 'documents':
+      content.innerHTML = renderDocuments(window.currentPatient);
+      break;
+  }
+}
+
+// 기본 정보 렌더링
+function renderBasicInfo(patient) {
+  return `
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <h4 class="text-md font-semibold text-gray-900">개인 정보</h4>
+        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+          <div><span class="font-medium">이름:</span> ${patient.name}</div>
+          <div><span class="font-medium">차트번호:</span> ${patient.patient_number || '-'}</div>
+          <div><span class="font-medium">나이/성별:</span> ${patient.age}세 / ${patient.gender_text}</div>
+          <div><span class="font-medium">생년월일:</span> ${patient.birth_date}</div>
+          <div><span class="font-medium">전화번호:</span> ${patient.phone}</div>
+          <div><span class="font-medium">이메일:</span> ${patient.email || '-'}</div>
+          <div><span class="font-medium">직업:</span> ${patient.occupation || '-'}</div>
+        </div>
+      </div>
+      
+      <div class="space-y-4">
+        <h4 class="text-md font-semibold text-gray-900">보험 및 기타 정보</h4>
+        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+          <div><span class="font-medium">보험유형:</span> ${patient.insurance_type_text}</div>
+          <div><span class="font-medium">보험번호:</span> ${patient.insurance_number || '-'}</div>
+          <div><span class="font-medium">응급연락처:</span> ${patient.emergency_contact_name || '-'} (${patient.emergency_contact_phone || '-'})</div>
+          <div><span class="font-medium">주소:</span> ${patient.address || '-'}</div>
+          <div><span class="font-medium">상태:</span> <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${patient.status_color}">${patient.status_text}</span></div>
+        </div>
+      </div>
+    </div>
+    
+    ${patient.notes ? `
+    <div class="mt-6">
+      <h4 class="text-md font-semibold text-gray-900 mb-2">특이사항</h4>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <p class="text-sm text-gray-700">${patient.notes}</p>
+      </div>
+    </div>
+    ` : ''}
+  `;
+}
+
+// 검진 이력 렌더링
+function renderCheckupHistory(patient) {
+  return `
+    <div class="space-y-4">
+      <div class="flex justify-between items-center">
+        <h4 class="text-md font-semibold text-gray-900">검진 이력</h4>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">새 검진 등록</button>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="bg-white border rounded-lg p-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h5 class="font-medium text-gray-900">종합 건강검진</h5>
+              <p class="text-sm text-gray-600 mt-1">2024년 03월 15일</p>
+              <p class="text-sm text-gray-500">담당의: 김의사</p>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              완료
+            </span>
+          </div>
+          <div class="mt-3 flex space-x-3">
+            <button class="text-blue-600 hover:text-blue-900 text-sm">결과 보기</button>
+            <button class="text-green-600 hover:text-green-900 text-sm">PDF 다운로드</button>
+          </div>
+        </div>
+        
+        <div class="bg-white border rounded-lg p-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h5 class="font-medium text-gray-900">일반 건강검진</h5>
+              <p class="text-sm text-gray-600 mt-1">2023년 03월 20일</p>
+              <p class="text-sm text-gray-500">담당의: 박의사</p>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              완료
+            </span>
+          </div>
+          <div class="mt-3 flex space-x-3">
+            <button class="text-blue-600 hover:text-blue-900 text-sm">결과 보기</button>
+            <button class="text-green-600 hover:text-green-900 text-sm">PDF 다운로드</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 검진 결과 렌더링
+function renderCheckupResults(patient) {
+  return `
+    <div class="space-y-4">
+      <h4 class="text-md font-semibold text-gray-900">최근 검진 결과 (2024.03.15)</h4>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="space-y-4">
+          <h5 class="font-medium text-gray-900">혈액 검사</h5>
+          <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+            <div class="flex justify-between">
+              <span class="text-sm">총 콜레스테롤</span>
+              <span class="text-sm font-medium text-green-600">180 mg/dL (정상)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm">혈당</span>
+              <span class="text-sm font-medium text-green-600">95 mg/dL (정상)</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm">혈압</span>
+              <span class="text-sm font-medium text-yellow-600">130/85 mmHg (경계)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="space-y-4">
+          <h5 class="font-medium text-gray-900">신체 계측</h5>
+          <div class="bg-gray-50 p-4 rounded-lg space-y-2">
+            <div class="flex justify-between">
+              <span class="text-sm">신장</span>
+              <span class="text-sm font-medium">175 cm</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm">체중</span>
+              <span class="text-sm font-medium">70 kg</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm">BMI</span>
+              <span class="text-sm font-medium text-green-600">22.9 (정상)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-6">
+        <h5 class="font-medium text-gray-900 mb-2">종합 소견</h5>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="text-sm text-gray-700">전체적으로 양호한 상태입니다. 혈압이 약간 높은 편이므로 염분 섭취를 줄이고 규칙적인 운동을 권장합니다.</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 의료 정보 렌더링
+function renderMedicalInfo(patient) {
+  return `
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <h4 class="text-md font-semibold text-gray-900">건강 정보</h4>
+        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+          <div><span class="font-medium">신장:</span> ${patient.height ? patient.height + 'cm' : '-'}</div>
+          <div><span class="font-medium">체중:</span> ${patient.weight ? patient.weight + 'kg' : '-'}</div>
+          <div><span class="font-medium">BMI:</span> ${patient.bmi || '-'} ${patient.bmi_status ? `(${patient.bmi_status})` : ''}</div>
+          <div><span class="font-medium">혈액형:</span> ${patient.blood_type || '-'}</div>
+          <div><span class="font-medium">흡연:</span> ${patient.smoking_status_text || '-'}</div>
+          <div><span class="font-medium">음주:</span> ${patient.drinking_status_text || '-'}</div>
+          <div><span class="font-medium">운동:</span> ${patient.exercise_status_text || '-'}</div>
+        </div>
+      </div>
+      
+      <div class="space-y-4">
+        <h4 class="text-md font-semibold text-gray-900">과거 병력</h4>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-medium">고혈압</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">관찰중</span>
+            </div>
+            <p class="text-xs text-gray-600">2023년 진단, 약물 치료 중</p>
+          </div>
+        </div>
+        
+        <h4 class="text-md font-semibold text-gray-900">가족력</h4>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <div class="space-y-2">
+            <div class="text-sm"><span class="font-medium">부:</span> 당뇨병</div>
+            <div class="text-sm"><span class="font-medium">모:</span> 고혈압</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 예약 관리 렌더링
+function renderAppointments(patient) {
+  return `
+    <div class="space-y-4">
+      <div class="flex justify-between items-center">
+        <h4 class="text-md font-semibold text-gray-900">예약 관리</h4>
+        <button onclick="createAppointmentForPatient(${patient.id})" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">새 예약 등록</button>
+      </div>
+      
+      <div class="space-y-4">
+        <h5 class="font-medium text-gray-900">예약 이력</h5>
+        <div class="bg-white border rounded-lg p-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <h6 class="font-medium text-gray-900">정기 검진</h6>
+              <p class="text-sm text-gray-600 mt-1">2024년 12월 15일 오전 10:00</p>
+              <p class="text-sm text-gray-500">담당의: 김의사</p>
+            </div>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              예정
+            </span>
+          </div>
+          <div class="mt-3 flex space-x-3">
+            <button class="text-blue-600 hover:text-blue-900 text-sm">변경</button>
+            <button class="text-red-600 hover:text-red-900 text-sm">취소</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 문서/청구 렌더링
+function renderDocuments(patient) {
+  return `
+    <div class="space-y-4">
+      <h4 class="text-md font-semibold text-gray-900">문서 및 청구</h4>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h5 class="font-medium text-gray-900 mb-2">검진 결과서</h5>
+          <p class="text-sm text-gray-600 mb-3">PDF 형태의 검진 결과서를 다운로드할 수 있습니다.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm">2024년 종합검진</span>
+              <button class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">다운로드</button>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">2023년 일반검진</span>
+              <button class="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">다운로드</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h5 class="font-medium text-gray-900 mb-2">청구/수납 내역</h5>
+          <p class="text-sm text-gray-600 mb-3">검진 비용 및 수납 내역을 확인할 수 있습니다.</p>
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm">2024.03.15 종합검진</span>
+              <span class="text-sm font-medium text-green-600">수납완료</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm">2023.03.20 일반검진</span>
+              <span class="text-sm font-medium text-green-600">수납완료</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 환자 수정
+function editPatient(patientId) {
+  toast.info('환자 수정 기능을 구현 중입니다.');
+}
+
+// 환자를 위한 예약 생성
+function createAppointmentForPatient(patientId) {
+  // 예약/접수 페이지로 이동하면서 환자 ID 전달
+  window.location.href = `/appointments?patient_id=${patientId}`;
+}
+
+// 실제 검색 및 필터링 기능 강화
+let currentPatientList = [];
+let filteredPatientList = [];
+let currentSearchTerm = '';
+
+// 검색 기능 강화
+function handleSearch() {
+  const searchInput = document.getElementById('searchInput');
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  currentSearchTerm = searchTerm;
+  
+  if (searchTerm === '') {
+    filteredPatientList = [...currentPatientList];
+  } else {
+    filteredPatientList = currentPatientList.filter(patient => {
+      return patient.name.toLowerCase().includes(searchTerm) ||
+             patient.patient_number.toLowerCase().includes(searchTerm) ||
+             patient.phone.includes(searchTerm) ||
+             (patient.email && patient.email.toLowerCase().includes(searchTerm));
+    });
+  }
+  
+  applyAllFilters();
+  updatePatientDisplay();
+}
+
+// 필터 적용 기능
+function applyAllFilters() {
+  let filtered = [...filteredPatientList];
+  
+  // 성별 필터
+  const genderFilter = document.getElementById('genderFilter').value;
+  if (genderFilter) {
+    filtered = filtered.filter(p => p.gender === genderFilter);
+  }
+  
+  // 연령대 필터
+  const ageFilter = document.getElementById('ageFilter').value;
+  if (ageFilter) {
+    const [minAge, maxAge] = ageFilter.split('-').map(Number);
+    filtered = filtered.filter(p => {
+      const age = calculateAge(p.birth_date);
+      if (maxAge) {
+        return age >= minAge && age <= maxAge;
+      } else {
+        return age >= minAge;
+      }
+    });
+  }
+  
+  // 보험 타입 필터
+  const insuranceFilter = document.getElementById('insuranceFilter').value;
+  if (insuranceFilter) {
+    filtered = filtered.filter(p => p.insurance_type === insuranceFilter);
+  }
+  
+  // 검진 상태 필터
+  const checkupFilter = document.getElementById('checkupFilter').value;
+  if (checkupFilter === 'needs') {
+    filtered = filtered.filter(p => needsCheckup(p));
+  } else if (checkupFilter === 'recent') {
+    filtered = filtered.filter(p => !needsCheckup(p));
+  }
+  
+  filteredPatientList = filtered;
+}
+
+// 연령 계산 함수
+function calculateAge(birthDate) {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+// 검진 필요 여부 확인
+function needsCheckup(patient) {
+  if (!patient.last_checkup_date) return true;
+  
+  const lastCheckup = new Date(patient.last_checkup_date);
+  const today = new Date();
+  const monthsDiff = (today.getFullYear() - lastCheckup.getFullYear()) * 12 + 
+                    (today.getMonth() - lastCheckup.getMonth());
+  
+  const cycleMonths = (patient.checkup_cycle || 1) * 12;
+  return monthsDiff >= cycleMonths;
+}
+
+// 환자 목록 표시 업데이트
+function updatePatientDisplay() {
+  const tableBody = document.getElementById('patients-table-body');
+  const countElement = document.getElementById('total-count');
+  
+  if (!tableBody) return;
+  
+  if (filteredPatientList.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="9" class="px-6 py-12 text-center">
+          <div class="text-6xl mb-4">🔍</div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">환자를 찾을 수 없습니다</h3>
+          <p class="text-gray-500">검색 조건을 변경하거나 새 환자를 등록해보세요.</p>
+        </td>
+      </tr>
+    `;
+  } else {
+    tableBody.innerHTML = filteredPatientList.slice(0, 20).map(patient => renderPatientTableRow(patient)).join('');
+  }
+  
+  if (countElement) {
+    countElement.textContent = filteredPatientList.length;
+  }
+  
+  updateStatistics();
+}
+
+// 통계 업데이트
+function updateStatistics() {
+  const totalCount = currentPatientList.length;
+  const activeCount = currentPatientList.filter(p => {
+    const lastVisit = new Date(p.last_checkup_date);
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    return lastVisit >= sixMonthsAgo;
+  }).length;
+  
+  const thisMonth = new Date();
+  thisMonth.setDate(1);
+  const newCount = currentPatientList.filter(p => new Date(p.created_at) >= thisMonth).length;
+  
+  const needsCount = currentPatientList.filter(p => needsCheckup(p)).length;
+  
+  const totalPatientsElement = document.getElementById('total-patients-count');
+  const activePatientsElement = document.getElementById('active-patients-count');
+  const newPatientsElement = document.getElementById('new-patients-count');
+  const needsCheckupElement = document.getElementById('needs-checkup-count');
+  
+  if (totalPatientsElement) totalPatientsElement.textContent = totalCount;
+  if (activePatientsElement) activePatientsElement.textContent = activeCount;
+  if (newPatientsElement) newPatientsElement.textContent = newCount;
+  if (needsCheckupElement) needsCheckupElement.textContent = needsCount;
+  
+  const ages = currentPatientList.map(p => calculateAge(p.birth_date));
+  const avgAge = ages.length > 0 ? Math.round(ages.reduce((a, b) => a + b) / ages.length) : 0;
+  
+  const averageAgeElement = document.getElementById('average-age');
+  if (averageAgeElement) {
+    averageAgeElement.textContent = `${avgAge}세`;
+  }
+}
+
+// 환자 테이블 행 렌더링
+function renderPatientTableRow(patient) {
+  const age = calculateAge(patient.birth_date);
+  const genderText = patient.gender === 'male' ? '남성' : '여성';
+  const needsCheckupStatus = needsCheckup(patient);
+  
+  const statusBadge = needsCheckupStatus ? 
+    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">검진 필요</span>' :
+    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">정상</span>';
+  
+  return `
+    <tr class="hover:bg-gray-50 cursor-pointer select-none" 
+        ondblclick="openPatientDetailModal('${patient.id}')"
+        title="더블 클릭하여 환자 상세 정보 보기">
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+        ${patient.name}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        ${patient.patient_number}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        ${age}세
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        ${genderText}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        ${patient.phone}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        ${patient.insurance_type || '-'}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+        ${patient.last_checkup_date ? formatDate(patient.last_checkup_date) : '-'}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap">
+        ${statusBadge}
+      </td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" onclick="event.stopPropagation();">
+        <div class="flex space-x-2">
+          <button onclick="editPatient('${patient.id}')" 
+                  class="text-blue-600 hover:text-blue-800 font-medium">수정</button>
+          <button onclick="createAppointmentForPatient('${patient.id}')" 
+                  class="text-green-600 hover:text-green-800 font-medium">예약</button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+// 환자 카드 렌더링 (기존 함수 유지 - 필요시 사용)
+function renderPatientCard(patient) {
+  const age = calculateAge(patient.birth_date);
+  const genderIcon = patient.gender === 'male' ? '👨' : '👩';
+  const needsCheckupStatus = needsCheckup(patient);
+  
+  return `
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-200 cursor-pointer transform hover:-translate-y-1"
+         onclick="showPatientDetail('${patient.id}')">
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-center">
+          <div class="text-2xl mr-3">${genderIcon}</div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">${patient.name}</h3>
+            <p class="text-sm text-gray-500">${patient.patient_number} • ${age}세</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-end space-y-2">
+          ${needsCheckupStatus ? 
+            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">검진 필요</span>' :
+            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">정상</span>'
+          }
+        </div>
+      </div>
+      
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span class="text-gray-500">연락처:</span>
+          <span class="font-medium">${patient.phone}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">혈액형:</span>
+          <span class="font-medium">${patient.blood_type || '-'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">최근 검진:</span>
+          <span class="font-medium">${patient.last_checkup_date ? formatDate(patient.last_checkup_date) : '없음'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-500">보험:</span>
+          <span class="font-medium">${patient.insurance_type || '-'}</span>
+        </div>
+      </div>
+      
+      <div class="mt-4 pt-4 border-t border-gray-200 flex justify-between">
+        <button onclick="event.stopPropagation(); editPatient('${patient.id}')" 
+                class="text-blue-600 hover:text-blue-800 text-sm font-medium">수정</button>
+        <button onclick="event.stopPropagation(); createAppointmentForPatient('${patient.id}')" 
+                class="text-green-600 hover:text-green-800 text-sm font-medium">예약</button>
+      </div>
+    </div>
+  `;
+}
+
+// 날짜 포맷 함수
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
+}
+
+// 이벤트 리스너 초기화
+function initializeEventListeners() {
+  // 검색 입력
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(handleSearch, 300);
+    });
+  }
+  
+  // 필터 변경
+  const filters = ['genderFilter', 'ageFilter', 'insuranceFilter', 'checkupFilter'];
+  filters.forEach(filterId => {
+    const element = document.getElementById(filterId);
+    if (element) {
+      element.addEventListener('change', () => {
+        applyAllFilters();
+        updatePatientDisplay();
+      });
+    }
+  });
+  
+  // 필터 초기화 버튼
+  const resetButton = document.getElementById('resetFilters');
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      // 모든 필터 초기화
+      document.getElementById('searchInput').value = '';
+      document.getElementById('genderFilter').value = '';
+      document.getElementById('ageFilter').value = '';
+      document.getElementById('insuranceFilter').value = '';
+      document.getElementById('checkupFilter').value = '';
+      
+      currentSearchTerm = '';
+      filteredPatientList = [...currentPatientList];
+      updatePatientDisplay();
+    });
+  }
+}
+
+// 페이지 로드시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+  initializeEventListeners();
+  
+  // Mock 데이터로 초기 환자 목록 설정 (실제 구현에서는 API에서 가져옴)
+  currentPatientList = generateMockPatients();
+  filteredPatientList = [...currentPatientList];
+  updatePatientDisplay();
+});
+
+// Mock 데이터 생성 함수
+function generateMockPatients() {
+  // 실제 구현에서는 API에서 데이터를 가져옵니다
+  return [
+    {
+      id: '1',
+      patient_number: 'P24110001',
+      name: '김민수',
+      gender: 'male',
+      birth_date: '1985-03-15',
+      phone: '010-1234-5678',
+      email: 'kim@example.com',
+      address: '서울시 강남구 테헤란로 123',
+      blood_type: 'A+',
+      insurance_type: '국민건강보험',
+      occupation: '회사원',
+      height: 175,
+      weight: 70,
+      smoking_status: 'never',
+      drinking_frequency: 'social',
+      exercise_frequency: 'regular',
+      last_checkup_date: '2023-12-15',
+      checkup_cycle: 1,
+      created_at: '2024-01-15',
+      checkup_history: [
+        {
+          id: '1',
+          date: '2023-12-15',
+          type: '종합검진',
+          doctor: '김의사',
+          status: 'completed',
+          result: '정상'
+        }
+      ],
+      medical_history: [],
+      family_history: []
+    },
+    {
+      id: '2',
+      patient_number: 'P24110002',
+      name: '이영희',
+      gender: 'female',
+      birth_date: '1992-07-22',
+      phone: '010-2345-6789',
+      email: 'lee@example.com',
+      address: '서울시 서초구 강남대로 456',
+      blood_type: 'B+',
+      insurance_type: '직장가입자',
+      occupation: '간호사',
+      height: 162,
+      weight: 55,
+      smoking_status: 'never',
+      drinking_frequency: 'none',
+      exercise_frequency: 'light',
+      last_checkup_date: '2024-01-20',
+      checkup_cycle: 2,
+      created_at: '2024-02-01',
+      checkup_history: [
+        {
+          id: '2',
+          date: '2024-01-20',
+          type: '기본검진',
+          doctor: '박의사',
+          status: 'completed',
+          result: '정상'
+        }
+      ],
+      medical_history: [
+        {
+          condition: '알레르기성 비염',
+          diagnosis_date: '2020-05-15',
+          status: 'active',
+          notes: '봄철 꽃가루 알레르기'
+        }
+      ],
+      family_history: [
+        {
+          relation: '모',
+          condition: '고혈압',
+          notes: '60세 진단'
+        }
+      ]
+    },
+    {
+      id: '3',
+      patient_number: 'P24110003',
+      name: '박철수',
+      gender: 'male',
+      birth_date: '1978-11-08',
+      phone: '010-3456-7890',
+      email: 'park@example.com',
+      address: '서울시 마포구 월드컵로 789',
+      blood_type: 'O+',
+      insurance_type: '국민건강보험',
+      occupation: '교사',
+      height: 180,
+      weight: 80,
+      smoking_status: 'former',
+      drinking_frequency: 'social',
+      exercise_frequency: 'intensive',
+      last_checkup_date: '2023-08-10',
+      checkup_cycle: 1,
+      created_at: '2023-08-10',
+      checkup_history: [
+        {
+          id: '3',
+          date: '2023-08-10',
+          type: '종합검진',
+          doctor: '이의사',
+          status: 'completed',
+          result: '주의'
+        }
+      ],
+      medical_history: [],
+      family_history: []
+    }
+    // 추가 Mock 데이터는 실제 구현시 확장
+  ];
+}
+</script>

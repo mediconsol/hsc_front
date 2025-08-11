@@ -8,108 +8,228 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %>
+    
+    <style>
+      /* 사이드바 스타일 */
+      #sidebar {
+        width: 16rem; /* 256px */
+        transition: width 0.3s ease-in-out;
+      }
+      
+      #sidebar[data-collapsed="true"] {
+        width: 4rem; /* 64px */
+      }
+      
+      #sidebar[data-collapsed="true"] .sidebar-text {
+        display: none;
+      }
+      
+      #sidebar[data-collapsed="true"] .sidebar-icon {
+        margin-right: 0;
+        display: block;
+        text-align: center;
+        width: 100%;
+      }
+      
+      #sidebar[data-collapsed="true"] nav a {
+        justify-content: center;
+      }
+      
+      #sidebar[data-collapsed="true"] .border-t {
+        margin: 0.5rem 0;
+      }
+      
+      /* 토글 버튼 회전 */
+      #sidebar[data-collapsed="true"] #sidebar-toggle-btn svg {
+        transform: rotate(180deg);
+      }
+      
+      /* 사용자 정보 영역 스타일 */
+      #sidebar .flex-shrink-0:last-child {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      
+      #sidebar[data-collapsed="true"] .sidebar-text {
+        display: none;
+      }
+      
+      #sidebar[data-collapsed="true"] .sidebar-icon-only {
+        display: flex !important;
+      }
+      
+      #sidebar .sidebar-icon-only {
+        display: none;
+      }
+      
+      /* 사용자 영역 footer 스타일 */
+      #sidebar .flex-shrink-0:last-child {
+        background-color: #f9fafb; /* gray-50 */
+        border-top: 2px solid #d1d5db; /* gray-300 */
+      }
+      
+      #sidebar[data-collapsed="true"] .flex-shrink-0:last-child {
+        background-color: #f3f4f6; /* gray-100 축소 시 조금 더 어둡게 */
+      }
+      
+      /* 축소 모드에서 로그아웃 버튼 아이콘 스타일 */
+      #sidebar[data-collapsed="true"] .sidebar-icon-only.logout-mode {
+        background-color: #ef4444; /* red-500 */
+        border-radius: 50%;
+      }
+      
+      #sidebar[data-collapsed="true"] .sidebar-icon-only.logout-mode:hover {
+        background-color: #dc2626; /* red-600 */
+      }
+      
+      /* 모바일에서는 항상 전체 너비 */
+      @media (max-width: 1024px) {
+        #sidebar {
+          width: 16rem !important;
+          transform: translateX(-100%);
+        }
+        
+        #sidebar.sidebar-open {
+          transform: translateX(0);
+        }
+        
+        #sidebar[data-collapsed="true"] .sidebar-text {
+          display: block;
+        }
+        
+        #sidebar[data-collapsed="true"] .sidebar-icon {
+          margin-right: 0.75rem;
+        }
+        
+        #sidebar[data-collapsed="true"] .sidebar-icon-only {
+          display: none !important;
+        }
+      }
+    </style>
   </head>
 
   <body class="bg-gray-50">
     <div class="min-h-screen flex">
       <!-- 사이드바 -->
-      <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0" id="sidebar">
-        <div class="flex items-center justify-center h-16 px-4 border-b border-gray-200">
-          <h1 class="text-lg font-bold text-gray-900">🏥 병원 인트라넷</h1>
+      <div class="fixed inset-y-0 left-0 z-50 bg-white shadow-lg transition-all duration-300 ease-in-out lg:fixed lg:inset-y-0 flex flex-col" id="sidebar" data-collapsed="false">
+        <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200 flex-shrink-0">
+          <h1 class="text-lg font-bold text-gray-900 sidebar-text">🏥 병원 인트라넷</h1>
+          <button onclick="toggleSidebar()" class="hidden lg:block p-1 rounded hover:bg-gray-100 transition-transform duration-300" id="sidebar-toggle-btn">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
         </div>
         
-        <nav class="mt-5 px-2">
+        <nav class="mt-5 px-2 flex-1 overflow-y-auto">
           <div class="space-y-1">
             <!-- 홈 -->
-            <a href="/dashboard" class="bg-blue-100 text-blue-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-              <span class="mr-3">🏠</span>
-              대시보드
+            <a href="/dashboard" class="bg-blue-100 text-blue-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="대시보드">
+              <span class="sidebar-icon mr-3">🏠</span>
+              <span class="sidebar-text">대시보드</span>
             </a>
             
             <!-- 인트라넷 핵심 기능들 -->
-            <a href="/announcements" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-              <span class="mr-3">📢</span>
-              공지사항
+            <a href="/announcements" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="공지사항">
+              <span class="sidebar-icon mr-3">📢</span>
+              <span class="sidebar-text">공지사항</span>
             </a>
             
-            <a href="/boards" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-              <span class="mr-3">📋</span>
-              부서별 게시판
+            <a href="/boards" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="부서별 게시판">
+              <span class="sidebar-icon mr-3">📋</span>
+              <span class="sidebar-text">부서별 게시판</span>
             </a>
             
-            <a href="/documents" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-              <span class="mr-3">📄</span>
-              문서/전자결재
+            <a href="/documents" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="문서/전자결재">
+              <span class="sidebar-icon mr-3">📄</span>
+              <span class="sidebar-text">문서/전자결재</span>
             </a>
             
-            <a href="/hr" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-              <span class="mr-3">👨‍⚕️</span>
-              인사/급여
+            <a href="/hr" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="인사/급여">
+              <span class="sidebar-icon mr-3">👨‍⚕️</span>
+              <span class="sidebar-text">인사/급여</span>
             </a>
             
-            <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-              <span class="mr-3">💰</span>
-              예산/재무
+            <a href="/appointments" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="예약/접수">
+              <span class="sidebar-icon mr-3">📅</span>
+              <span class="sidebar-text">예약/접수</span>
             </a>
             
-            <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-              <span class="mr-3">🏢</span>
-              시설/자산
+            <a href="/patients" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="환자관리">
+              <span class="sidebar-icon mr-3">👥</span>
+              <span class="sidebar-text">환자관리</span>
+            </a>
+            
+            <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="예산/재무">
+              <span class="sidebar-icon mr-3">💰</span>
+              <span class="sidebar-text">예산/재무</span>
+            </a>
+            
+            <a href="#" class="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md" title="시설/자산">
+              <span class="sidebar-icon mr-3">🏢</span>
+              <span class="sidebar-text">시설/자산</span>
             </a>
             
             <!-- 구분선 -->
             <div class="border-t border-gray-200 my-4"></div>
             
             <!-- 향후 개발 예정 (회색 처리) -->
-            <div class="text-xs font-medium text-gray-400 uppercase tracking-wider px-2 py-2">향후 개발 예정</div>
+            <div class="text-xs font-medium text-gray-400 uppercase tracking-wider px-2 py-2 sidebar-text">향후 개발 예정</div>
             
-            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
-              <span class="mr-3">📅</span>
-              예약/접수
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed" title="상담/CRM">
+              <span class="sidebar-icon mr-3">💬</span>
+              <span class="sidebar-text">상담/CRM</span>
             </a>
             
-            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
-              <span class="mr-3">💬</span>
-              상담/CRM
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed" title="진료/검진">
+              <span class="sidebar-icon mr-3">🩺</span>
+              <span class="sidebar-text">진료/검진</span>
             </a>
             
-            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
-              <span class="mr-3">🩺</span>
-              진료/검진
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed" title="재고/구매">
+              <span class="sidebar-icon mr-3">📦</span>
+              <span class="sidebar-text">재고/구매</span>
             </a>
             
-            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
-              <span class="mr-3">👥</span>
-              환자관리
-            </a>
-            
-            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
-              <span class="mr-3">📦</span>
-              재고/구매
-            </a>
-            
-            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed">
-              <span class="mr-3">📊</span>
-              통계
+            <a href="#" class="text-gray-400 group flex items-center px-2 py-2 text-sm font-medium rounded-md cursor-not-allowed" title="통계">
+              <span class="sidebar-icon mr-3">📊</span>
+              <span class="sidebar-text">통계</span>
             </a>
           </div>
         </nav>
         
-        <!-- 사용자 정보 영역 -->
-        <div class="absolute bottom-0 w-full p-4 border-t border-gray-200">
-          <div class="flex items-center">
-            <div class="flex-1">
-              <span id="user-welcome" class="text-sm text-gray-600">환영합니다!</span>
-              <div id="auth-buttons">
-                <%= link_to "로그인", login_path, class: "text-blue-600 text-sm hover:text-blue-800" %>
+        <!-- 사용자 정보 영역 (Footer) -->
+        <div class="flex-shrink-0 mt-auto border-t-2 border-gray-300 bg-gray-50">
+          <div class="px-2 py-3">
+            <!-- 사용자 환영 메시지 -->
+            <div class="sidebar-text group flex items-center px-2 py-2 text-sm rounded-md mb-1">
+              <span class="sidebar-icon mr-3">👤</span>
+              <div class="flex-1 min-w-0">
+                <span id="user-welcome" class="text-gray-700 block truncate font-medium">환영합니다!</span>
               </div>
             </div>
-            <div>
-              <a href="#" class="text-gray-400 hover:text-gray-600">
-                <span class="sr-only">설정</span>
-                ⚙️
-              </a>
+            
+            <!-- 로그인/로그아웃 버튼 -->
+            <div id="auth-buttons" class="sidebar-text mb-2">
+              <%= link_to login_path, class: "text-gray-700 hover:bg-white hover:text-blue-600 hover:shadow-sm group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200" do %>
+                <span class="sidebar-icon mr-3">🔑</span>
+                <span class="sidebar-text">로그인</span>
+              <% end %>
             </div>
+            
+            <!-- 버전 정보 -->
+            <div class="sidebar-text border-t border-gray-200 pt-2">
+              <div class="px-2 py-1 text-center">
+                <span class="text-xs text-gray-500 font-mono">Hospital System v.2.38.1</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 축소 모드 아이콘 -->
+          <div class="sidebar-icon-only hidden justify-center items-center py-4" id="collapsed-user-icon">
+            <a href="#" class="text-gray-600 hover:text-gray-800 hover:bg-white rounded-full p-2 transition-all duration-200" title="사용자 메뉴">
+              <span class="text-xl">👤</span>
+            </a>
           </div>
         </div>
       </div>
@@ -118,7 +238,7 @@
       <div class="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 transition-opacity duration-300 ease-linear lg:hidden hidden" id="sidebar-overlay"></div>
 
       <!-- 메인 콘텐츠 영역 -->
-      <div class="flex-1 flex flex-col lg:ml-0">
+      <div class="flex-1 flex flex-col lg:ml-64" id="main-content">
         <!-- 상단 모바일 네비게이션 -->
         <div class="sticky top-0 z-10 bg-white pl-1 pt-1 sm:pl-3 sm:pt-3 lg:hidden">
           <button type="button" class="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500" id="sidebar-toggle">
@@ -433,6 +553,11 @@
       
     </script>
     
+    <!-- 환경 변수 설정 -->
+    <script>
+      window.BACKEND_API_URL = '<%= ENV.fetch("BACKEND_API_URL", "http://localhost:7001/api/v1") %>';
+    </script>
+
     <!-- API 및 UI 모듈 인라인 로드 -->
     <script>
       <%= File.read(Rails.root.join('app', 'assets', 'javascripts', 'modules', 'api.js')).html_safe %>
@@ -463,11 +588,24 @@
             
             welcomeSpan.textContent = `${user.name || '사용자'}님, 환영합니다!`;
             authButtons.innerHTML = `
-              <span class="text-xs text-gray-500 block">${roleDisplay}</span>
-              <button onclick="logout()" class="bg-red-500 text-white px-3 py-1 rounded text-xs hover:bg-red-600 mt-1 w-full">
-                로그아웃
+              <button onclick="logout()" class="bg-red-500 text-white hover:bg-red-600 hover:shadow-md group flex items-center justify-center px-2 py-2 text-sm font-medium rounded-md w-full transition-all duration-200">
+                <span class="sidebar-text font-semibold">로그아웃</span>
               </button>
+              <div class="mt-2 px-2 py-1 sidebar-text text-center">
+                <span class="text-xs text-gray-500 font-medium">${roleDisplay}</span>
+              </div>
             `;
+            
+            // 축소 모드 아이콘도 로그아웃 버튼으로 업데이트
+            const collapsedIcon = document.getElementById('collapsed-user-icon');
+            if (collapsedIcon) {
+              collapsedIcon.innerHTML = `
+                <button onclick="logout()" class="text-white bg-red-500 hover:bg-red-600 rounded-full p-2 transition-all duration-200 logout-mode" title="로그아웃">
+                  <span class="text-sm font-bold">OUT</span>
+                </button>
+              `;
+              collapsedIcon.classList.add('logout-mode');
+            }
           } catch (error) {
             console.error('사용자 정보 파싱 오류:', error);
             showLoginButton();
@@ -481,7 +619,23 @@
         const welcomeSpan = document.getElementById('user-welcome');
         const authButtons = document.getElementById('auth-buttons');
         welcomeSpan.textContent = '로그인이 필요합니다';
-        authButtons.innerHTML = `<a href="/login" class="text-blue-600 text-sm hover:text-blue-800">로그인</a>`;
+        authButtons.innerHTML = `
+          <a href="/login" class="text-gray-700 hover:bg-white hover:text-blue-600 hover:shadow-sm group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200">
+            <span class="sidebar-icon mr-3">🔑</span>
+            <span class="sidebar-text">로그인</span>
+          </a>
+        `;
+        
+        // 축소 모드 아이콘을 기본 상태로 복원
+        const collapsedIcon = document.getElementById('collapsed-user-icon');
+        if (collapsedIcon) {
+          collapsedIcon.innerHTML = `
+            <a href="#" class="text-gray-600 hover:text-gray-800 hover:bg-white rounded-full p-2 transition-all duration-200" title="사용자 메뉴">
+              <span class="text-xl">👤</span>
+            </a>
+          `;
+          collapsedIcon.classList.remove('logout-mode');
+        }
       }
       
       // 로그아웃 함수
@@ -496,7 +650,74 @@
       }
       
       // 페이지 로드 시 인증 상태 확인
-      document.addEventListener('DOMContentLoaded', updateAuthUI);
+      document.addEventListener('DOMContentLoaded', function() {
+        updateAuthUI();
+        highlightCurrentPage();
+      });
+      
+      // 현재 페이지에 해당하는 사이드바 메뉴 하이라이트
+      function highlightCurrentPage() {
+        const currentPath = window.location.pathname;
+        const sidebarLinks = document.querySelectorAll('nav a[href]');
+        
+        // 모든 링크에서 active 클래스 제거
+        sidebarLinks.forEach(link => {
+          link.classList.remove('bg-blue-100', 'text-blue-900');
+          link.classList.add('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+        });
+        
+        // 현재 페이지에 해당하는 링크에 active 클래스 추가
+        sidebarLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          
+          // 정확한 경로 매칭 또는 경로가 포함된 경우 (대시보드는 정확히 매칭)
+          if (currentPath === href || (href !== '/dashboard' && href !== '#' && currentPath.startsWith(href))) {
+            link.classList.remove('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+            link.classList.add('bg-blue-100', 'text-blue-900');
+          }
+        });
+        
+        // 대시보드가 기본 활성화될 경우 처리
+        if (currentPath === '/' || currentPath === '') {
+          const dashboardLink = document.querySelector('nav a[href="/dashboard"]');
+          if (dashboardLink) {
+            dashboardLink.classList.remove('text-gray-600', 'hover:bg-gray-50', 'hover:text-gray-900');
+            dashboardLink.classList.add('bg-blue-100', 'text-blue-900');
+          }
+        }
+      }
+      
+      // 사이드바 토글 기능 (데스크톱)
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const isCollapsed = sidebar.getAttribute('data-collapsed') === 'true';
+        
+        if (isCollapsed) {
+          sidebar.setAttribute('data-collapsed', 'false');
+          mainContent.classList.remove('lg:ml-16');
+          mainContent.classList.add('lg:ml-64');
+          localStorage.setItem('sidebar-collapsed', 'false');
+        } else {
+          sidebar.setAttribute('data-collapsed', 'true');
+          mainContent.classList.remove('lg:ml-64');
+          mainContent.classList.add('lg:ml-16');
+          localStorage.setItem('sidebar-collapsed', 'true');
+        }
+      }
+      
+      // 페이지 로드 시 사이드바 상태 복원
+      document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const savedState = localStorage.getItem('sidebar-collapsed');
+        
+        if (savedState === 'true') {
+          sidebar.setAttribute('data-collapsed', 'true');
+          mainContent.classList.remove('lg:ml-64');
+          mainContent.classList.add('lg:ml-16');
+        }
+      });
       
       // 모바일 사이드바 토글 기능
       const sidebarToggle = document.getElementById('sidebar-toggle');
@@ -505,12 +726,12 @@
       
       if (sidebarToggle && sidebar && sidebarOverlay) {
         sidebarToggle.addEventListener('click', function() {
-          sidebar.classList.toggle('-translate-x-full');
+          sidebar.classList.toggle('sidebar-open');
           sidebarOverlay.classList.toggle('hidden');
         });
         
         sidebarOverlay.addEventListener('click', function() {
-          sidebar.classList.add('-translate-x-full');
+          sidebar.classList.remove('sidebar-open');
           sidebarOverlay.classList.add('hidden');
         });
       }

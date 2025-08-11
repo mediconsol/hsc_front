@@ -1,7 +1,8 @@
 // API 모듈
 class ApiClient {
-  constructor(baseUrl = 'http://localhost:7001/api/v1') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl = null) {
+    // 환경 변수에서 API URL 가져오기, 없으면 기본값 사용
+    this.baseUrl = baseUrl || window.BACKEND_API_URL || 'http://localhost:7001/api/v1';
   }
 
   // 인증 헤더 가져오기
