@@ -57,14 +57,19 @@ RUN chmod +x bin/* && \
     sed -i "s/\r$//g" bin/* && \
     sed -i 's/ruby\.exe$/ruby/' bin/*
 
-# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
+# Precompiling assets for production with Rails 8 compatibility
 ENV RAILS_ENV=production \
     SECRET_KEY_BASE=dummy_key_for_precompile \
     RAILS_SERVE_STATIC_FILES=true \
-    DATABASE_URL=postgresql://dummy:dummy@dummy:5432/dummy
+    DATABASE_URL=postgresql://dummy:dummy@dummy:5432/dummy \
+    DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
+    RAILS_SKIP_MIGRATIONS=1
 
-# Skip database initialization and precompile assets
-RUN RAILS_GROUPS=assets ./bin/rails assets:precompile --trace
+# Precompile assets with complete database isolation
+RUN RAILS_GROUPS=assets \
+    DISABLE_DATABASE_ENVIRONMENT_CHECK=1 \
+    RAILS_SKIP_MIGRATIONS=1 \
+    ./bin/rails assets:precompile --trace
 
 
 

@@ -23,5 +23,18 @@ module Frontend
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Skip Active Record initialization during asset precompilation for Rails 8
+    if ENV['RAILS_GROUPS'] == 'assets'
+      config.active_record.database_tasks = false
+      config.active_record.maintain_test_schema = false
+      config.active_record.dump_schema_after_migration = false
+      
+      # Disable all Active Record features during asset precompilation
+      config.active_record.establish_connection = false
+      
+      # Skip database-dependent initializers
+      config.eager_load = false
+    end
   end
 end

@@ -32,6 +32,21 @@ Rails.application.configure do
     config.force_ssl = true
   end
 
+  # Rails 8 Asset Precompilation Configuration
+  if ENV['RAILS_GROUPS'] == 'assets'
+    # Completely disable Active Record during asset precompilation
+    config.active_record.database_tasks = false
+    config.active_record.maintain_test_schema = false
+    config.active_record.dump_schema_after_migration = false
+    config.active_record.check_pending_migrations = false
+    
+    # Skip eager loading during asset precompilation
+    config.eager_load = false
+    
+    # Disable ActionCable during asset precompilation
+    config.action_cable.disable_request_forgery_protection = true
+  end
+
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
 
