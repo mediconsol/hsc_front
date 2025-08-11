@@ -69,20 +69,6 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
-    <<: *default
-    database: frontend_production
-    username: frontend
-    password: <%= ENV["FRONTEND_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: frontend_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: frontend_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: frontend_production_cable
-    migrations_paths: db/cable_migrate
+  <<: *default
+  # Frontend doesn't need database, use dummy configuration for asset precompile
+  url: <%= ENV.fetch("DATABASE_URL", "postgresql://dummy:dummy@dummy:5432/dummy") %>
