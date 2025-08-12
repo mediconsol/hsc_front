@@ -1,0 +1,953 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 헤더 -->
+  <div class="mb-8">
+    <div class="md:flex md:items-center md:justify-between">
+      <div class="flex-1 min-w-0">
+        <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+          🏢 시설/자산 관리
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">
+          병원 내 모든 시설과 자산을 체계적으로 관리합니다
+        </p>
+      </div>
+      <div class="mt-4 flex md:mt-0 md:ml-4">
+        <button onclick="openCreateModal()" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+          ➕ 시설 등록
+        </button>
+        <button onclick="openAssetModal()" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+          📦 자산 등록
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통계 대시보드 -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" id="statistics-dashboard">
+    <!-- 동적으로 생성 -->
+  </div>
+
+  <!-- 탭 네비게이션 -->
+  <div class="border-b border-gray-200">
+    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+      <button onclick="switchTab('facilities')" class="tab-button active border-transparent text-blue-600 hover:text-blue-500 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+        🏢 시설 관리
+      </button>
+      <button onclick="switchTab('assets')" class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+        📦 자산 관리
+      </button>
+      <button onclick="switchTab('maintenances')" class="tab-button border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm">
+        🔧 점검/보수
+      </button>
+    </nav>
+  </div>
+
+  <!-- 필터 섹션 -->
+  <div class="bg-gray-50 px-4 py-3 sm:flex sm:items-center sm:justify-between" id="filter-section">
+    <div class="flex flex-wrap gap-4">
+      <!-- 동적으로 생성 -->
+    </div>
+    <div class="mt-3 sm:mt-0 sm:ml-4">
+      <div class="flex rounded-md shadow-sm">
+        <input type="text" id="search-input" placeholder="검색..." class="focus:ring-blue-500 focus:border-blue-500 flex-1 block w-full rounded-none rounded-l-md sm:text-sm border-gray-300">
+        <button onclick="applyFilters()" class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 rounded-r-md bg-gray-50 text-gray-500 text-sm">
+          🔍
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 컨텐츠 영역 -->
+  <div class="mt-6">
+    <!-- 시설 탭 -->
+    <div id="facilities-tab" class="tab-content">
+      <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div id="facilities-loading" class="animate-pulse p-6">
+          <div class="space-y-3">
+            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+          </div>
+        </div>
+        <ul id="facilities-list" class="divide-y divide-gray-200 hidden">
+          <!-- 동적으로 생성 -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- 자산 탭 -->
+    <div id="assets-tab" class="tab-content hidden">
+      <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div id="assets-loading" class="animate-pulse p-6">
+          <div class="space-y-3">
+            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+          </div>
+        </div>
+        <ul id="assets-list" class="divide-y divide-gray-200 hidden">
+          <!-- 동적으로 생성 -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- 점검/보수 탭 -->
+    <div id="maintenances-tab" class="tab-content hidden">
+      <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div id="maintenances-loading" class="animate-pulse p-6">
+          <div class="space-y-3">
+            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+          </div>
+        </div>
+        <ul id="maintenances-list" class="divide-y divide-gray-200 hidden">
+          <!-- 동적으로 생성 -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 시설 등록 모달 -->
+<div id="create-facility-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">새 시설 등록</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeFacilityModal()">
+          <span class="sr-only">닫기</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <form id="facility-form" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label for="facility-name" class="block text-sm font-medium text-gray-700">시설명 *</label>
+            <input type="text" id="facility-name" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="facility-type" class="block text-sm font-medium text-gray-700">시설 유형 *</label>
+            <select id="facility-type" name="facility_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <!-- 동적으로 생성 -->
+            </select>
+          </div>
+          <div>
+            <label for="facility-building" class="block text-sm font-medium text-gray-700">건물</label>
+            <input type="text" id="facility-building" name="building" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="facility-floor" class="block text-sm font-medium text-gray-700">층</label>
+            <input type="number" id="facility-floor" name="floor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="facility-room" class="block text-sm font-medium text-gray-700">호실</label>
+            <input type="text" id="facility-room" name="room_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="facility-capacity" class="block text-sm font-medium text-gray-700">수용 인원/규모</label>
+            <input type="number" id="facility-capacity" name="capacity" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+        </div>
+        <div>
+          <label for="facility-description" class="block text-sm font-medium text-gray-700">설명</label>
+          <textarea id="facility-description" name="description" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="closeFacilityModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            취소
+          </button>
+          <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+            등록하기
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 자산 등록 모달 -->
+<div id="create-asset-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">새 자산 등록</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeAssetModal()">
+          <span class="sr-only">닫기</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <form id="asset-form" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label for="asset-name" class="block text-sm font-medium text-gray-700">자산명 *</label>
+            <input type="text" id="asset-name" name="name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="asset-type" class="block text-sm font-medium text-gray-700">자산 유형 *</label>
+            <select id="asset-type" name="asset_type" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <!-- 동적으로 생성 -->
+            </select>
+          </div>
+          <div>
+            <label for="asset-serial" class="block text-sm font-medium text-gray-700">시리얼 번호 *</label>
+            <input type="text" id="asset-serial" name="serial_number" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="asset-model" class="block text-sm font-medium text-gray-700">모델명</label>
+            <input type="text" id="asset-model" name="model" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="asset-vendor" class="block text-sm font-medium text-gray-700">공급업체</label>
+            <input type="text" id="asset-vendor" name="vendor" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="asset-price" class="block text-sm font-medium text-gray-700">구매가격</label>
+            <input type="number" id="asset-price" name="purchase_price" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="asset-purchase-date" class="block text-sm font-medium text-gray-700">구매일</label>
+            <input type="date" id="asset-purchase-date" name="purchase_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="asset-warranty" class="block text-sm font-medium text-gray-700">보증만료일</label>
+            <input type="date" id="asset-warranty" name="warranty_expiry" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          </div>
+          <div>
+            <label for="asset-facility" class="block text-sm font-medium text-gray-700">위치 (시설)</label>
+            <select id="asset-facility" name="facility_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <option value="">위치 선택...</option>
+              <!-- 동적으로 생성 -->
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="asset-description" class="block text-sm font-medium text-gray-700">설명</label>
+          <textarea id="asset-description" name="description" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="closeAssetModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            취소
+          </button>
+          <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:green-blue-700">
+            등록하기
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentTab = 'facilities';
+let currentFilters = {};
+let currentUser = null;
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadCurrentUser();
+  await loadStatistics();
+  await loadData();
+  setupFilters();
+  setupForms();
+  setupFilterListeners();
+});
+
+// 현재 사용자 정보 로드
+async function loadCurrentUser() {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
+  
+  try {
+    const response = await fetch('http://localhost:7001/api/v1/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      currentUser = data.user;
+    }
+  } catch (error) {
+    console.error('Failed to load current user:', error);
+  }
+}
+
+// 통계 로드
+async function loadStatistics() {
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const [facilitiesStats, assetsStats] = await Promise.all([
+      fetch('http://localhost:7001/api/v1/facilities/statistics', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }),
+      fetch('http://localhost:7001/api/v1/assets/statistics', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+    ]);
+    
+    const facilitiesData = await facilitiesStats.json();
+    const assetsData = await assetsStats.json();
+    
+    displayStatistics(facilitiesData.data, assetsData.data);
+  } catch (error) {
+    console.error('Failed to load statistics:', error);
+  }
+}
+
+// 통계 표시
+function displayStatistics(facilitiesStats, assetsStats) {
+  const statsContainer = document.getElementById('statistics-dashboard');
+  
+  const stats = [
+    {
+      title: '총 시설',
+      value: facilitiesStats.total_facilities,
+      icon: '🏢',
+      color: 'text-blue-600 bg-blue-100'
+    },
+    {
+      title: '총 자산',
+      value: assetsStats.total_assets,
+      icon: '📦',
+      color: 'text-green-600 bg-green-100'
+    },
+    {
+      title: '점검 필요',
+      value: assetsStats.requires_maintenance,
+      icon: '🔧',
+      color: 'text-yellow-600 bg-yellow-100'
+    },
+    {
+      title: '보증 만료 임박',
+      value: assetsStats.warranty_expiring_soon,
+      icon: '⚠️',
+      color: 'text-red-600 bg-red-100'
+    }
+  ];
+  
+  statsContainer.innerHTML = stats.map(stat => `
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="flex items-center justify-center h-8 w-8 rounded-md ${stat.color}">
+              <span class="text-lg">${stat.icon}</span>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">${stat.title}</dt>
+              <dd class="text-lg font-medium text-gray-900">${stat.value.toLocaleString()}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// 탭 전환
+function switchTab(tab) {
+  currentTab = tab;
+  
+  // 탭 버튼 활성화 상태 변경
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.classList.remove('active', 'border-blue-500', 'text-blue-600');
+    btn.classList.add('border-transparent', 'text-gray-500');
+  });
+  
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active', 'border-blue-500', 'text-blue-600');
+  document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.remove('border-transparent', 'text-gray-500');
+  
+  // 탭 컨텐츠 표시
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.add('hidden');
+  });
+  
+  document.getElementById(`${tab}-tab`).classList.remove('hidden');
+  
+  // 필터 업데이트
+  setupFilters();
+  loadData();
+}
+
+// 필터 설정
+function setupFilters() {
+  const filterSection = document.getElementById('filter-section');
+  const filterDiv = filterSection.querySelector('.flex.flex-wrap');
+  
+  let filtersHtml = '';
+  
+  if (currentTab === 'facilities') {
+    filtersHtml = `
+      <select id="filter-facility-type" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+        <option value="">모든 시설 유형</option>
+        <option value="ward">병실</option>
+        <option value="operating_room">수술실</option>
+        <option value="examination_room">검사실</option>
+        <option value="consultation_room">진료실</option>
+        <option value="office">사무실</option>
+        <option value="meeting_room">회의실</option>
+        <option value="storage">창고</option>
+        <option value="pharmacy">약국</option>
+        <option value="laboratory">실험실</option>
+        <option value="radiology">영상의학과</option>
+        <option value="emergency">응급실</option>
+        <option value="icu">중환자실</option>
+        <option value="cafeteria">식당</option>
+        <option value="parking">주차장</option>
+        <option value="other">기타</option>
+      </select>
+      <select id="filter-facility-status" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+        <option value="">모든 상태</option>
+        <option value="active">사용중</option>
+        <option value="inactive">비사용</option>
+        <option value="maintenance">점검중</option>
+        <option value="repair">수리중</option>
+        <option value="closed">폐쇄</option>
+      </select>
+    `;
+  } else if (currentTab === 'assets') {
+    filtersHtml = `
+      <select id="filter-asset-type" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+        <option value="">모든 자산 유형</option>
+        <option value="medical_equipment">의료장비</option>
+        <option value="it_equipment">IT장비</option>
+        <option value="furniture">가구</option>
+        <option value="vehicle">차량</option>
+        <option value="building_equipment">건물설비</option>
+        <option value="safety_equipment">안전장비</option>
+        <option value="office_equipment">사무용품</option>
+        <option value="cleaning_equipment">청소장비</option>
+        <option value="kitchen_equipment">주방장비</option>
+        <option value="other">기타</option>
+      </select>
+      <select id="filter-asset-status" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+        <option value="">모든 상태</option>
+        <option value="active">정상</option>
+        <option value="inactive">비사용</option>
+        <option value="maintenance">점검중</option>
+        <option value="repair">수리중</option>
+        <option value="broken">고장</option>
+        <option value="disposed">폐기</option>
+      </select>
+    `;
+  } else if (currentTab === 'maintenances') {
+    filtersHtml = `
+      <select id="filter-maintenance-type" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+        <option value="">모든 점검 유형</option>
+        <option value="routine_inspection">정기점검</option>
+        <option value="preventive">예방정비</option>
+        <option value="corrective">사후정비</option>
+        <option value="emergency">응급수리</option>
+        <option value="calibration">교정/보정</option>
+        <option value="cleaning">청소/소독</option>
+        <option value="software_update">소프트웨어 업데이트</option>
+        <option value="parts_replacement">부품교체</option>
+        <option value="warranty_service">보증서비스</option>
+        <option value="upgrade">업그레이드</option>
+      </select>
+      <select id="filter-maintenance-status" class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm">
+        <option value="">모든 상태</option>
+        <option value="scheduled">예정</option>
+        <option value="in_progress">진행중</option>
+        <option value="completed">완료</option>
+        <option value="cancelled">취소</option>
+        <option value="postponed">연기</option>
+      </select>
+    `;
+  }
+  
+  filterDiv.innerHTML = filtersHtml;
+}
+
+// 데이터 로드
+async function loadData() {
+  const token = localStorage.getItem('auth_token');
+  let endpoint = `http://localhost:7001/api/v1/${currentTab}`;
+  
+  // 필터 파라미터 추가
+  const params = new URLSearchParams();
+  
+  // 검색어 필터
+  const searchInput = document.getElementById('search-input');
+  if (searchInput && searchInput.value.trim()) {
+    params.append('search', searchInput.value.trim());
+  }
+  
+  // 탭별 필터 적용
+  if (currentTab === 'facilities') {
+    const typeFilter = document.getElementById('filter-facility-type');
+    const statusFilter = document.getElementById('filter-facility-status');
+    
+    if (typeFilter && typeFilter.value) {
+      params.append('facility_type', typeFilter.value);
+    }
+    if (statusFilter && statusFilter.value) {
+      params.append('status', statusFilter.value);
+    }
+  } else if (currentTab === 'assets') {
+    const typeFilter = document.getElementById('filter-asset-type');
+    const statusFilter = document.getElementById('filter-asset-status');
+    
+    if (typeFilter && typeFilter.value) {
+      params.append('asset_type', typeFilter.value);
+    }
+    if (statusFilter && statusFilter.value) {
+      params.append('status', statusFilter.value);
+    }
+  } else if (currentTab === 'maintenances') {
+    const typeFilter = document.getElementById('filter-maintenance-type');
+    const statusFilter = document.getElementById('filter-maintenance-status');
+    
+    if (typeFilter && typeFilter.value) {
+      params.append('type', typeFilter.value);
+    }
+    if (statusFilter && statusFilter.value) {
+      params.append('status', statusFilter.value);
+    }
+  }
+  
+  // 파라미터가 있으면 URL에 추가
+  if (params.toString()) {
+    endpoint += '?' + params.toString();
+  }
+  
+  showLoading();
+  
+  try {
+    const response = await fetch(endpoint, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      if (currentTab === 'facilities') {
+        displayFacilities(data.data);
+      } else if (currentTab === 'assets') {
+        displayAssets(data.data);
+      } else if (currentTab === 'maintenances') {
+        displayMaintenances(data.data);
+      }
+      hideLoading();
+    } else {
+      showError(data.message || '데이터를 불러올 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('Failed to load data:', error);
+    showError('네트워크 오류가 발생했습니다.');
+  }
+}
+
+// 시설 목록 표시
+function displayFacilities(facilities) {
+  const listElement = document.getElementById('facilities-list');
+  
+  if (facilities.length === 0) {
+    listElement.innerHTML = `
+      <div class="px-6 py-8 text-center text-gray-500">
+        등록된 시설이 없습니다.
+      </div>
+    `;
+    return;
+  }
+  
+  listElement.innerHTML = facilities.map(facility => `
+    <li class="px-6 py-4 hover:bg-gray-50">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <div class="flex items-center space-x-3">
+            <h3 class="text-sm font-medium text-gray-900">${facility.name}</h3>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${facility.status_color}">
+              ${facility.status_text}
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-purple-800 bg-purple-100">
+              ${facility.facility_type_text}
+            </span>
+          </div>
+          <div class="mt-1 text-sm text-gray-500">
+            📍 ${facility.full_location || '위치 정보 없음'} 
+            ${facility.capacity ? `| 👥 ${facility.capacity}명` : ''}
+            ${facility.manager ? `| 👤 관리자: ${facility.manager}` : ''}
+          </div>
+          ${facility.description ? `
+            <div class="mt-1 text-sm text-gray-600">
+              ${facility.description}
+            </div>
+          ` : ''}
+          <div class="mt-2 text-xs text-gray-400">
+            📦 자산 ${facility.assets_count}개 | 📅 등록일: ${new Date(facility.created_at).toLocaleDateString('ko-KR')}
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="viewFacility(${facility.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            상세보기
+          </button>
+        </div>
+      </div>
+    </li>
+  `).join('');
+}
+
+// 자산 목록 표시
+function displayAssets(assets) {
+  const listElement = document.getElementById('assets-list');
+  
+  if (assets.length === 0) {
+    listElement.innerHTML = `
+      <div class="px-6 py-8 text-center text-gray-500">
+        등록된 자산이 없습니다.
+      </div>
+    `;
+    return;
+  }
+  
+  listElement.innerHTML = assets.map(asset => `
+    <li class="px-6 py-4 hover:bg-gray-50">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <div class="flex items-center space-x-3">
+            <h3 class="text-sm font-medium text-gray-900">${asset.name}</h3>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${asset.status_color}">
+              ${asset.status_text}
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-purple-800 bg-purple-100">
+              ${asset.asset_type_text}
+            </span>
+            ${asset.warranty_expiry ? `
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${asset.warranty_color}">
+                ${asset.warranty_status}
+              </span>
+            ` : ''}
+          </div>
+          <div class="mt-1 text-sm text-gray-500">
+            🔢 ${asset.serial_number} | 📍 ${asset.facility || '위치 미지정'}
+            ${asset.manager ? `| 👤 관리자: ${asset.manager}` : ''}
+          </div>
+          ${asset.model ? `
+            <div class="mt-1 text-sm text-gray-600">
+              📋 모델: ${asset.model} ${asset.vendor ? `| 🏭 ${asset.vendor}` : ''}
+            </div>
+          ` : ''}
+          <div class="mt-2 text-xs text-gray-400">
+            💰 ${asset.purchase_price ? `${Number(asset.purchase_price).toLocaleString()}원` : '가격정보없음'} 
+            | 📅 구매일: ${asset.purchase_date ? new Date(asset.purchase_date).toLocaleDateString('ko-KR') : '정보없음'}
+            ${asset.requires_maintenance ? ' | ⚠️ 점검필요' : ''}
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="viewAsset(${asset.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            상세보기
+          </button>
+        </div>
+      </div>
+    </li>
+  `).join('');
+}
+
+// 점검/보수 목록 표시
+function displayMaintenances(maintenances) {
+  const listElement = document.getElementById('maintenances-list');
+  
+  if (maintenances.length === 0) {
+    listElement.innerHTML = `
+      <div class="px-6 py-8 text-center text-gray-500">
+        등록된 점검/보수 이력이 없습니다.
+      </div>
+    `;
+    return;
+  }
+  
+  listElement.innerHTML = maintenances.map(maintenance => `
+    <li class="px-6 py-4 hover:bg-gray-50">
+      <div class="flex items-center justify-between">
+        <div class="flex-1">
+          <div class="flex items-center space-x-3">
+            <h3 class="text-sm font-medium text-gray-900">${maintenance.asset_name}</h3>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${maintenance.status_color}">
+              ${maintenance.status_text}
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-blue-800 bg-blue-100">
+              ${maintenance.maintenance_type_text}
+            </span>
+            ${maintenance.is_overdue ? `
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-red-800 bg-red-100">
+                ⚠️ 연체
+              </span>
+            ` : ''}
+          </div>
+          <div class="mt-1 text-sm text-gray-500">
+            📅 예정일: ${new Date(maintenance.scheduled_date).toLocaleDateString('ko-KR')}
+            ${maintenance.completed_date ? ` | ✅ 완료일: ${new Date(maintenance.completed_date).toLocaleDateString('ko-KR')}` : ''}
+            ${maintenance.technician ? ` | 👨‍🔧 담당자: ${maintenance.technician}` : ''}
+          </div>
+          ${maintenance.description ? `
+            <div class="mt-1 text-sm text-gray-600">
+              📝 ${maintenance.description}
+            </div>
+          ` : ''}
+          <div class="mt-2 text-xs text-gray-400">
+            ${maintenance.cost ? `💰 비용: ${Number(maintenance.cost).toLocaleString()}원 | ` : ''}
+            ${maintenance.days_until_due !== null ? 
+              maintenance.days_until_due >= 0 ? 
+                `⏰ ${maintenance.days_until_due}일 후 예정` : 
+                `⚠️ ${Math.abs(maintenance.days_until_due)}일 연체`
+              : ''
+            }
+          </div>
+          ${maintenance.notes ? `
+            <div class="mt-2 text-xs text-gray-500 bg-gray-50 p-2 rounded">
+              💬 ${maintenance.notes}
+            </div>
+          ` : ''}
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="viewMaintenance(${maintenance.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+            상세보기
+          </button>
+        </div>
+      </div>
+    </li>
+  `).join('');
+}
+
+// 로딩 상태 표시/숨김
+function showLoading() {
+  document.getElementById(`${currentTab}-loading`).classList.remove('hidden');
+  document.getElementById(`${currentTab}-list`).classList.add('hidden');
+}
+
+function hideLoading() {
+  document.getElementById(`${currentTab}-loading`).classList.add('hidden');
+  document.getElementById(`${currentTab}-list`).classList.remove('hidden');
+}
+
+function showError(message) {
+  hideLoading();
+  document.getElementById(`${currentTab}-list`).innerHTML = `
+    <div class="px-6 py-8 text-center text-red-500">
+      ⚠️ ${message}
+    </div>
+  `;
+  document.getElementById(`${currentTab}-list`).classList.remove('hidden');
+}
+
+// 모달 관리
+function openCreateModal() {
+  document.getElementById('create-facility-modal').classList.remove('hidden');
+  loadFacilityTypes();
+}
+
+function closeFacilityModal() {
+  document.getElementById('create-facility-modal').classList.add('hidden');
+  document.getElementById('facility-form').reset();
+}
+
+function openAssetModal() {
+  document.getElementById('create-asset-modal').classList.remove('hidden');
+  loadAssetTypes();
+  loadFacilitiesForSelect();
+}
+
+function closeAssetModal() {
+  document.getElementById('create-asset-modal').classList.add('hidden');
+  document.getElementById('asset-form').reset();
+}
+
+// 시설 유형 로드
+function loadFacilityTypes() {
+  const select = document.getElementById('facility-type');
+  const types = [
+    { value: 'ward', text: '병실' },
+    { value: 'operating_room', text: '수술실' },
+    { value: 'examination_room', text: '검사실' },
+    { value: 'consultation_room', text: '진료실' },
+    { value: 'office', text: '사무실' },
+    { value: 'meeting_room', text: '회의실' },
+    { value: 'storage', text: '창고' },
+    { value: 'pharmacy', text: '약국' },
+    { value: 'laboratory', text: '실험실' },
+    { value: 'radiology', text: '영상의학과' },
+    { value: 'emergency', text: '응급실' },
+    { value: 'icu', text: '중환자실' },
+    { value: 'cafeteria', text: '식당' },
+    { value: 'parking', text: '주차장' },
+    { value: 'other', text: '기타' }
+  ];
+  
+  select.innerHTML = '<option value="">시설 유형 선택...</option>' + 
+    types.map(type => `<option value="${type.value}">${type.text}</option>`).join('');
+}
+
+// 자산 유형 로드
+function loadAssetTypes() {
+  const select = document.getElementById('asset-type');
+  const types = [
+    { value: 'medical_equipment', text: '의료장비' },
+    { value: 'it_equipment', text: 'IT장비' },
+    { value: 'furniture', text: '가구' },
+    { value: 'vehicle', text: '차량' },
+    { value: 'building_equipment', text: '건물설비' },
+    { value: 'safety_equipment', text: '안전장비' },
+    { value: 'office_equipment', text: '사무용품' },
+    { value: 'cleaning_equipment', text: '청소장비' },
+    { value: 'kitchen_equipment', text: '주방장비' },
+    { value: 'other', text: '기타' }
+  ];
+  
+  select.innerHTML = '<option value="">자산 유형 선택...</option>' + 
+    types.map(type => `<option value="${type.value}">${type.text}</option>`).join('');
+}
+
+// 시설 목록을 자산 등록 폼에 로드
+async function loadFacilitiesForSelect() {
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const response = await fetch('http://localhost:7001/api/v1/facilities', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      const select = document.getElementById('asset-facility');
+      select.innerHTML = '<option value="">위치 선택...</option>' +
+        data.data.map(facility => 
+          `<option value="${facility.id}">${facility.name} (${facility.full_location})</option>`
+        ).join('');
+    }
+  } catch (error) {
+    console.error('Failed to load facilities for select:', error);
+  }
+}
+
+// 폼 설정
+function setupForms() {
+  // 시설 등록 폼
+  document.getElementById('facility-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const token = localStorage.getItem('auth_token');
+    const formData = new FormData(e.target);
+    const facilityData = Object.fromEntries(formData.entries());
+    
+    try {
+      const response = await fetch('http://localhost:7001/api/v1/facilities', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ facility: facilityData })
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        closeFacilityModal();
+        loadData();
+        loadStatistics();
+        alert('시설이 성공적으로 등록되었습니다.');
+      } else {
+        alert('시설 등록 실패: ' + (data.message || '알 수 없는 오류'));
+      }
+    } catch (error) {
+      console.error('Failed to create facility:', error);
+      alert('시설 등록 중 오류가 발생했습니다.');
+    }
+  });
+  
+  // 자산 등록 폼
+  document.getElementById('asset-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const token = localStorage.getItem('auth_token');
+    const formData = new FormData(e.target);
+    const assetData = Object.fromEntries(formData.entries());
+    
+    try {
+      const response = await fetch('http://localhost:7001/api/v1/assets', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ asset: assetData })
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success') {
+        closeAssetModal();
+        loadData();
+        loadStatistics();
+        alert('자산이 성공적으로 등록되었습니다.');
+      } else {
+        alert('자산 등록 실패: ' + (data.message || '알 수 없는 오류'));
+      }
+    } catch (error) {
+      console.error('Failed to create asset:', error);
+      alert('자산 등록 중 오류가 발생했습니다.');
+    }
+  });
+}
+
+// 필터 적용
+function applyFilters() {
+  loadData();
+}
+
+// 실시간 필터 적용을 위한 이벤트 리스너 추가
+function setupFilterListeners() {
+  // 검색 입력 시 실시간 검색 (300ms 딜레이)
+  let searchTimeout;
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        loadData();
+      }, 300);
+    });
+  }
+  
+  // 드롭다운 필터 변경 시 즉시 적용
+  document.addEventListener('change', (e) => {
+    if (e.target.id.startsWith('filter-')) {
+      loadData();
+    }
+  });
+}
+
+// 상세보기 함수들
+function viewFacility(id) {
+  window.location.href = `/facilities/${id}`;
+}
+
+function viewAsset(id) {
+  window.location.href = `/assets/${id}`;
+}
+
+function viewMaintenance(id) {
+  window.location.href = `/maintenances/${id}`;
+}
+</script>

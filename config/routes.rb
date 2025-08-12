@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "facilities/index"
+  get "facilities/show"
   get 'patients', to: 'patients#index'
   get "hr/index"
   get "documents/index"
@@ -26,4 +28,15 @@ Rails.application.routes.draw do
   resources :documents, only: [:index, :show]
   get 'hr', to: 'hr#index'
   get 'appointments', to: 'appointments#index'
+  
+  # Facilities and Assets Management
+  resources :facilities, only: [:index, :show]
+  resources :assets, only: [:index, :show]
+  resources :maintenances, only: [:index, :show]
+  
+  # Budget and Finance Management
+  get 'finance', to: 'finance#index'
+  get 'finance/budgets', to: 'finance#budgets'
+  get 'finance/expenses', to: 'finance#expenses'
+  get 'finance/invoices', to: 'finance#invoices'
 end

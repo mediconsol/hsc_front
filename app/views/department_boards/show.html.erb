@@ -1,4 +1,740 @@
-<div>
-  <h1 class="font-bold text-4xl">DepartmentBoards#show</h1>
-  <p>Find me in app/views/department_boards/show.html.erb</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 뒤로가기 버튼 -->
+  <div class="mb-6">
+    <button onclick="history.back()" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      부서별 게시판으로 돌아가기
+    </button>
+  </div>
+
+  <!-- 게시글 로딩 상태 -->
+  <div id="loading-state" class="animate-pulse">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+        <div class="flex space-x-2">
+          <div class="h-4 bg-gray-200 rounded w-16"></div>
+          <div class="h-4 bg-gray-200 rounded w-20"></div>
+          <div class="h-4 bg-gray-200 rounded w-24"></div>
+        </div>
+      </div>
+      <div class="px-6 py-6">
+        <div class="space-y-3">
+          <div class="h-4 bg-gray-200 rounded"></div>
+          <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+          <div class="h-4 bg-gray-200 rounded w-4/6"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 게시글 내용 -->
+  <div id="post-content" class="hidden">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <!-- 게시글 헤더 -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <!-- 태그들 -->
+            <div class="flex items-center mb-3 space-x-2" id="post-tags">
+              <!-- 동적으로 생성 -->
+            </div>
+            
+            <!-- 제목 -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-2" id="post-title">
+              <!-- 동적으로 생성 -->
+            </h1>
+            
+            <!-- 메타 정보 -->
+            <div class="flex items-center text-sm text-gray-500 space-x-4" id="post-meta">
+              <!-- 동적으로 생성 -->
+            </div>
+          </div>
+          
+          <!-- 액션 버튼들 -->
+          <div class="ml-6 flex items-center space-x-2" id="post-actions">
+            <!-- 동적으로 생성 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 게시글 본문 -->
+      <div class="px-6 py-6">
+        <div class="prose max-w-none text-gray-900" id="post-body">
+          <!-- 동적으로 생성 -->
+        </div>
+      </div>
+
+      <!-- 게시글 하단 정보 -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4 text-sm text-gray-500">
+            <span id="views-count">👁 0</span>
+            <span id="comments-count">💬 0</span>
+            <span id="created-date">📅 -</span>
+          </div>
+          
+          <!-- 공유 및 액션 버튼 -->
+          <div class="flex items-center space-x-2">
+            <button onclick="toggleLike()" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <span id="like-icon">👍</span>
+              <span class="ml-1" id="like-count">0</span>
+            </button>
+            <button onclick="toggleBookmark()" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <span id="bookmark-icon">🔖</span>
+            </button>
+            <button onclick="sharePost()" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              📤 공유
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 댓글 섹션 -->
+    <div class="mt-8">
+      <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <!-- 댓글 헤더 -->
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">
+            댓글 <span id="total-comments-count" class="text-blue-600">0</span>개
+          </h3>
+        </div>
+
+        <!-- 댓글 작성 -->
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+          <form id="comment-form" class="space-y-3">
+            <textarea 
+              id="comment-content" 
+              name="content" 
+              rows="3" 
+              placeholder="댓글을 작성해주세요..." 
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 resize-none"
+              required
+            ></textarea>
+            <div class="flex justify-end">
+              <button 
+                type="submit" 
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                댓글 등록
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 댓글 목록 -->
+        <div id="comments-list" class="divide-y divide-gray-200">
+          <!-- 동적으로 생성 -->
+        </div>
+
+        <!-- 댓글 로딩 -->
+        <div id="comments-loading" class="px-6 py-8 text-center">
+          <div class="text-gray-500">댓글을 불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 에러 상태 -->
+  <div id="error-state" class="hidden">
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+      <div class="text-red-600 mb-2">⚠️ 게시글을 불러올 수 없습니다</div>
+      <div class="text-sm text-red-500 mb-4" id="error-message"></div>
+      <button onclick="loadPost()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+        다시 시도
+      </button>
+    </div>
+  </div>
 </div>
+
+<!-- 게시글 수정 모달 -->
+<div id="edit-post-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">게시글 수정</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeEditModal()">
+          <span class="sr-only">닫기</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <form id="edit-post-form" class="space-y-4">
+        <div>
+          <label for="edit-title" class="block text-sm font-medium text-gray-700">제목</label>
+          <input type="text" id="edit-title" name="title" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label for="edit-department" class="block text-sm font-medium text-gray-700">부서</label>
+            <select id="edit-department" name="department" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <option value="">부서 선택</option>
+              <option value="의료진">의료진</option>
+              <option value="간호부">간호부</option>
+              <option value="행정부">행정부</option>
+              <option value="시설관리">시설관리</option>
+            </select>
+          </div>
+          
+          <div>
+            <label for="edit-category" class="block text-sm font-medium text-gray-700">카테고리</label>
+            <select id="edit-category" name="category" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+              <option value="">카테고리 선택</option>
+              <option value="work_share">업무공유</option>
+              <option value="qna">질문답변</option>
+              <option value="notice">부서공지</option>
+              <option value="suggestion">건의사항</option>
+            </select>
+          </div>
+        </div>
+        
+        <div>
+          <label for="edit-priority" class="block text-sm font-medium text-gray-700">우선순위</label>
+          <select id="edit-priority" name="priority" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="normal">일반</option>
+            <option value="important">중요</option>
+            <option value="reference">참고</option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="edit-content" class="block text-sm font-medium text-gray-700">내용</label>
+          <textarea id="edit-content" name="content" rows="8" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+        </div>
+        
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input id="edit-is-public" name="is_public" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="edit-is-public" class="ml-2 block text-sm text-gray-900">
+              전체 공개
+            </label>
+          </div>
+          <div class="flex space-x-3">
+            <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              취소
+            </button>
+            <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              수정 완료
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPost = null;
+let currentUser = null;
+
+// 페이지 로드 시 게시글 데이터 로드
+document.addEventListener('DOMContentLoaded', async () => {
+  // 현재 사용자 정보 로드
+  await loadCurrentUser();
+  
+  // URL에서 게시글 ID 추출
+  const postId = window.location.pathname.split('/').pop();
+  await loadPost(postId);
+});
+
+// 현재 사용자 정보 로드
+async function loadCurrentUser() {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
+  
+  try {
+    const response = await fetch('http://localhost:7001/api/v1/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      currentUser = data.user;
+    }
+  } catch (error) {
+    console.error('Failed to load current user:', error);
+  }
+}
+
+// 게시글 데이터 로드
+async function loadPost(postId) {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
+  
+  try {
+    showLoadingState();
+    
+    const response = await fetch(`http://localhost:7001/api/v1/department_posts/${postId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      currentPost = data.data;
+      displayPost(currentPost);
+      displayComments(currentPost.comments || []);
+      hideLoadingState();
+    } else {
+      showErrorState(data.message || '게시글을 불러올 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('Failed to load post:', error);
+    showErrorState('네트워크 오류가 발생했습니다.');
+  }
+}
+
+// 게시글 표시
+function displayPost(post) {
+  // 태그 표시
+  const tagsHtml = `
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${post.priority_color}">
+      ${post.priority_text}
+    </span>
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-green-800 bg-green-100">
+      ${post.category_text}
+    </span>
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-800 bg-gray-100">
+      ${post.department}
+    </span>
+  `;
+  document.getElementById('post-tags').innerHTML = tagsHtml;
+  
+  // 제목
+  document.getElementById('post-title').textContent = post.title;
+  
+  // 메타 정보
+  const metaHtml = `
+    <span>👤 ${post.author}</span>
+    <span>📅 ${new Date(post.created_at).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}</span>
+    ${post.updated_at !== post.created_at ? `<span class="text-blue-600">✏️ 수정됨</span>` : ''}
+  `;
+  document.getElementById('post-meta').innerHTML = metaHtml;
+  
+  // 액션 버튼 (수정/삭제)
+  let actionsHtml = '';
+  if (currentUser && (currentUser.id === post.author_id || currentUser.role >= 2)) {
+    actionsHtml = `
+      <button onclick="openEditModal()" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        ✏️ 수정
+      </button>
+      <button onclick="deletePost()" class="inline-flex items-center px-3 py-1.5 border border-red-300 rounded-md text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+        🗑️ 삭제
+      </button>
+    `;
+  }
+  document.getElementById('post-actions').innerHTML = actionsHtml;
+  
+  // 본문 (줄바꿈 처리)
+  document.getElementById('post-body').innerHTML = post.content.replace(/\n/g, '<br>');
+  
+  // 하단 정보
+  document.getElementById('views-count').textContent = `👁 ${post.views_count || 0}`;
+  document.getElementById('comments-count').textContent = `💬 ${post.comments ? post.comments.length : 0}`;
+  document.getElementById('created-date').textContent = `📅 ${new Date(post.created_at).toLocaleDateString('ko-KR')}`;
+  document.getElementById('total-comments-count').textContent = post.comments ? post.comments.length : 0;
+}
+
+// 댓글 표시
+function displayComments(comments) {
+  const listElement = document.getElementById('comments-list');
+  
+  if (comments.length === 0) {
+    listElement.innerHTML = `
+      <div class="px-6 py-8 text-center text-gray-500">
+        첫 번째 댓글을 작성해보세요!
+      </div>
+    `;
+    return;
+  }
+  
+  listElement.innerHTML = comments.map(comment => createCommentHTML(comment)).join('');
+  document.getElementById('comments-loading').style.display = 'none';
+}
+
+// 댓글 HTML 생성
+function createCommentHTML(comment) {
+  const isAuthor = currentUser && currentUser.id === comment.author_id;
+  const canDelete = currentUser && (currentUser.id === comment.author_id || currentUser.role >= 2);
+  
+  return `
+    <div class="px-6 py-4 comment-item" data-comment-id="${comment.id}">
+      <div class="flex items-start space-x-3">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+            <span class="text-sm text-gray-600">👤</span>
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center space-x-2 mb-1">
+            <span class="text-sm font-medium text-gray-900">${comment.author}</span>
+            <span class="text-xs text-gray-500">${new Date(comment.created_at).toLocaleDateString('ko-KR', {
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}</span>
+            ${isAuthor ? '<span class="text-xs text-blue-600">작성자</span>' : ''}
+          </div>
+          <div class="text-sm text-gray-700 mb-2">${comment.content.replace(/\n/g, '<br>')}</div>
+          <div class="flex items-center space-x-4 text-xs">
+            <button onclick="toggleReplyForm(${comment.id})" class="text-blue-600 hover:text-blue-800">답글</button>
+            ${canDelete ? `<button onclick="deleteComment(${comment.id})" class="text-red-600 hover:text-red-800">삭제</button>` : ''}
+          </div>
+          
+          <!-- 답글 작성 폼 -->
+          <div id="reply-form-${comment.id}" class="mt-3 hidden">
+            <form onsubmit="submitReply(event, ${comment.id})" class="space-y-2">
+              <textarea name="content" rows="2" placeholder="답글을 작성해주세요..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm resize-none" required></textarea>
+              <div class="flex justify-end space-x-2">
+                <button type="button" onclick="toggleReplyForm(${comment.id})" class="px-3 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50">취소</button>
+                <button type="submit" class="px-3 py-1 text-xs font-medium text-white bg-blue-600 border border-transparent rounded hover:bg-blue-700">답글 등록</button>
+              </div>
+            </form>
+          </div>
+          
+          <!-- 답글 목록 -->
+          ${comment.replies && comment.replies.length > 0 ? `
+            <div class="mt-4 space-y-3 border-l-2 border-gray-200 pl-4">
+              ${comment.replies.map(reply => createReplyHTML(reply)).join('')}
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// 답글 HTML 생성
+function createReplyHTML(reply) {
+  const isAuthor = currentUser && currentUser.id === reply.author_id;
+  const canDelete = currentUser && (currentUser.id === reply.author_id || currentUser.role >= 2);
+  
+  return `
+    <div class="flex items-start space-x-3 reply-item" data-reply-id="${reply.id}">
+      <div class="flex-shrink-0">
+        <div class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+          <span class="text-xs text-gray-600">👤</span>
+        </div>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center space-x-2 mb-1">
+          <span class="text-sm font-medium text-gray-900">${reply.author}</span>
+          <span class="text-xs text-gray-500">${new Date(reply.created_at).toLocaleDateString('ko-KR', {
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</span>
+          ${isAuthor ? '<span class="text-xs text-blue-600">작성자</span>' : ''}
+        </div>
+        <div class="text-sm text-gray-700 mb-1">${reply.content.replace(/\n/g, '<br>')}</div>
+        ${canDelete ? `
+          <div class="flex items-center">
+            <button onclick="deleteReply(${reply.id})" class="text-xs text-red-600 hover:text-red-800">삭제</button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// UI 상태 관리
+function showLoadingState() {
+  document.getElementById('loading-state').classList.remove('hidden');
+  document.getElementById('post-content').classList.add('hidden');
+  document.getElementById('error-state').classList.add('hidden');
+}
+
+function hideLoadingState() {
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('post-content').classList.remove('hidden');
+  document.getElementById('error-state').classList.add('hidden');
+}
+
+function showErrorState(message) {
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('post-content').classList.add('hidden');
+  document.getElementById('error-state').classList.remove('hidden');
+  document.getElementById('error-message').textContent = message;
+}
+
+// 임시 기능들 (나중에 구현)
+function toggleLike() {
+  // TODO: 좋아요 기능 구현
+  console.log('좋아요 기능 - 추후 구현 예정');
+}
+
+function toggleBookmark() {
+  // TODO: 북마크 기능 구현
+  console.log('북마크 기능 - 추후 구현 예정');
+}
+
+function sharePost() {
+  // URL 복사 기능
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    alert('게시글 링크가 복사되었습니다!');
+  }).catch(() => {
+    alert('링크 복사에 실패했습니다.');
+  });
+}
+
+function openEditModal() {
+  if (!currentPost) return;
+  
+  // 현재 게시글 데이터로 폼 채우기
+  document.getElementById('edit-title').value = currentPost.title;
+  document.getElementById('edit-department').value = currentPost.department;
+  document.getElementById('edit-category').value = currentPost.category;
+  document.getElementById('edit-priority').value = currentPost.priority;
+  document.getElementById('edit-content').value = currentPost.content;
+  document.getElementById('edit-is-public').checked = currentPost.is_public;
+  
+  document.getElementById('edit-post-modal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+  document.getElementById('edit-post-modal').classList.add('hidden');
+}
+
+async function deletePost() {
+  if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const postId = window.location.pathname.split('/').pop();
+    const response = await fetch(`http://localhost:7001/api/v1/department_posts/${postId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      alert('게시글이 삭제되었습니다.');
+      window.location.href = '/boards'; // 게시판 목록으로 이동
+    } else {
+      alert('게시글 삭제 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to delete post:', error);
+    alert('게시글 삭제 중 오류가 발생했습니다.');
+  }
+}
+
+function toggleReplyForm(commentId) {
+  const form = document.getElementById(`reply-form-${commentId}`);
+  form.classList.toggle('hidden');
+  
+  if (!form.classList.contains('hidden')) {
+    form.querySelector('textarea').focus();
+  }
+}
+
+async function submitReply(event, commentId) {
+  event.preventDefault();
+  
+  const token = localStorage.getItem('auth_token');
+  const form = event.target;
+  const content = form.querySelector('textarea').value.trim();
+  
+  if (!content) {
+    alert('답글 내용을 입력해주세요.');
+    return;
+  }
+  
+  try {
+    const postId = window.location.pathname.split('/').pop();
+    const response = await fetch(`http://localhost:7001/api/v1/department_posts/${postId}/comments/${commentId}/create_reply`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        comment: { content: content }
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      form.reset();
+      toggleReplyForm(commentId); // 답글 폼 숨기기
+      await loadPost(postId); // 댓글 목록 새로고침
+      alert('답글이 등록되었습니다.');
+    } else {
+      alert('답글 등록 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to create reply:', error);
+    alert('답글 등록 중 오류가 발생했습니다.');
+  }
+}
+
+async function deleteComment(commentId) {
+  if (!confirm('댓글을 삭제하시겠습니까?')) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const postId = window.location.pathname.split('/').pop();
+    const response = await fetch(`http://localhost:7001/api/v1/department_posts/${postId}/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      await loadPost(postId); // 댓글 목록 새로고침
+      alert('댓글이 삭제되었습니다.');
+    } else {
+      alert('댓글 삭제 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to delete comment:', error);
+    alert('댓글 삭제 중 오류가 발생했습니다.');
+  }
+}
+
+async function deleteReply(replyId) {
+  if (!confirm('답글을 삭제하시겠습니까?')) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const postId = window.location.pathname.split('/').pop();
+    const response = await fetch(`http://localhost:7001/api/v1/department_posts/${postId}/comments/${replyId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      await loadPost(postId); // 댓글 목록 새로고침
+      alert('답글이 삭제되었습니다.');
+    } else {
+      alert('답글 삭제 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to delete reply:', error);
+    alert('답글 삭제 중 오류가 발생했습니다.');
+  }
+}
+
+// 댓글 등록
+document.getElementById('comment-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const token = localStorage.getItem('auth_token');
+  const content = document.getElementById('comment-content').value.trim();
+  
+  if (!content) {
+    alert('댓글 내용을 입력해주세요.');
+    return;
+  }
+  
+  try {
+    const postId = window.location.pathname.split('/').pop();
+    const response = await fetch(`http://localhost:7001/api/v1/department_posts/${postId}/comments`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        comment: { content: content }
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      document.getElementById('comment-content').value = '';
+      await loadPost(postId); // 댓글 목록 새로고침
+      alert('댓글이 등록되었습니다.');
+    } else {
+      alert('댓글 등록 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to create comment:', error);
+    alert('댓글 등록 중 오류가 발생했습니다.');
+  }
+});
+
+// 게시글 수정
+document.getElementById('edit-post-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const token = localStorage.getItem('auth_token');
+  const formData = new FormData(e.target);
+  
+  const postData = {
+    title: formData.get('title'),
+    content: formData.get('content'),
+    department: formData.get('department'),
+    category: formData.get('category'),
+    priority: formData.get('priority'),
+    is_public: formData.get('is_public') === 'on'
+  };
+  
+  try {
+    const postId = window.location.pathname.split('/').pop();
+    const response = await fetch(`http://localhost:7001/api/v1/department_posts/${postId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ department_post: postData })
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      closeEditModal();
+      await loadPost(postId); // 게시글 새로고침
+      alert('게시글이 수정되었습니다.');
+    } else {
+      alert('게시글 수정 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to update post:', error);
+    alert('게시글 수정 중 오류가 발생했습니다.');
+  }
+});
+</script>

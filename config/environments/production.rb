@@ -63,18 +63,19 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
-  # Replace the default in-process memory cache store with a durable alternative.
-  # config.cache_store = :mem_cache_store
+  # Railway 환경에서 캐시 설정
+  config.cache_store = :memory_store, { size: 32.megabytes }
 
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  # config.active_job.queue_adapter = :resque
+  # Active Job 비활성화 (Frontend는 API 클라이언트)
+  # config.active_job.queue_adapter = :async
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  frontend_host = ENV["RAILWAY_PUBLIC_DOMAIN"] || ENV["RAILWAY_STATIC_URL"] || "localhost"
+  config.action_mailer.default_url_options = { host: frontend_host, protocol: 'https' }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
@@ -106,4 +107,45 @@ Rails.application.configure do
   
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Railway Frontend 최적화
+  # Asset 파이프라인 최적화
+  config.assets.compile = false
+  config.assets.digest = true
+  config.assets.version = '1.0'
+  
+  # Gzip 압축 활성화
+  config.middleware.use Rack::Deflate
+
+  # 보안 헤더 설정 (CSP는 별도 설정)
+  config.force_ssl_exceptions = ["/up", "/assets"]
+  
+  # 세션 보안 강화
+  config.session_store :cookie_store,
+    key: '_hospital_frontend_session',
+    secure: true,
+    httponly: true,
+    same_site: :lax,
+    expire_after: 24.hours
+
+  # Railway 환경 변수 검증
+  required_env_vars = %w[BACKEND_API_URL]
+  missing_vars = required_env_vars.select { |var| ENV[var].blank? }
+  
+  if missing_vars.any? && !ENV['RAILS_GROUPS'] == 'assets'
+    Rails.logger.error "Missing required environment variables: #{missing_vars.join(', ')}"
+  end
+
+  # CSP 헤더 설정 (Frontend 보안)
+  config.content_security_policy do |policy|
+    policy.default_src :self
+    policy.script_src :self, :unsafe_inline, :unsafe_eval, 'https://cdn.jsdelivr.net'
+    policy.style_src :self, :unsafe_inline, 'https://cdn.jsdelivr.net', 'https://fonts.googleapis.com'
+    policy.font_src :self, 'https://fonts.gstatic.com'
+    policy.img_src :self, :data, :https
+    policy.connect_src :self, ENV["BACKEND_API_URL"]
+  end
+
+  config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
+  config.content_security_policy_nonce_directives = %w(script-src)
 end

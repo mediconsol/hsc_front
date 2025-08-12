@@ -1,4 +1,582 @@
-<div>
-  <h1 class="font-bold text-4xl">Documents#show</h1>
-  <p>Find me in app/views/documents/show.html.erb</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <!-- 뒤로가기 버튼 -->
+  <div class="mb-6">
+    <button onclick="history.back()" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      문서 목록으로 돌아가기
+    </button>
+  </div>
+
+  <!-- 문서 로딩 상태 -->
+  <div id="loading-state" class="animate-pulse">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+        <div class="flex space-x-2">
+          <div class="h-4 bg-gray-200 rounded w-16"></div>
+          <div class="h-4 bg-gray-200 rounded w-20"></div>
+          <div class="h-4 bg-gray-200 rounded w-24"></div>
+        </div>
+      </div>
+      <div class="px-6 py-6">
+        <div class="space-y-3">
+          <div class="h-4 bg-gray-200 rounded"></div>
+          <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+          <div class="h-4 bg-gray-200 rounded w-4/6"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 문서 내용 -->
+  <div id="document-content" class="hidden">
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <!-- 문서 헤더 -->
+      <div class="px-6 py-4 border-b border-gray-200">
+        <div class="flex items-start justify-between">
+          <div class="flex-1">
+            <!-- 상태 및 유형 태그 -->
+            <div class="flex items-center mb-3 space-x-2" id="document-tags">
+              <!-- 동적으로 생성 -->
+            </div>
+            
+            <!-- 제목 -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-2" id="document-title">
+              <!-- 동적으로 생성 -->
+            </h1>
+            
+            <!-- 메타 정보 -->
+            <div class="flex items-center text-sm text-gray-500 space-x-4" id="document-meta">
+              <!-- 동적으로 생성 -->
+            </div>
+          </div>
+          
+          <!-- 액션 버튼들 -->
+          <div class="ml-6 flex items-center space-x-2" id="document-actions">
+            <!-- 동적으로 생성 -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 문서 본문 -->
+      <div class="px-6 py-6">
+        <div class="prose max-w-none text-gray-900" id="document-body">
+          <!-- 동적으로 생성 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 결재선 및 진행 상황 -->
+    <div class="mt-8" id="approval-section">
+      <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <!-- 결재선 헤더 -->
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-medium text-gray-900">
+            결재 진행 상황
+          </h3>
+          <div class="mt-2">
+            <div class="flex items-center">
+              <div class="flex-1 bg-gray-200 rounded-full h-2">
+                <div class="h-2 bg-blue-600 rounded-full transition-all duration-300" id="approval-progress-bar" style="width: 0%"></div>
+              </div>
+              <span class="ml-3 text-sm text-gray-600" id="approval-progress-text">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 결재선 목록 -->
+        <div id="approval-list" class="divide-y divide-gray-200">
+          <!-- 동적으로 생성 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 에러 상태 -->
+  <div id="error-state" class="hidden">
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+      <div class="text-red-600 mb-2">⚠️ 문서를 불러올 수 없습니다</div>
+      <div class="text-sm text-red-500 mb-4" id="error-message"></div>
+      <button onclick="loadDocument()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+        다시 시도
+      </button>
+    </div>
+  </div>
 </div>
+
+<!-- 결재 승인 모달 -->
+<div id="approve-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">결재 승인</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeApproveModal()">
+          <span class="sr-only">닫기</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <form id="approve-form" class="space-y-4">
+        <div>
+          <label for="approve-comments" class="block text-sm font-medium text-gray-700">승인 의견 (선택사항)</label>
+          <textarea id="approve-comments" name="comments" rows="3" placeholder="승인 의견을 입력하세요..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"></textarea>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="closeApproveModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            취소
+          </button>
+          <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+            승인하기
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 결재 반려 모달 -->
+<div id="reject-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-medium text-gray-900">결재 반려</h3>
+        <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeRejectModal()">
+          <span class="sr-only">닫기</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <form id="reject-form" class="space-y-4">
+        <div>
+          <label for="reject-comments" class="block text-sm font-medium text-gray-700">반려 사유 <span class="text-red-500">*</span></label>
+          <textarea id="reject-comments" name="comments" rows="4" placeholder="반려 사유를 입력하세요..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 sm:text-sm" required></textarea>
+        </div>
+        
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="closeRejectModal()" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            취소
+          </button>
+          <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+            반려하기
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentDocument = null;
+let currentUser = null;
+let currentApproval = null;
+
+// 페이지 로드 시 문서 데이터 로드
+document.addEventListener('DOMContentLoaded', async () => {
+  // 현재 사용자 정보 로드
+  await loadCurrentUser();
+  
+  // URL에서 문서 ID 추출
+  const documentId = window.location.pathname.split('/').pop();
+  await loadDocument(documentId);
+});
+
+// 현재 사용자 정보 로드
+async function loadCurrentUser() {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
+  
+  try {
+    const response = await fetch('http://localhost:7001/api/v1/auth/me', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      currentUser = data.user;
+    }
+  } catch (error) {
+    console.error('Failed to load current user:', error);
+  }
+}
+
+// 문서 데이터 로드
+async function loadDocument(documentId) {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
+  
+  try {
+    showLoadingState();
+    
+    const response = await fetch(`http://localhost:7001/api/v1/documents/${documentId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      currentDocument = data.data;
+      displayDocument(currentDocument);
+      displayApprovals(currentDocument.approvals || []);
+      hideLoadingState();
+    } else {
+      showErrorState(data.message || '문서를 불러올 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('Failed to load document:', error);
+    showErrorState('네트워크 오류가 발생했습니다.');
+  }
+}
+
+// 문서 표시
+function displayDocument(doc) {
+  // 상태 및 유형 태그
+  const tagsHtml = `
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${doc.status_color}">
+      ${doc.status_text}
+    </span>
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-purple-800 bg-purple-100">
+      ${doc.document_type_text}
+    </span>
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-800 bg-gray-100">
+      ${doc.department}
+    </span>
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-blue-800 bg-blue-100">
+      ${doc.security_level_text}
+    </span>
+  `;
+  document.getElementById('document-tags').innerHTML = tagsHtml;
+  
+  // 제목
+  document.getElementById('document-title').textContent = doc.title;
+  
+  // 메타 정보
+  const metaHtml = `
+    <span>👤 작성자: ${doc.author}</span>
+    <span>📅 작성일: ${new Date(doc.created_at).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })}</span>
+    <span>📄 버전: v${doc.version}</span>
+    ${doc.updated_at !== doc.created_at ? `<span class="text-blue-600">✏️ 수정됨</span>` : ''}
+  `;
+  document.getElementById('document-meta').innerHTML = metaHtml;
+  
+  // 액션 버튼
+  let actionsHtml = '';
+  if (currentUser) {
+    // 작성자 또는 관리자인 경우
+    if (doc.can_edit && doc.status === 'draft') {
+      actionsHtml += `
+        <button onclick="editDocument()" class="inline-flex items-center px-3 py-1.5 border border-blue-300 rounded-md text-sm font-medium text-blue-700 bg-white hover:bg-blue-50">
+          ✏️ 수정
+        </button>
+      `;
+    }
+    
+    // 결재 요청자 액션
+    if (doc.author_id === currentUser.id) {
+      if (doc.status === 'pending') {
+        actionsHtml += `
+          <button onclick="cancelApproval()" class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            🚫 결재 취소
+          </button>
+          <button onclick="recallApproval()" class="inline-flex items-center px-3 py-1.5 border border-yellow-300 rounded-md text-sm font-medium text-yellow-700 bg-white hover:bg-yellow-50">
+            ↩️ 결재 회수
+          </button>
+        `;
+      }
+    }
+  }
+  document.getElementById('document-actions').innerHTML = actionsHtml;
+  
+  // 본문 (줄바꿈 처리)
+  document.getElementById('document-body').innerHTML = doc.content.replace(/\n/g, '<br>');
+}
+
+// 결재선 표시
+function displayApprovals(approvals) {
+  const listElement = document.getElementById('approval-list');
+  const progressBar = document.getElementById('approval-progress-bar');
+  const progressText = document.getElementById('approval-progress-text');
+  
+  if (approvals.length === 0) {
+    listElement.innerHTML = `
+      <div class="px-6 py-8 text-center text-gray-500">
+        결재선이 설정되지 않았습니다.
+      </div>
+    `;
+    return;
+  }
+  
+  // 진행률 업데이트
+  const progress = currentDocument.approval_progress || 0;
+  progressBar.style.width = `${progress}%`;
+  progressText.textContent = `${progress}%`;
+  
+  // 현재 사용자의 결재 권한 확인
+  currentApproval = approvals.find(approval => approval.can_approve);
+  
+  listElement.innerHTML = approvals.map((approval, index) => {
+    const isCurrentStep = approval.status === 'pending' && index === 0;
+    const canApprove = approval.can_approve;
+    
+    return `
+      <div class="px-6 py-4 ${isCurrentStep ? 'bg-yellow-50 border-l-4 border-yellow-400' : ''}">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="flex-shrink-0">
+              ${getApprovalIcon(approval.status)}
+            </div>
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm font-medium text-gray-900">${index + 1}순위 결재자</span>
+                <span class="text-sm text-gray-600">${approval.approver}</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${approval.status_color}">
+                  ${approval.status_text}
+                </span>
+              </div>
+              ${approval.comments ? `
+                <div class="mt-1 text-sm text-gray-600">
+                  💬 ${approval.comments}
+                </div>
+              ` : ''}
+              ${approval.approved_at ? `
+                <div class="mt-1 text-xs text-gray-500">
+                  📅 ${new Date(approval.approved_at).toLocaleDateString('ko-KR', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+          
+          ${canApprove ? `
+            <div class="flex space-x-2">
+              <button onclick="openApproveModal(${approval.id})" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700">
+                ✅ 승인
+              </button>
+              <button onclick="openRejectModal(${approval.id})" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md text-sm font-medium text-white bg-red-600 hover:bg-red-700">
+                ❌ 반려
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// 결재 상태 아이콘
+function getApprovalIcon(status) {
+  switch (status) {
+    case 'pending':
+      return '<div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center"><span class="text-yellow-600">⏳</span></div>';
+    case 'approved':
+      return '<div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center"><span class="text-green-600">✅</span></div>';
+    case 'rejected':
+      return '<div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center"><span class="text-red-600">❌</span></div>';
+    case 'skipped':
+      return '<div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center"><span class="text-gray-600">⏭️</span></div>';
+    default:
+      return '<div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center"><span class="text-gray-600">❓</span></div>';
+  }
+}
+
+// UI 상태 관리
+function showLoadingState() {
+  document.getElementById('loading-state').classList.remove('hidden');
+  document.getElementById('document-content').classList.add('hidden');
+  document.getElementById('error-state').classList.add('hidden');
+}
+
+function hideLoadingState() {
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('document-content').classList.remove('hidden');
+  document.getElementById('error-state').classList.add('hidden');
+}
+
+function showErrorState(message) {
+  document.getElementById('loading-state').classList.add('hidden');
+  document.getElementById('document-content').classList.add('hidden');
+  document.getElementById('error-state').classList.remove('hidden');
+  document.getElementById('error-message').textContent = message;
+}
+
+// 결재 승인 모달
+let currentApprovalId = null;
+
+function openApproveModal(approvalId) {
+  currentApprovalId = approvalId;
+  document.getElementById('approve-modal').classList.remove('hidden');
+}
+
+function closeApproveModal() {
+  document.getElementById('approve-modal').classList.add('hidden');
+  document.getElementById('approve-form').reset();
+}
+
+function openRejectModal(approvalId) {
+  currentApprovalId = approvalId;
+  document.getElementById('reject-modal').classList.remove('hidden');
+}
+
+function closeRejectModal() {
+  document.getElementById('reject-modal').classList.add('hidden');
+  document.getElementById('reject-form').reset();
+}
+
+// 결재 승인
+document.getElementById('approve-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const token = localStorage.getItem('auth_token');
+  const formData = new FormData(e.target);
+  const comments = formData.get('comments');
+  
+  try {
+    const response = await fetch(`http://localhost:7001/api/v1/documents/${currentDocument.id}/approvals/${currentApprovalId}/approve`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ comments: comments })
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      closeApproveModal();
+      await loadDocument(currentDocument.id);
+      alert('결재가 승인되었습니다.');
+    } else {
+      alert('결재 승인 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to approve:', error);
+    alert('결재 승인 중 오류가 발생했습니다.');
+  }
+});
+
+// 결재 반려
+document.getElementById('reject-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const token = localStorage.getItem('auth_token');
+  const formData = new FormData(e.target);
+  const comments = formData.get('comments');
+  
+  if (!comments.trim()) {
+    alert('반려 사유를 입력해주세요.');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`http://localhost:7001/api/v1/documents/${currentDocument.id}/approvals/${currentApprovalId}/reject`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ comments: comments })
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      closeRejectModal();
+      await loadDocument(currentDocument.id);
+      alert('결재가 반려되었습니다.');
+    } else {
+      alert('결재 반려 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to reject:', error);
+    alert('결재 반려 중 오류가 발생했습니다.');
+  }
+});
+
+// 문서 액션 함수들
+function editDocument() {
+  window.location.href = `/documents/${currentDocument.id}/edit`;
+}
+
+async function cancelApproval() {
+  if (!confirm('정말로 결재를 취소하시겠습니까?')) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const response = await fetch(`http://localhost:7001/api/v1/documents/${currentDocument.id}/cancel_approval`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      await loadDocument(currentDocument.id);
+      alert('결재가 취소되었습니다.');
+    } else {
+      alert('결재 취소 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to cancel approval:', error);
+    alert('결재 취소 중 오류가 발생했습니다.');
+  }
+}
+
+async function recallApproval() {
+  if (!confirm('정말로 결재를 회수하시겠습니까? 문서를 다시 수정할 수 있게 됩니다.')) return;
+  
+  const token = localStorage.getItem('auth_token');
+  
+  try {
+    const response = await fetch(`http://localhost:7001/api/v1/documents/${currentDocument.id}/recall_approval`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const data = await response.json();
+    
+    if (data.status === 'success') {
+      await loadDocument(currentDocument.id);
+      alert('결재가 회수되었습니다. 문서를 다시 수정할 수 있습니다.');
+    } else {
+      alert('결재 회수 실패: ' + (data.message || '알 수 없는 오류'));
+    }
+  } catch (error) {
+    console.error('Failed to recall approval:', error);
+    alert('결재 회수 중 오류가 발생했습니다.');
+  }
+}
+</script>

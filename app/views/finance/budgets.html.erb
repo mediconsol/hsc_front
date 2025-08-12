@@ -1,0 +1,590 @@
+<% content_for :title, "예산 관리" %>
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="flex items-center space-x-3">
+              <a href="/finance" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </a>
+              <h1 class="text-3xl font-bold text-gray-900">예산 관리</h1>
+            </div>
+            <p class="mt-2 text-gray-600">부서별 예산 계획을 수립하고 사용 현황을 모니터링합니다</p>
+          </div>
+          <div class="flex space-x-3">
+            <button onclick="openCreateBudgetModal()" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              예산 추가
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 필터 및 검색 -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- 검색 -->
+        <div class="lg:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2">검색</label>
+          <input type="text" id="search-input" placeholder="부서, 카테고리, 설명 검색..."
+                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+        
+        <!-- 부서 필터 -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">부서</label>
+          <select id="department-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="">전체 부서</option>
+          </select>
+        </div>
+        
+        <!-- 카테고리 필터 -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">카테고리</label>
+          <select id="category-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="">전체 카테고리</option>
+          </select>
+        </div>
+        
+        <!-- 상태 필터 -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">상태</label>
+          <select id="status-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            <option value="">전체 상태</option>
+            <option value="active">활성</option>
+            <option value="closed">마감</option>
+            <option value="suspended">중단</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 예산 목록 -->
+    <div class="bg-white rounded-lg shadow-sm border">
+      <!-- 테이블 헤더 -->
+      <div class="px-6 py-4 border-b bg-gray-50">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">예산 목록</h3>
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-gray-600">총 <span id="total-count">0</span>건</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 테이블 -->
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50 border-b">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">부서/카테고리</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">회계연도</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">배정 예산</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">사용 현황</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">사용률</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상태</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">담당자</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">작업</th>
+            </tr>
+          </thead>
+          <tbody id="budgets-table-body" class="bg-white divide-y divide-gray-200">
+            <!-- JavaScript로 채워질 내용 -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 로딩/빈 상태 -->
+      <div id="loading-state" class="text-center py-12">
+        <svg class="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        <p class="text-gray-600">데이터를 불러오는 중...</p>
+      </div>
+
+      <div id="empty-state" class="text-center py-12 hidden">
+        <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+        <p class="text-gray-600">검색 조건에 맞는 예산이 없습니다</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 예산 생성/수정 모달 -->
+<div id="budget-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg max-w-md w-full mx-4 max-h-screen overflow-y-auto">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 id="modal-title" class="text-lg font-semibold text-gray-900">새 예산 추가</h3>
+        <button onclick="closeBudgetModal()" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <form id="budget-form" onsubmit="saveBudget(event)">
+        <input type="hidden" id="budget-id">
+        
+        <div class="space-y-4">
+          <!-- 부서 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">부서 *</label>
+            <select id="modal-department" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">부서를 선택하세요</option>
+            </select>
+          </div>
+
+          <!-- 카테고리 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">카테고리 *</label>
+            <select id="modal-category" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="">카테고리를 선택하세요</option>
+            </select>
+          </div>
+
+          <!-- 회계연도 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">회계연도 *</label>
+            <select id="modal-fiscal-year" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="2024">2024년</option>
+              <option value="2025">2025년</option>
+              <option value="2026">2026년</option>
+            </select>
+          </div>
+
+          <!-- 기간 유형 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">기간 유형 *</label>
+            <select id="modal-period-type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="annual">연간</option>
+              <option value="quarterly">분기별</option>
+              <option value="monthly">월별</option>
+            </select>
+          </div>
+
+          <!-- 배정 금액 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">배정 금액 *</label>
+            <input type="number" id="modal-allocated-amount" required min="0" step="1000"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                   placeholder="예산 금액을 입력하세요">
+          </div>
+
+          <!-- 상태 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">상태</label>
+            <select id="modal-status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+              <option value="active">활성</option>
+              <option value="closed">마감</option>
+              <option value="suspended">중단</option>
+            </select>
+          </div>
+
+          <!-- 설명 -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">설명</label>
+            <textarea id="modal-description" rows="3"
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="예산에 대한 설명을 입력하세요"></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6">
+          <button type="button" onclick="closeBudgetModal()" class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+            취소
+          </button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            저장
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+let budgets = [];
+let departments = [];
+let categories = [];
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadDepartments();
+  loadCategories();
+  loadBudgets();
+  setupFilterListeners();
+  
+  // 현재 연도를 기본값으로 설정
+  const currentYear = new Date().getFullYear();
+  document.getElementById('modal-fiscal-year').value = currentYear;
+});
+
+function setupFilterListeners() {
+  const searchInput = document.getElementById('search-input');
+  const departmentFilter = document.getElementById('department-filter');
+  const categoryFilter = document.getElementById('category-filter');
+  const statusFilter = document.getElementById('status-filter');
+
+  let debounceTimer;
+  
+  [searchInput, departmentFilter, categoryFilter, statusFilter].forEach(element => {
+    element.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(applyFilters, 300);
+    });
+  });
+}
+
+async function loadDepartments() {
+  try {
+    const response = await fetch('/api/v1/budgets/departments', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) throw new Error('부서 목록 로드 실패');
+    const result = await response.json();
+    
+    departments = result.data || [];
+    
+    // 필터 옵션 업데이트
+    const departmentFilter = document.getElementById('department-filter');
+    const modalDepartment = document.getElementById('modal-department');
+    
+    [departmentFilter, modalDepartment].forEach(select => {
+      if (select) {
+        const currentValue = select.value;
+        select.innerHTML = select === departmentFilter ? '<option value="">전체 부서</option>' : '<option value="">부서를 선택하세요</option>';
+        
+        departments.forEach(dept => {
+          const option = document.createElement('option');
+          option.value = dept.value;
+          option.textContent = dept.text;
+          select.appendChild(option);
+        });
+        
+        if (currentValue) select.value = currentValue;
+      }
+    });
+  } catch (error) {
+    console.error('부서 목록 로드 실패:', error);
+  }
+}
+
+async function loadCategories() {
+  try {
+    const response = await fetch('/api/v1/budgets/categories', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) throw new Error('카테고리 목록 로드 실패');
+    const result = await response.json();
+    
+    categories = result.data || [];
+    
+    // 필터 옵션 업데이트
+    const categoryFilter = document.getElementById('category-filter');
+    const modalCategory = document.getElementById('modal-category');
+    
+    [categoryFilter, modalCategory].forEach(select => {
+      if (select) {
+        const currentValue = select.value;
+        select.innerHTML = select === categoryFilter ? '<option value="">전체 카테고리</option>' : '<option value="">카테고리를 선택하세요</option>';
+        
+        categories.forEach(cat => {
+          const option = document.createElement('option');
+          option.value = cat.value;
+          option.textContent = cat.text;
+          select.appendChild(option);
+        });
+        
+        if (currentValue) select.value = currentValue;
+      }
+    });
+  } catch (error) {
+    console.error('카테고리 목록 로드 실패:', error);
+  }
+}
+
+async function loadBudgets() {
+  try {
+    showLoading();
+    
+    const params = new URLSearchParams();
+    applyCurrentFilters(params);
+    
+    const response = await fetch(`/api/v1/budgets?${params}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) throw new Error('예산 목록 로드 실패');
+    const result = await response.json();
+    
+    budgets = result.data || [];
+    displayBudgets();
+    updateTotalCount(result.meta?.total || 0);
+    
+  } catch (error) {
+    console.error('예산 목록 로드 실패:', error);
+    showError('예산 목록을 불러오는 데 실패했습니다.');
+  }
+}
+
+function applyCurrentFilters(params) {
+  const search = document.getElementById('search-input').value.trim();
+  const department = document.getElementById('department-filter').value;
+  const category = document.getElementById('category-filter').value;
+  const status = document.getElementById('status-filter').value;
+
+  if (search) params.append('search', search);
+  if (department) params.append('department', department);
+  if (category) params.append('category', category);
+  if (status) params.append('status', status);
+}
+
+function applyFilters() {
+  loadBudgets();
+}
+
+function displayBudgets() {
+  const tbody = document.getElementById('budgets-table-body');
+  
+  hideLoading();
+  
+  if (budgets.length === 0) {
+    showEmpty();
+    tbody.innerHTML = '';
+    return;
+  }
+  
+  hideEmpty();
+  
+  tbody.innerHTML = budgets.map(budget => `
+    <tr class="hover:bg-gray-50">
+      <td class="px-6 py-4">
+        <div>
+          <div class="font-medium text-gray-900">${budget.department_text}</div>
+          <div class="text-sm text-gray-600">${budget.category_text}</div>
+        </div>
+      </td>
+      <td class="px-6 py-4">
+        <span class="text-sm text-gray-900">${budget.fiscal_year}년</span>
+        <div class="text-xs text-gray-500">${budget.period_type_text}</div>
+      </td>
+      <td class="px-6 py-4">
+        <div class="text-sm font-medium text-gray-900">${formatCurrency(budget.allocated_amount)}</div>
+      </td>
+      <td class="px-6 py-4">
+        <div class="text-sm text-gray-900">${formatCurrency(budget.used_amount)}</div>
+        <div class="text-xs text-gray-500">잔액: ${formatCurrency(budget.remaining_amount)}</div>
+      </td>
+      <td class="px-6 py-4">
+        <div class="flex items-center">
+          <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
+            <div class="h-2 rounded-full ${getUsageColor(budget.usage_percentage)}" 
+                 style="width: ${Math.min(budget.usage_percentage, 100)}%"></div>
+          </div>
+          <span class="text-sm font-medium ${getUsageTextColor(budget.usage_percentage)}">
+            ${budget.usage_percentage}%
+          </span>
+          ${budget.is_over_budget ? '<span class="ml-1 text-red-500">⚠️</span>' : ''}
+        </div>
+      </td>
+      <td class="px-6 py-4">
+        <span class="px-2 py-1 text-xs font-medium rounded-full ${budget.status_color}">
+          ${budget.status_text}
+        </span>
+      </td>
+      <td class="px-6 py-4">
+        <div class="text-sm text-gray-900">${budget.manager.name}</div>
+        <div class="text-xs text-gray-500">${budget.manager.email}</div>
+      </td>
+      <td class="px-6 py-4">
+        <div class="flex items-center space-x-2">
+          ${budget.can_edit ? `
+            <button onclick="editBudget(${budget.id})" class="text-blue-600 hover:text-blue-800 text-sm">
+              수정
+            </button>
+            <button onclick="deleteBudget(${budget.id})" class="text-red-600 hover:text-red-800 text-sm">
+              삭제
+            </button>
+          ` : `
+            <span class="text-gray-400 text-sm">권한 없음</span>
+          `}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function getUsageColor(percentage) {
+  if (percentage > 90) return 'bg-red-500';
+  if (percentage > 70) return 'bg-yellow-500';
+  return 'bg-green-500';
+}
+
+function getUsageTextColor(percentage) {
+  if (percentage > 90) return 'text-red-600';
+  if (percentage > 70) return 'text-yellow-600';
+  return 'text-green-600';
+}
+
+function showLoading() {
+  document.getElementById('loading-state').classList.remove('hidden');
+  document.getElementById('empty-state').classList.add('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loading-state').classList.add('hidden');
+}
+
+function showEmpty() {
+  document.getElementById('empty-state').classList.remove('hidden');
+}
+
+function hideEmpty() {
+  document.getElementById('empty-state').classList.add('hidden');
+}
+
+function updateTotalCount(count) {
+  document.getElementById('total-count').textContent = count;
+}
+
+function openCreateBudgetModal() {
+  document.getElementById('modal-title').textContent = '새 예산 추가';
+  document.getElementById('budget-form').reset();
+  document.getElementById('budget-id').value = '';
+  
+  // 현재 연도를 기본값으로 설정
+  const currentYear = new Date().getFullYear();
+  document.getElementById('modal-fiscal-year').value = currentYear;
+  
+  document.getElementById('budget-modal').classList.remove('hidden');
+}
+
+function editBudget(budgetId) {
+  const budget = budgets.find(b => b.id === budgetId);
+  if (!budget) return;
+  
+  document.getElementById('modal-title').textContent = '예산 수정';
+  document.getElementById('budget-id').value = budget.id;
+  document.getElementById('modal-department').value = budget.department;
+  document.getElementById('modal-category').value = budget.category;
+  document.getElementById('modal-fiscal-year').value = budget.fiscal_year;
+  document.getElementById('modal-period-type').value = budget.period_type;
+  document.getElementById('modal-allocated-amount').value = budget.allocated_amount;
+  document.getElementById('modal-status').value = budget.status;
+  document.getElementById('modal-description').value = budget.description || '';
+  
+  document.getElementById('budget-modal').classList.remove('hidden');
+}
+
+function closeBudgetModal() {
+  document.getElementById('budget-modal').classList.add('hidden');
+}
+
+async function saveBudget(event) {
+  event.preventDefault();
+  
+  const budgetId = document.getElementById('budget-id').value;
+  const formData = {
+    department: document.getElementById('modal-department').value,
+    category: document.getElementById('modal-category').value,
+    fiscal_year: parseInt(document.getElementById('modal-fiscal-year').value),
+    period_type: document.getElementById('modal-period-type').value,
+    allocated_amount: parseFloat(document.getElementById('modal-allocated-amount').value),
+    status: document.getElementById('modal-status').value,
+    description: document.getElementById('modal-description').value
+  };
+
+  try {
+    const url = budgetId ? `/api/v1/budgets/${budgetId}` : '/api/v1/budgets';
+    const method = budgetId ? 'PATCH' : 'POST';
+    
+    const response = await fetch(url, {
+      method: method,
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ budget: formData })
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      showSuccess(result.message);
+      closeBudgetModal();
+      loadBudgets();
+    } else {
+      showError(result.message || '예산 저장에 실패했습니다.');
+    }
+  } catch (error) {
+    console.error('예산 저장 실패:', error);
+    showError('예산 저장 중 오류가 발생했습니다.');
+  }
+}
+
+async function deleteBudget(budgetId) {
+  if (!confirm('정말로 이 예산을 삭제하시겠습니까?')) return;
+  
+  try {
+    const response = await fetch(`/api/v1/budgets/${budgetId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      showSuccess(result.message);
+      loadBudgets();
+    } else {
+      showError(result.message || '예산 삭제에 실패했습니다.');
+    }
+  } catch (error) {
+    console.error('예산 삭제 실패:', error);
+    showError('예산 삭제 중 오류가 발생했습니다.');
+  }
+}
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('ko-KR', {
+    style: 'currency',
+    currency: 'KRW'
+  }).format(amount);
+}
+
+function showSuccess(message) {
+  // 성공 메시지 표시 (실제로는 toast로 구현)
+  alert(message);
+}
+
+function showError(message) {
+  // 에러 메시지 표시 (실제로는 toast로 구현)
+  alert(message);
+}
+</script>

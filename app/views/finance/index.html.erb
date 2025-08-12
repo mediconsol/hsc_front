@@ -1,0 +1,549 @@
+<% content_for :title, "예산/재무 관리" %>
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">예산/재무 관리</h1>
+            <p class="mt-2 text-gray-600">병원 예산 계획, 지출 관리, 청구서 처리를 통합 관리합니다</p>
+          </div>
+          <div class="flex space-x-3">
+            <button onclick="exportFinanceReport()" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              재무 보고서
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 대시보드 통계 -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- 주요 통계 카드 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="flex items-center">
+          <div class="p-3 bg-blue-100 rounded-lg">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-600">전체 예산</p>
+            <p class="text-2xl font-bold text-gray-900" id="total-budget">₩0</p>
+            <p class="text-sm text-green-600" id="budget-change">+0%</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="flex items-center">
+          <div class="p-3 bg-green-100 rounded-lg">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-600">이번 달 지출</p>
+            <p class="text-2xl font-bold text-gray-900" id="monthly-expenses">₩0</p>
+            <p class="text-sm text-gray-600" id="expense-change">vs 지난달</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="flex items-center">
+          <div class="p-3 bg-yellow-100 rounded-lg">
+            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-600">승인 대기</p>
+            <p class="text-2xl font-bold text-gray-900" id="pending-approvals">0</p>
+            <p class="text-sm text-yellow-600">처리 필요</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-lg shadow-sm border">
+        <div class="flex items-center">
+          <div class="p-3 bg-red-100 rounded-lg">
+            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm text-gray-600">연체 청구서</p>
+            <p class="text-2xl font-bold text-gray-900" id="overdue-invoices">0</p>
+            <p class="text-sm text-red-600">즉시 처리</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 메인 콘텐츠 영역 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- 왼쪽: 메뉴 카드들 -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- 예산 관리 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="p-3 bg-blue-100 rounded-lg">
+                  <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <h3 class="text-lg font-semibold text-gray-900">예산 관리</h3>
+                  <p class="text-gray-600">부서별 예산 계획 및 배정 관리</p>
+                </div>
+              </div>
+              <a href="/finance/budgets" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
+                <span>관리하기</span>
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+            <div class="grid grid-cols-3 gap-4 pt-4 border-t">
+              <div class="text-center">
+                <p class="text-sm text-gray-600">활성 예산</p>
+                <p class="text-xl font-bold text-blue-600" id="active-budgets">0</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600">예산 사용률</p>
+                <p class="text-xl font-bold text-green-600" id="budget-usage">0%</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600">초과 예산</p>
+                <p class="text-xl font-bold text-red-600" id="over-budget">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 지출 관리 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="p-3 bg-green-100 rounded-lg">
+                  <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <h3 class="text-lg font-semibold text-gray-900">지출 관리</h3>
+                  <p class="text-gray-600">지출 요청, 승인 및 지급 처리</p>
+                </div>
+              </div>
+              <a href="/finance/expenses" class="inline-flex items-center px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+                <span>관리하기</span>
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+            <div class="grid grid-cols-3 gap-4 pt-4 border-t">
+              <div class="text-center">
+                <p class="text-sm text-gray-600">이번 달 지출</p>
+                <p class="text-xl font-bold text-green-600" id="month-expenses">₩0</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600">승인 대기</p>
+                <p class="text-xl font-bold text-yellow-600" id="pending-expenses">0</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600">긴급 처리</p>
+                <p class="text-xl font-bold text-red-600" id="urgent-expenses">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 청구서 관리 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center">
+                <div class="p-3 bg-purple-100 rounded-lg">
+                  <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <h3 class="text-lg font-semibold text-gray-900">청구서 관리</h3>
+                  <p class="text-gray-600">공급업체 청구서 접수 및 지급 처리</p>
+                </div>
+              </div>
+              <a href="/finance/invoices" class="inline-flex items-center px-4 py-2 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors">
+                <span>관리하기</span>
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+            <div class="grid grid-cols-3 gap-4 pt-4 border-t">
+              <div class="text-center">
+                <p class="text-sm text-gray-600">미지급 금액</p>
+                <p class="text-xl font-bold text-purple-600" id="unpaid-amount">₩0</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600">이번 달 지급</p>
+                <p class="text-xl font-bold text-green-600" id="paid-amount">₩0</p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-gray-600">연체 건수</p>
+                <p class="text-xl font-bold text-red-600" id="overdue-count">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 최근 활동 및 알림 -->
+      <div class="space-y-6">
+        <!-- 최근 지출 승인 요청 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">승인 대기 지출</h3>
+              <a href="/finance/expenses?status=pending" class="text-blue-600 hover:text-blue-800 text-sm">전체보기</a>
+            </div>
+            <div id="recent-expenses" class="space-y-3">
+              <!-- JavaScript로 채워질 내용 -->
+              <div class="text-center py-8 text-gray-500">
+                <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                <p>승인 대기 중인 지출이 없습니다</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 연체 청구서 알림 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">연체 청구서</h3>
+              <a href="/finance/invoices?period=overdue" class="text-red-600 hover:text-red-800 text-sm">전체보기</a>
+            </div>
+            <div id="overdue-invoices-list" class="space-y-3">
+              <!-- JavaScript로 채워질 내용 -->
+              <div class="text-center py-8 text-gray-500">
+                <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p>연체된 청구서가 없습니다</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 예산 사용률 차트 -->
+        <div class="bg-white rounded-lg shadow-sm border">
+          <div class="p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">부서별 예산 사용률</h3>
+            <div id="budget-usage-chart" class="space-y-3">
+              <!-- JavaScript로 채워질 내용 -->
+              <div class="text-center py-8 text-gray-500">
+                <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <p>데이터를 불러오는 중...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  loadDashboardData();
+});
+
+async function loadDashboardData() {
+  try {
+    // 병렬로 모든 데이터 로드
+    const [budgetStats, expenseStats, invoiceStats] = await Promise.all([
+      fetchBudgetStatistics(),
+      fetchExpenseStatistics(), 
+      fetchInvoiceStatistics()
+    ]);
+
+    // 메인 통계 카드 업데이트
+    updateMainStats(budgetStats, expenseStats, invoiceStats);
+    
+    // 개별 섹션 업데이트
+    updateBudgetSection(budgetStats);
+    updateExpenseSection(expenseStats);
+    updateInvoiceSection(invoiceStats);
+    
+    // 사이드바 데이터 로드
+    loadRecentExpenses();
+    loadOverdueInvoices();
+    loadBudgetUsageChart();
+    
+  } catch (error) {
+    console.error('대시보드 데이터 로드 실패:', error);
+    showError('데이터를 불러오는 데 실패했습니다.');
+  }
+}
+
+async function fetchBudgetStatistics() {
+  const response = await fetch(`${window.BACKEND_API_URL}/budgets/statistics`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  if (!response.ok) throw new Error('예산 통계 로드 실패');
+  return await response.json();
+}
+
+async function fetchExpenseStatistics() {
+  const response = await fetch(`${window.BACKEND_API_URL}/expenses/statistics`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  if (!response.ok) throw new Error('지출 통계 로드 실패');
+  return await response.json();
+}
+
+async function fetchInvoiceStatistics() {
+  const response = await fetch(`${window.BACKEND_API_URL}/invoices/statistics`, {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  if (!response.ok) throw new Error('청구서 통계 로드 실패');
+  return await response.json();
+}
+
+function updateMainStats(budgetStats, expenseStats, invoiceStats) {
+  // 전체 예산
+  document.getElementById('total-budget').textContent = 
+    formatCurrency(budgetStats.data?.total_allocated || 0);
+  
+  // 이번 달 지출
+  document.getElementById('monthly-expenses').textContent = 
+    formatCurrency(expenseStats.data?.total_amount_this_month || 0);
+  
+  // 승인 대기
+  document.getElementById('pending-approvals').textContent = 
+    expenseStats.data?.pending_approval || 0;
+  
+  // 연체 청구서
+  document.getElementById('overdue-invoices').textContent = 
+    invoiceStats.data?.overdue_count || 0;
+}
+
+function updateBudgetSection(budgetStats) {
+  const data = budgetStats.data || {};
+  
+  document.getElementById('active-budgets').textContent = 
+    data.active_budgets || 0;
+  
+  // 전체 예산 사용률 계산
+  const totalAllocated = data.total_allocated || 0;
+  const totalUsed = data.total_used || 0;
+  const usageRate = totalAllocated > 0 ? Math.round((totalUsed / totalAllocated) * 100) : 0;
+  
+  document.getElementById('budget-usage').textContent = `${usageRate}%`;
+  document.getElementById('over-budget').textContent = data.over_budget || 0;
+}
+
+function updateExpenseSection(expenseStats) {
+  const data = expenseStats.data || {};
+  
+  document.getElementById('month-expenses').textContent = 
+    formatCurrency(data.total_amount_this_month || 0);
+  
+  document.getElementById('pending-expenses').textContent = 
+    data.pending_approval || 0;
+  
+  document.getElementById('urgent-expenses').textContent = 
+    data.urgent_expenses || 0;
+}
+
+function updateInvoiceSection(invoiceStats) {
+  const data = invoiceStats.data || {};
+  
+  document.getElementById('unpaid-amount').textContent = 
+    formatCurrency(data.total_amount_pending || 0);
+  
+  document.getElementById('paid-amount').textContent = 
+    formatCurrency(data.total_amount_paid_this_month || 0);
+  
+  document.getElementById('overdue-count').textContent = 
+    data.overdue_count || 0;
+}
+
+async function loadRecentExpenses() {
+  try {
+    const response = await fetch(`${window.BACKEND_API_URL}/expenses?status=pending&limit=5`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) throw new Error('최근 지출 로드 실패');
+    const result = await response.json();
+    
+    const container = document.getElementById('recent-expenses');
+    
+    if (result.data && result.data.length > 0) {
+      container.innerHTML = result.data.map(expense => `
+        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div>
+            <p class="font-medium text-gray-900">${expense.title}</p>
+            <p class="text-sm text-gray-600">${expense.department_text} • ${formatCurrency(expense.amount)}</p>
+          </div>
+          <div class="text-right">
+            <span class="px-2 py-1 text-xs rounded-full ${expense.status_color}">
+              ${expense.status_text}
+            </span>
+            ${expense.is_urgent ? '<span class="ml-1 text-red-500">🔥</span>' : ''}
+          </div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-500">
+          <p>승인 대기 중인 지출이 없습니다</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('최근 지출 로드 실패:', error);
+  }
+}
+
+async function loadOverdueInvoices() {
+  try {
+    const response = await fetch(`${window.BACKEND_API_URL}/invoices?period=overdue&limit=5`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) throw new Error('연체 청구서 로드 실패');
+    const result = await response.json();
+    
+    const container = document.getElementById('overdue-invoices-list');
+    
+    if (result.data && result.data.length > 0) {
+      container.innerHTML = result.data.map(invoice => `
+        <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+          <div>
+            <p class="font-medium text-gray-900">${invoice.vendor}</p>
+            <p class="text-sm text-gray-600">${invoice.invoice_number} • ${formatCurrency(invoice.total_amount)}</p>
+          </div>
+          <div class="text-right">
+            <span class="text-red-600 text-sm font-medium">
+              ${invoice.days_overdue}일 연체
+            </span>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-500">
+          <p>연체된 청구서가 없습니다</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('연체 청구서 로드 실패:', error);
+  }
+}
+
+async function loadBudgetUsageChart() {
+  try {
+    const response = await fetch(`${window.BACKEND_API_URL}/budgets/statistics`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) throw new Error('예산 사용률 차트 로드 실패');
+    const result = await response.json();
+    
+    const container = document.getElementById('budget-usage-chart');
+    const categoryData = result.data?.by_category || [];
+    
+    if (categoryData.length > 0) {
+      container.innerHTML = categoryData.slice(0, 5).map(item => {
+        const usageRate = item.allocated_amount > 0 ? 
+          Math.round((item.used_amount / item.allocated_amount) * 100) : 0;
+        
+        return `
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="font-medium">${item.category_text}</span>
+              <span class="${usageRate > 90 ? 'text-red-600' : usageRate > 70 ? 'text-yellow-600' : 'text-green-600'}">${usageRate}%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+              <div class="h-2 rounded-full ${usageRate > 90 ? 'bg-red-500' : usageRate > 70 ? 'bg-yellow-500' : 'bg-green-500'}" 
+                   style="width: ${Math.min(usageRate, 100)}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      container.innerHTML = `
+        <div class="text-center py-8 text-gray-500">
+          <p>예산 데이터가 없습니다</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('예산 사용률 차트 로드 실패:', error);
+  }
+}
+
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('ko-KR', {
+    style: 'currency',
+    currency: 'KRW'
+  }).format(amount);
+}
+
+function showError(message) {
+  // 에러 메시지 표시 (실제로는 toast나 modal로 구현)
+  console.error(message);
+}
+
+async function exportFinanceReport() {
+  try {
+    // 재무 보고서 다운로드 기능 (추후 구현)
+    alert('재무 보고서 다운로드 기능은 준비 중입니다.');
+  } catch (error) {
+    console.error('보고서 다운로드 실패:', error);
+    showError('보고서 다운로드에 실패했습니다.');
+  }
+}
+</script>
