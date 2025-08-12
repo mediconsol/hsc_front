@@ -22,7 +22,6 @@
             required 
             class="form-input" 
             placeholder="이메일 주소를 입력하세요"
-            value="admin@mediconsol.com"
           >
         </div>
         <div>
@@ -34,36 +33,52 @@
             required 
             class="form-input" 
             placeholder="비밀번호를 입력하세요"
-            value="test1234"
           >
         </div>
 
         <div class="test-account" style="text-align: left;">
-          <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">테스트 계정 선택:</p>
-          <div style="font-size: 0.75rem; line-height: 1.5;">
-            <div style="margin-bottom: 0.25rem; cursor: pointer; padding: 0.25rem; border-radius: 0.25rem;" 
-                 onmouseover="this.style.backgroundColor='#e0e7ff'" 
-                 onmouseout="this.style.backgroundColor='transparent'"
-                 onclick="fillLoginForm('admin@hospital.com', 'password123')">
-              <strong>관리자:</strong> admin@hospital.com / password123
+          <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">🔐 테스트 계정 (클릭하여 자동 입력):</p>
+          <div style="font-size: 0.75rem; line-height: 1.8;">
+            <div style="margin-bottom: 0.5rem; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.5rem;">
+              <strong style="color: #1f2937;">관리자 권한 (Admin)</strong>
+              <div style="margin-left: 1rem; margin-top: 0.25rem;">
+                <div style="cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 0.25rem; transition: all 0.2s;" 
+                     onmouseover="this.style.backgroundColor='#dbeafe'; this.style.paddingLeft='1rem'" 
+                     onmouseout="this.style.backgroundColor='transparent'; this.style.paddingLeft='0.5rem'"
+                     onclick="fillLoginForm('admin@hospital.com', 'password123')">
+                  📧 admin@hospital.com / 🔑 password123
+                </div>
+                <div style="cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 0.25rem; transition: all 0.2s;" 
+                     onmouseover="this.style.backgroundColor='#dbeafe'; this.style.paddingLeft='1rem'" 
+                     onmouseout="this.style.backgroundColor='transparent'; this.style.paddingLeft='0.5rem'"
+                     onclick="fillLoginForm('admin@mediconsol.com', 'test1234')">
+                  📧 admin@mediconsol.com / 🔑 test1234
+                </div>
+              </div>
             </div>
-            <div style="margin-bottom: 0.25rem; cursor: pointer; padding: 0.25rem; border-radius: 0.25rem;" 
-                 onmouseover="this.style.backgroundColor='#e0e7ff'" 
-                 onmouseout="this.style.backgroundColor='transparent'"
-                 onclick="fillLoginForm('admin@mediconsol.com', 'test1234')">
-              <strong>시스템관리자:</strong> admin@mediconsol.com / test1234
+            
+            <div style="margin-bottom: 0.5rem; background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.5rem;">
+              <strong style="color: #1f2937;">매니저 권한 (Manager)</strong>
+              <div style="margin-left: 1rem; margin-top: 0.25rem;">
+                <div style="cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 0.25rem; transition: all 0.2s;" 
+                     onmouseover="this.style.backgroundColor='#dbeafe'; this.style.paddingLeft='1rem'" 
+                     onmouseout="this.style.backgroundColor='transparent'; this.style.paddingLeft='0.5rem'"
+                     onclick="fillLoginForm('manager@hospital.com', 'password123')">
+                  📧 manager@hospital.com / 🔑 password123
+                </div>
+              </div>
             </div>
-            <div style="margin-bottom: 0.25rem; cursor: pointer; padding: 0.25rem; border-radius: 0.25rem;" 
-                 onmouseover="this.style.backgroundColor='#e0e7ff'" 
-                 onmouseout="this.style.backgroundColor='transparent'"
-                 onclick="fillLoginForm('manager@hospital.com', 'password123')">
-              <strong>매니저:</strong> manager@hospital.com / password123
-            </div>
-            <div style="margin-bottom: 0.25rem; cursor: pointer; padding: 0.25rem; border-radius: 0.25rem;" 
-                 onmouseover="this.style.backgroundColor='#e0e7ff'" 
-                 onmouseout="this.style.backgroundColor='transparent'"
-                 onclick="fillLoginForm('staff@hospital.com', 'password123')">
-              <strong>직원:</strong> staff@hospital.com / password123
+            
+            <div style="background-color: #f3f4f6; padding: 0.5rem; border-radius: 0.5rem;">
+              <strong style="color: #1f2937;">직원 권한 (Staff)</strong>
+              <div style="margin-left: 1rem; margin-top: 0.25rem;">
+                <div style="cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 0.25rem; transition: all 0.2s;" 
+                     onmouseover="this.style.backgroundColor='#dbeafe'; this.style.paddingLeft='1rem'" 
+                     onmouseout="this.style.backgroundColor='transparent'; this.style.paddingLeft='0.5rem'"
+                     onclick="fillLoginForm('staff@hospital.com', 'password123')">
+                  📧 staff@hospital.com / 🔑 password123
+                </div>
+              </div>
             </div>
           </div>
         </div>
