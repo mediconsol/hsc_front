@@ -4,8 +4,12 @@ class HomeController < ActionController::Base
   
   def index
     # 병원 관리 시스템 대시보드
-    # Railway에서 application 레이아웃 오류 방지를 위해 layout: false
-    render layout: false
+    # Railway에서는 simple 레이아웃 사용
+    if Rails.env.production?
+      render layout: false
+    else
+      render layout: 'application'
+    end
   end
   
   def login

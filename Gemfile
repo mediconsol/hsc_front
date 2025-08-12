@@ -1,9 +1,9 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.2"
-# The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem "propshaft"
+gem "rails", "~> 7.1.0"
+# The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
+gem "sprockets-rails"
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -35,10 +35,8 @@ gem 'tailwindcss-rails'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem "solid_cache"
-gem "solid_queue"
-gem "solid_cable"
+# Use Redis adapter to run Action Cable in production
+gem "redis", ">= 4.0.1"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
