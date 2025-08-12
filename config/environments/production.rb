@@ -109,10 +109,11 @@ Rails.application.configure do
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # Railway Frontend 최적화
-  # Asset 파이프라인 최적화 - Tailwind를 위해 compile 활성화
-  config.assets.compile = true
+  # Asset 파이프라인 최적화 (Sprockets 사용)
+  config.assets.compile = false
   config.assets.digest = true
   config.assets.version = '1.0'
+  config.assets.precompile += %w[tailwind.css]
   
   # Gzip 압축 활성화
   config.middleware.use Rack::Deflater
