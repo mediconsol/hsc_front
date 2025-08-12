@@ -7,7 +7,7 @@ class HomeController < ActionController::Base
   
   def login
     # 로그인 페이지는 별도 레이아웃 사용 (사이드바 없음)
-    # 임시로 간단한 텍스트로 테스트
-    render plain: "Hospital Management System - Login Page"
+    # login 레이아웃으로 테스트 (application 레이아웃 문제 회피)
+    render template: 'home/login', layout: 'login'
   end
 end
