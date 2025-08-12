@@ -64,3 +64,5 @@
 # Ignore OS files
 .DS_Store
 Thumbs.db
+/app/assets/builds/*
+!/app/assets/builds/.keep

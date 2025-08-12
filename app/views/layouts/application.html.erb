@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Asset pipeline 비활성화 (CDN 사용) -->
-    <!-- <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %> -->
+    <!-- Asset pipeline 활성화 -->
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %>
     
     <style>
       /* 사이드바 스타일 */
