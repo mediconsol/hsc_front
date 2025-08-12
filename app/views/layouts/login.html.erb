@@ -117,9 +117,36 @@
       window.loading = new LoadingManager();
     </script>
     
-    <!-- 인증 모듈 인라인 로드 -->
+    <!-- 인증 모듈 간소화 버전 -->
     <script>
-      <%= File.read(Rails.root.join('app', 'assets', 'javascripts', 'modules', 'auth.js')).html_safe %>
+      // 간소화된 인증 관리자 (로그인 페이지 전용)
+      window.authManager = {
+        login: async function(email, password) {
+          const apiUrl = window.BACKEND_API_URL || 'https://hsc1-production.up.railway.app/api/v1';
+          try {
+            const response = await fetch(`${apiUrl}/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+              localStorage.setItem('auth_token', data.access_token);
+              localStorage.setItem('user_info', JSON.stringify(data.user));
+              return { success: true, data: data };
+            } else {
+              return { success: false, message: data.message };
+            }
+          } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, message: 'API 연결 실패' };
+          }
+        }
+      };
     </script>
   </body>
 </html>
