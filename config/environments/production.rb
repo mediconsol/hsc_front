@@ -149,6 +149,7 @@ Rails.application.configure do
     policy.connect_src *connect_sources
   end
 
-  config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
-  config.content_security_policy_nonce_directives = %w(script-src)
+  # CSP nonce 비활성화 - 인라인 스크립트 허용을 위해
+  # config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
+  # config.content_security_policy_nonce_directives = %w(script-src)
 end
