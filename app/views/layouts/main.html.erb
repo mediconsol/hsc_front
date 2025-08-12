@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>병원 관리 시스템</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        background-color: #f9fafb;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      /* 사이드바 스타일 */
+      #sidebar {
+        width: 16rem;
+        transition: width 0.3s ease-in-out;
+      }
+      #sidebar[data-collapsed="true"] {
+        width: 4rem;
+      }
+      #sidebar[data-collapsed="true"] .sidebar-text {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="min-h-screen flex">
+      <!-- 사이드바 -->
+      <div class="fixed inset-y-0 left-0 z-50 bg-white shadow-lg flex flex-col" id="sidebar">
+        <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200">
+          <h1 class="text-lg font-bold text-gray-900 sidebar-text">🏥 병원 시스템</h1>
+          <button onclick="toggleSidebar()" class="p-1 rounded hover:bg-gray-100" id="sidebar-toggle">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
+        
+        <nav class="mt-5 px-2 flex-1 overflow-y-auto">
+          <div class="space-y-1">
+            <!-- 대시보드 -->
+            <a href="/dashboard" class="bg-blue-100 text-blue-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="sidebar-icon mr-3">🏠</span>
+              <span class="sidebar-text">대시보드</span>
+            </a>
+            
+            <!-- 예약 관리 -->
+            <a href="/appointments" class="text-gray-700 hover:bg-gray-100 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="sidebar-icon mr-3">📋</span>
+              <span class="sidebar-text">예약 관리</span>
+            </a>
+            
+            <!-- 환자 관리 -->
+            <a href="/patients" class="text-gray-700 hover:bg-gray-100 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="sidebar-icon mr-3">👥</span>
+              <span class="sidebar-text">환자 관리</span>
+            </a>
+            
+            <!-- 인사 관리 -->
+            <a href="/hr" class="text-gray-700 hover:bg-gray-100 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="sidebar-icon mr-3">👨‍⚕️</span>
+              <span class="sidebar-text">인사 관리</span>
+            </a>
+            
+            <!-- 시설 관리 -->
+            <a href="/facilities" class="text-gray-700 hover:bg-gray-100 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="sidebar-icon mr-3">🏢</span>
+              <span class="sidebar-text">시설 관리</span>
+            </a>
+            
+            <!-- 재무 관리 -->
+            <a href="/finance" class="text-gray-700 hover:bg-gray-100 group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+              <span class="sidebar-icon mr-3">💰</span>
+              <span class="sidebar-text">재무 관리</span>
+            </a>
+          </div>
+        </nav>
+        
+        <!-- 사용자 정보 -->
+        <div class="flex-shrink-0 p-4 border-t border-gray-200">
+          <div class="flex items-center">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-900 sidebar-text" id="user-name">사용자</p>
+              <p class="text-xs text-gray-500 sidebar-text" id="user-role">role</p>
+            </div>
+            <button id="logout-btn" class="ml-2 bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs sidebar-text">
+              로그아웃
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 메인 컨텐츠 -->
+      <div class="flex-1 ml-64" id="main-content">
+        <main class="py-6">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      // 사이드바 토글
+      function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const isCollapsed = sidebar.getAttribute('data-collapsed') === 'true';
+        
+        if (isCollapsed) {
+          sidebar.setAttribute('data-collapsed', 'false');
+          mainContent.classList.remove('ml-16');
+          mainContent.classList.add('ml-64');
+        } else {
+          sidebar.setAttribute('data-collapsed', 'true');
+          mainContent.classList.remove('ml-64');
+          mainContent.classList.add('ml-16');
+        }
+      }
+
+      // 사용자 정보 로드
+      const userInfo = localStorage.getItem('user_info');
+      if (userInfo) {
+        try {
+          const user = JSON.parse(userInfo);
+          const roleNames = {
+            0: '읽기전용', 1: '직원', 2: '관리자', 3: '시스템관리자'
+          };
+          document.getElementById('user-name').textContent = user.name || '사용자';
+          document.getElementById('user-role').textContent = roleNames[user.role] || '직원';
+        } catch (error) {
+          console.error('사용자 정보 파싱 오류:', error);
+        }
+      }
+
+      // 로그아웃
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
+        window.location.href = '/login';
+      });
+    </script>
+  </body>
+</html>
