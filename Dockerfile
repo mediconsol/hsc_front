@@ -88,5 +88,5 @@ USER 1000:1000
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 7002
-CMD ["./bin/rails", "server", "-b", "0.0.0.0", "-p", "7002"]
+EXPOSE 3000
+CMD ./bin/rails server -b 0.0.0.0 -p ${PORT:-3000}
