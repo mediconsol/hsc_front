@@ -4,9 +4,5 @@
 # See the Securing Rails Applications Guide for more information:
 # https://guides.rubyonrails.org/security.html#content-security-policy-header
 
-Rails.application.configure do
-  # 프로덕션에서 CSP 완전 비활성화 (인라인 스크립트 허용 필요 시)
-  if Rails.env.production?
-    config.content_security_policy = false
-  end
-end
+# CSP 설정은 config/environments/production.rb에서 처리됨
+# 이 파일은 필요 시 추가 CSP 설정을 위해 남겨둠
