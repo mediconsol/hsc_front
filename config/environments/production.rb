@@ -115,7 +115,7 @@ Rails.application.configure do
   config.assets.version = '1.0'
   
   # Gzip 압축 활성화
-  config.middleware.use Rack::Deflate
+  config.middleware.use Rack::Deflater
 
   # 보안 헤더 설정 (CSP는 별도 설정)
   config.force_ssl_exceptions = ["/up", "/assets"]
