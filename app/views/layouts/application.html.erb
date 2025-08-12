@@ -12,7 +12,11 @@
     <% end %>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- Asset pipeline 활성화 -->
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %>
+    <% begin %>
+      <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %>
+    <% rescue Propshaft::MissingAssetError %>
+      <!-- app.css 파일이 없으면 무시 -->
+    <% end %>
     
     <style>
       /* 사이드바 스타일 */
