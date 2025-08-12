@@ -143,7 +143,10 @@ Rails.application.configure do
     policy.style_src :self, :unsafe_inline, 'https://cdn.jsdelivr.net', 'https://fonts.googleapis.com'
     policy.font_src :self, 'https://fonts.gstatic.com'
     policy.img_src :self, :data, :https
-    policy.connect_src :self, ENV["BACKEND_API_URL"]
+    # Asset precompile 시에는 BACKEND_API_URL이 없을 수 있음
+    connect_sources = [:self]
+    connect_sources << ENV["BACKEND_API_URL"] if ENV["BACKEND_API_URL"].present?
+    policy.connect_src *connect_sources
   end
 
   config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
