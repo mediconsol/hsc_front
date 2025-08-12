@@ -137,7 +137,5 @@ Rails.application.configure do
   end
 
   # CSP 완전 비활성화 (경고 제거)
-  config.content_security_policy = false
-  config.action_dispatch.default_headers.delete('Content-Security-Policy-Report-Only')
-  config.action_dispatch.default_headers.delete('Content-Security-Policy')
+  config.content_security_policy_report_only = false
 end
