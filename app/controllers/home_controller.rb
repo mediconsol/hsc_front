@@ -1,4 +1,4 @@
-class HomeController < ActionController::Base
+class HomeController < ApplicationController
   
   def index
     # 병원 관리 시스템 대시보드
@@ -7,6 +7,6 @@ class HomeController < ActionController::Base
   
   def login
     # 로그인 페이지는 별도 레이아웃 사용 (사이드바 없음)
-    render plain: "Login page works!"
+    render layout: 'login'
   end
 end
