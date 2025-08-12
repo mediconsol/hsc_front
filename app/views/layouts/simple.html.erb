@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>병원 관리 시스템 - 로그인</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-gradient-to-br from-blue-50 to-indigo-100">
+    <%= yield %>
+
+    <script>
+      // 간소화된 인증 관리자 (로그인 페이지 전용)
+      window.authManager = {
+        login: async function(email, password) {
+          const apiUrl = 'https://hsc1-production.up.railway.app/api/v1';
+          try {
+            const response = await fetch(`${apiUrl}/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+              localStorage.setItem('auth_token', data.access_token);
+              localStorage.setItem('user_info', JSON.stringify(data.user));
+              return { success: true, data: data };
+            } else {
+              return { success: false, message: data.message };
+            }
+          } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, message: 'API 연결 실패' };
+          }
+        }
+      };
+    </script>
+  </body>
+</html>

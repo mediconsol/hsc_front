@@ -8,7 +8,7 @@ class HomeController < ActionController::Base
   end
   
   def login
-    # 레이아웃 없이 뷰만 렌더링 (단계별 테스트)
-    render template: 'home/login', layout: false
+    # 최소한의 레이아웃으로 테스트
+    render template: 'home/login', layout: 'simple'
   end
 end
