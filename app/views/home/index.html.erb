@@ -229,8 +229,13 @@
     return;
   }
   
+  // 프로덕션 환경에서는 백엔드 URL 사용
+  const apiBaseUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:7001' 
+    : 'https://hsc1-production.up.railway.app';
+  
   // 토큰 유효성 검증
-  fetch('http://localhost:7001/api/v1/auth/me', {
+  fetch(`${apiBaseUrl}/api/v1/auth/me`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${token}`,
@@ -296,8 +301,13 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
   const token = localStorage.getItem('auth_token');
   
   try {
+    // 프로덕션 환경에서는 백엔드 URL 사용
+    const apiBaseUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:7001' 
+      : 'https://hsc1-production.up.railway.app';
+    
     // 백엔드 로그아웃 API 호출
-    await fetch('http://localhost:7001/api/v1/auth/logout', {
+    await fetch(`${apiBaseUrl}/api/v1/auth/logout`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -318,7 +328,12 @@ document.getElementById('logout-btn').addEventListener('click', async () => {
 });
 
 // API 상태 확인
-fetch('http://localhost:7001/')
+// 프로덕션 환경에서는 백엔드 URL 사용
+const statusApiUrl = window.location.hostname === 'localhost' 
+  ? 'http://localhost:7001' 
+  : 'https://hsc1-production.up.railway.app';
+
+fetch(`${statusApiUrl}/`)
   .then(response => response.json())
   .then(data => {
     document.getElementById('api-status').textContent = '연결됨 ✅';

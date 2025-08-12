@@ -144,7 +144,7 @@ Rails.application.configure do
     policy.font_src :self, 'https://fonts.gstatic.com'
     policy.img_src :self, :data, :https
     # Asset precompile 시에는 BACKEND_API_URL이 없을 수 있음
-    connect_sources = [:self, 'https://hsc1-production.up.railway.app']
+    connect_sources = [:self, 'https://hsc1-production.up.railway.app', 'https://hsc1-production-acea.up.railway.app']
     connect_sources << ENV["BACKEND_API_URL"] if ENV["BACKEND_API_URL"].present?
     policy.connect_src *connect_sources
   end
