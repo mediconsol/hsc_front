@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <% if Rails.env.production? %>
+      <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <% else %>
+      <script src="https://cdn.tailwindcss.com"></script>
+    <% end %>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- Asset pipeline 활성화 -->
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload", "data-turbo-eval": "false" %>

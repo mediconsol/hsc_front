@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     
-    <!-- Tailwind CSS 정적 파일 -->
-    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <!-- Tailwind CSS -->
+    <% if Rails.env.production? %>
+      <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <% else %>
+      <script src="https://cdn.tailwindcss.com"></script>
+    <% end %>
     
     <!-- 인라인 CSS로 스타일 강제 적용 -->
     <style>
