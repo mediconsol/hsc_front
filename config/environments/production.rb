@@ -136,23 +136,19 @@ Rails.application.configure do
     Rails.logger.error "Missing required environment variables: #{missing_vars.join(', ')}"
   end
 
-  # CSP 완전 비활성화 (개발 단계에서 임시로)
-  config.content_security_policy = false
-  
-  # # CSP 헤더 설정 (Frontend 보안)
-  # config.content_security_policy do |policy|
-  #   policy.default_src :self
-  #   policy.script_src :self, :unsafe_inline, :unsafe_eval, 'https://cdn.jsdelivr.net', 'https://cdn.tailwindcss.com'
-  #   policy.style_src :self, :unsafe_inline, 'https://cdn.jsdelivr.net', 'https://fonts.googleapis.com', 'https://cdn.tailwindcss.com'
-  #   policy.font_src :self, 'https://fonts.gstatic.com'
-  #   policy.img_src :self, :data, :https
-  #   # Asset precompile 시에는 BACKEND_API_URL이 없을 수 있음
-  #   connect_sources = [:self, 'https://hsc1-production.up.railway.app']
-  #   connect_sources << ENV["BACKEND_API_URL"] if ENV["BACKEND_API_URL"].present?
-  #   policy.connect_src *connect_sources
-  # end
+  # CSP 헤더 설정 (Frontend 보안)
+  config.content_security_policy do |policy|
+    policy.default_src :self
+    policy.script_src :self, :unsafe_inline, :unsafe_eval, 'https://cdn.jsdelivr.net', 'https://cdn.tailwindcss.com'
+    policy.style_src :self, :unsafe_inline, 'https://cdn.jsdelivr.net', 'https://fonts.googleapis.com', 'https://cdn.tailwindcss.com'
+    policy.font_src :self, 'https://fonts.gstatic.com'
+    policy.img_src :self, :data, :https
+    # Asset precompile 시에는 BACKEND_API_URL이 없을 수 있음
+    connect_sources = [:self, 'https://hsc1-production.up.railway.app']
+    connect_sources << ENV["BACKEND_API_URL"] if ENV["BACKEND_API_URL"].present?
+    policy.connect_src *connect_sources
+  end
 
-  # # CSP nonce 비활성화 - 인라인 스크립트 허용을 위해
-  # # config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
-  # # config.content_security_policy_nonce_directives = %w(script-src)
+  # CSP 헤더를 report-only 모드로 설정 (위반은 보고만 하고 차단하지 않음)
+  config.content_security_policy_report_only = true
 end

@@ -8,7 +8,7 @@ class HomeController < ActionController::Base
   end
   
   def login
-    # 최소한의 레이아웃으로 테스트
-    render template: 'home/login', layout: 'simple'
+    # login 레이아웃 사용 (사이드바 없는 간단한 레이아웃)
+    render template: 'home/login', layout: 'login'
   end
 end
