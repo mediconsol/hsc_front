@@ -38,11 +38,14 @@
           >
         </div>
 
-        <div class="test-account">
-          <p style="font-size: 0.875rem;">
-            <span style="font-weight: 500;">테스트 계정</span><br>
-            admin@mediconsol.com / test1234
-          </p>
+        <div class="test-account" style="text-align: left;">
+          <p style="font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">테스트 계정 목록:</p>
+          <div style="font-size: 0.75rem; line-height: 1.5;">
+            <div style="margin-bottom: 0.25rem;"><strong>관리자:</strong> admin@hospital.com / password123</div>
+            <div style="margin-bottom: 0.25rem;"><strong>시스템관리자:</strong> admin@mediconsol.com / test1234</div>
+            <div style="margin-bottom: 0.25rem;"><strong>매니저:</strong> manager@hospital.com / password123</div>
+            <div style="margin-bottom: 0.25rem;"><strong>직원:</strong> staff@hospital.com / password123</div>
+          </div>
         </div>
 
         <div>
@@ -109,7 +112,9 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
       body: JSON.stringify({ email, password })
     });
     
+    console.log('Response status:', response.status);
     const data = await response.json();
+    console.log('Response data:', data);
     
     if (data.status === 'success') {
       statusDiv.textContent = '로그인 성공! 대시보드로 이동합니다...';
