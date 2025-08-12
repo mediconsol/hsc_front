@@ -8,7 +8,7 @@ class HomeController < ActionController::Base
   end
   
   def login
-    # login 레이아웃 사용 (사이드바 없는 간단한 레이아웃)
-    render template: 'home/login', layout: 'login'
+    # 레이아웃 없이 완전히 독립적인 HTML 렌더링
+    render file: Rails.root.join('app', 'views', 'home', 'login_simple.html.erb'), layout: false
   end
 end
