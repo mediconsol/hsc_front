@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+  # 브라우저 제한 제거 (배포 환경에서 문제 발생 가능)
+  # allow_browser versions: :modern
   
   private
   

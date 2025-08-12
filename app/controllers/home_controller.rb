@@ -1,4 +1,4 @@
-class HomeController < ApplicationController
+class HomeController < ActionController::Base
   
   def index
     # 병원 관리 시스템 대시보드
