@@ -5,11 +5,14 @@ if ENV['RAILS_GROUPS'] == 'assets'
   Rails.application.configure do
     # Completely disable Active Record during asset precompilation
     config.active_record.maintain_test_schema = false
-    config.active_record.database_tasks = false
+    # database_tasks is removed in Rails 8, skip it
+    # config.active_record.database_tasks = false
     config.active_record.dump_schema_after_migration = false
     
-    # Disable database migration checks
-    config.active_record.check_pending_migrations = false
+    # Disable database migration checks - Rails 8 compatible way
+    if config.active_record.respond_to?(:check_pending_migrations=)
+      config.active_record.check_pending_migrations = false
+    end
     
     # Skip all database-dependent initializers
     config.eager_load = false
