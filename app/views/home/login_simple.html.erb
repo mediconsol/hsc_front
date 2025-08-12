@@ -3,7 +3,7 @@
 <head>
   <title>병원 관리 시스템 - 로그인</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
   <div class="min-h-screen flex items-center justify-center">
@@ -59,10 +59,10 @@
       messageDiv.className = 'mt-4 text-center text-sm text-blue-600';
       
       try {
-        // 프로덕션 환경에서는 백엔드 URL 사용
-        const apiBaseUrl = window.location.hostname === 'localhost' 
-          ? 'http://localhost:7001' 
-          : 'https://hsc1-production.up.railway.app';
+        // 환경에 따른 백엔드 URL 설정
+        const apiBaseUrl = window.location.hostname.includes('railway.app')
+          ? 'https://hsc1-production.up.railway.app'
+          : 'http://localhost:7001';
         
         const response = await fetch(`${apiBaseUrl}/api/v1/auth/login`, {
           method: 'POST',
